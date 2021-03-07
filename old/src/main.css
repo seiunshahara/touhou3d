@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+* {
+    cursor: none;
+}
+
+@font-face {
+    font-family: 'tuhu';
+    src: url('/fonts/Codex LT.ttf');
+}

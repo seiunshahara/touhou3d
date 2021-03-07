@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'tuhu';
+  src: url('./fonts/851CHIKARA-DZUYOKU_kanaA_004.ttf');
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'tuhu';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
