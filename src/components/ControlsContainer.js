@@ -7,9 +7,10 @@ export const ControlsContainer = ({children}) => {
     const [downKeys, setDownKeys] = useState([])
 
     const [keyMap, setKeyMap] = useState({
+        27: "ESCAPE",
         90: "ENTER",
         40: "DOWN",
-        38: "UP"
+        38: "UP",
     });
 
     const keyDownHandler = (event) => {

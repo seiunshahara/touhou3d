@@ -10,26 +10,30 @@ const mod = function(num, n) {
 const choiceSound = new MultiSound("sfx/select00.wav", 20, .20)
 const selectSound = new MultiSound("sfx/ok00.wav", 20, .20)
 
-export const VerticleMenu = ({menuMap, slanted}) => {
+export const VerticleMenu = ({menuMap, active = true, slanted = false}) => {
 
     const menuKeys = Object.keys(menuMap)
     const numChildren = menuKeys.length;
     const [selectedItem, setSelectedItem] = useState(0);
+
     useKeydown("UP", () => {
+        if(!active) return;
         setSelectedItem(mod((selectedItem - 1), numChildren))
         choiceSound.play();
     })
     useKeydown("DOWN", () => {
+        if(!active) return;
         setSelectedItem(mod((selectedItem + 1), numChildren))
         choiceSound.play();
     })
     useKeydown("ENTER", () => {
+        if(!active) return;
         menuMap[menuKeys[selectedItem]]();
         selectSound.play();
     })
 
     return (
-        <List>
+        <List style={{visibility: active ? "visible" : "hidden"}}>
             {menuKeys.map((menuKey, i) => {
 
                 const styleAddin = i === selectedItem ? {

@@ -6,6 +6,7 @@ import BackgroundImage from '../img/menu_bamboo.jpg'
 import { ControlsContext } from '../components/ControlsContainer';
 import { VerticleMenu } from '../components/VerticleMenu';
 import { useKeydown } from '../hooks/useKeydown';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles({
     titlePos1: {
@@ -46,28 +47,19 @@ const useStyles = makeStyles({
     },
     optionsPos2: {
         left: "70vw",
-    },
-    container: {
-        background: `url(${BackgroundImage})`,
-        width: "100vw",
-        height: "100vh",
-        fontSize: "5vh"
     }
 })
 
-export const MainMenu = () => {
+export const MainMenu = ({menuAudio, menuOpenInit = false}) => {
     const classes = useStyles();
-    const [audio, setAudio] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(menuOpenInit);
+    const history = useHistory();
 
     const openMenu = () => {
         if (menuOpen) return;
 
-        const audio = new Audio("menu_music.wav");
-        audio.loop = true;
-        audio.play();
-
-        setAudio(audio);
+        menuAudio.loop = true;
+        menuAudio.play();
         setMenuOpen(true);
     }
 
@@ -76,7 +68,7 @@ export const MainMenu = () => {
     }
 
     const titleOptions = useMemo(() => ({
-        "Stage Select": null,
+        "Play": () => history.push("/game/difficultySelect"),
         "Option": null,
         "Quit": quit,
     }), [])
@@ -87,16 +79,16 @@ export const MainMenu = () => {
     const optionsPos = menuOpen ? classes.optionsPos2 : classes.optionsPos1
 
     return (
-        <Box className={classes.container}>
+        <>
             <Box className={classes.title + " " + titlePos}>
                 東方
                 <Box className={classes.title2}>
                     3D
                 </Box>
             </Box>
-            {menuOpen && <Box className={classes.options + " " + optionsPos}>
-                <VerticleMenu menuMap={titleOptions} slanted={menuOpen}/>
-            </Box>}
-        </Box>
+            <Box className={classes.options + " " + optionsPos}>
+                <VerticleMenu menuMap={titleOptions} slanted={menuOpen} active={menuOpen}/>
+            </Box>
+        </>
     )
 }

@@ -1,18 +1,27 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { ControlsContainer } from './components/ControlsContainer';
-import { MainMenu } from './pages/MainMenu';
+import { GlobalsContainer } from './components/GlobalsContainer';
+import { Menu } from './pages/Menu';
+import { Stage1 } from './stages/Stage1';
+
+const audio = new Audio("menu_music.wav");
 
 function App() {
     return (
-        <ControlsContainer>
-            <Router>
-                <Switch>
-                    <Route exact path="/">
-                        <MainMenu />
-                    </Route>
-                </Switch>
-            </Router>
-        </ControlsContainer>
+        <GlobalsContainer>
+            <ControlsContainer>
+                <Router>
+                    <Switch>
+                        <Route path="game/stage1">
+                            <Stage1 />
+                        </Route>
+                        <Route path="/">
+                            <Menu menuAudio={audio}/>
+                        </Route>
+                    </Switch>
+                </Router>
+            </ControlsContainer>
+        </GlobalsContainer>
     );
 }
 

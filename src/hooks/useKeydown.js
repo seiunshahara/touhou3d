@@ -14,5 +14,6 @@ export const useKeydown = (key, onKeydown) => {
         else{
             setKeyDown(false)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [downKeys])
 }
