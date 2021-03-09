@@ -68,8 +68,8 @@ export const MainMenu = ({menuAudio, menuOpenInit = false}) => {
     }
 
     const titleOptions = useMemo(() => ({
-        "Play": () => history.push("/game/difficultySelect"),
-        "Option": null,
+        "Play": () => history.push("/menu/game/difficultySelect"),
+        "Option": () => history.push("/menu/options"),
         "Quit": quit,
     }), [])
 

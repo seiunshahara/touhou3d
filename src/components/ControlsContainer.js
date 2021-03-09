@@ -30,12 +30,11 @@ export const ControlsContainer = ({children}) => {
             return;
         }
 
-        const newDownKeys = [...downKeys]
         const key = keyMap[event.which];
-        const index = newDownKeys.indexOf(key);
+        const index = downKeys.indexOf(key);
 
         if(index > -1){
-            newDownKeys.splice(index, 1);
+            const newDownKeys = downKeys.filter(x => x !== key)
             setDownKeys(newDownKeys);
         }
     }

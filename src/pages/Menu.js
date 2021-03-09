@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { MainMenu } from './MainMenu';
 import { DifficultySelect } from './DifficultySelect';
 import { CharacterSelect } from './CharacterSelect';
+import { Options } from './Options';
 
 const useStyles = makeStyles({
     container: {
@@ -33,11 +34,14 @@ export const Menu = ({menuAudio}) => {
                     <Route exact path="/menu">
                         <MainMenu menuAudio={menuAudio} menuOpenInit/>
                     </Route>
-                    <Route exact path="/game/difficultySelect">
-                        <DifficultySelect next={"/game/characterSelect"}/>
+                    <Route exact path="/menu/options">
+                        <Options menuAudio={menuAudio}/>
                     </Route>
-                    <Route exact path="/game/characterSelect">
-                        <CharacterSelect back={"/game/difficultySelect"} next={"/game/stage1"}/>
+                    <Route exact path="/menu/game/difficultySelect">
+                        <DifficultySelect next={"/menu/game/characterSelect"}/>
+                    </Route>
+                    <Route exact path="/menu/game/characterSelect">
+                        <CharacterSelect back={"/menu/game/difficultySelect"} next={"/game/stage1"}/>
                     </Route>
                 </Switch>
             </Router>

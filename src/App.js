@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { ControlsContainer } from './components/ControlsContainer';
 import { GlobalsContainer } from './components/GlobalsContainer';
+import { Game } from './pages/Game';
 import { Menu } from './pages/Menu';
-import { Stage1 } from './stages/Stage1';
 
 const audio = new Audio("menu_music.wav");
 
@@ -12,8 +12,8 @@ function App() {
             <ControlsContainer>
                 <Router>
                     <Switch>
-                        <Route path="game/stage1">
-                            <Stage1 />
+                        <Route path="/game/">
+                            <Game />
                         </Route>
                         <Route path="/">
                             <Menu menuAudio={audio}/>
