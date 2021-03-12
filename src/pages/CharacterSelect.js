@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useCallback, useContext, useMemo } from 'react'
 import { useHistory } from 'react-router'
 import { GlobalsContext } from '../components/GlobalsContainer'
 import { VerticleMenu } from '../components/VerticleMenu'
@@ -9,15 +9,15 @@ export const CharacterSelect = ({back, next}) => {
     const {setGlobal} = useContext(GlobalsContext)
     useBack(back);
 
-    const choose = (character) => {
+    const choose = useCallback((character) => {
         setGlobal("character", character);
         history.push(next)
-    }
+    }, [history, setGlobal, next])
 
     const characterOptions = useMemo(() => ({
         "Marisa": () => choose("MARISA"),
         "Reimu": () => {},
-    }), [])
+    }), [choose])
 
     return (
         <VerticleMenu menuMap={characterOptions}>

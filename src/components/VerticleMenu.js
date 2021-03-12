@@ -85,6 +85,7 @@ export const VerticleMenu = ({ menuMap, active = true, slanted = false }) => {
                     return <VerticleMenuSingle {...menuItemProps}/>
                 if(Array.isArray(menuValue))
                     return <VerticleMenuArray {...menuItemProps}/>
+                return false;
             })}
         </List>
     )

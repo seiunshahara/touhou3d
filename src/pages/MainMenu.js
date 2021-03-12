@@ -1,9 +1,7 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 
-import BackgroundImage from '../img/menu_bamboo.jpg'
-import { ControlsContext } from '../components/ControlsContainer';
 import { VerticleMenu } from '../components/VerticleMenu';
 import { useKeydown } from '../hooks/useKeydown';
 import { useHistory } from 'react-router';
@@ -71,7 +69,7 @@ export const MainMenu = ({menuAudio, menuOpenInit = false}) => {
         "Play": () => history.push("/menu/game/difficultySelect"),
         "Option": () => history.push("/menu/options"),
         "Quit": quit,
-    }), [])
+    }), [history])
 
     useKeydown("ENTER", openMenu)
 

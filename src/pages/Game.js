@@ -1,36 +1,28 @@
-import { makeStyles } from '@material-ui/core'
-import React, { Suspense, useRef } from 'react'
+import React, { Suspense } from 'react'
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom'
-import { Canvas } from 'react-three-fiber'
 import { Stage1 } from '../stages/Stage1'
-import { TouhouCameraControls } from '../three-components/TouhouCameraControls'
-
-const useStyles = makeStyles({
-    canvas: {
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "skyblue"
-    }
-})
+import {Engine, Scene } from 'react-babylonjs'
+import {useWindowSize} from '../hooks/useWindowSize';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
 
 export const Game = () => {
-    const classes = useStyles();
-    const canvasRef = useRef();
+    const windowSize = useWindowSize();
 
     return (
-        <div className={classes.canvas}>
-            <Canvas>
-                <TouhouCameraControls/>
-                <Suspense fallback={false}>
-                    <Router>
-                        <Switch>
-                            <Route path="/game/stage1">
-                                <Stage1 />
-                            </Route>
-                        </Switch>
-                    </Router>
-                </Suspense>
-            </Canvas>
-        </div>
+            <Engine width={windowSize.width} height={windowSize.height} antialias adaptToDeviceRatio canvasId='babylonJS' >
+                <Scene 
+                    clearColor={new Color3(.529, .808, .922)}
+                >
+                    <Suspense fallback={false}>
+                        <Router>
+                            <Switch>
+                                <Route path="/game/stage1">
+                                    <Stage1 />
+                                </Route>
+                            </Switch>
+                        </Router>
+                    </Suspense>
+                </Scene>
+            </Engine>
     )
 }

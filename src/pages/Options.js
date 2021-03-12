@@ -12,7 +12,7 @@ export const Options = () => {
     const optionsList = useMemo(() => ({
         "Player": [1, 2, 3, 4, 5],
         "Back": () => history.push("/menu"),
-    }), [])
+    }), [history])
 
     return (
         <VerticleMenu menuMap={optionsList}>
