@@ -1,49 +1,62 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
+import { useBeforeRender } from 'react-babylonjs'
 
 export const ControlsContext = React.createContext();
 
-export const ControlsContainer = ({children}) => {
+let metaDownKeys = [];
+
+export const ControlsContainer = ({ children }) => {
 
     const [downKeys, setDownKeys] = useState([])
 
     const [keyMap, setKeyMap] = useState({
         27: "ESCAPE",
         90: "ENTER",
-        40: "DOWN",
-        38: "UP",
+        40: "DOWN", //Down arrow
+        83: "DOWN", //s
+        38: "UP", //Up arrow
+        87: "UP", //w
+        
+        65: "LEFT", //a
+        68: "RIGHT", //d
+        16: "SLOW", //shift
     });
 
-    const keyDownHandler = (event) => {
-        if(!(event.which in keyMap)){
-            return;
-        }
-
-        const newDownKeys = [...downKeys]
-        const key = keyMap[event.which];
-        newDownKeys.push(key)
-
-        setDownKeys(newDownKeys);
-    }
-
-    const keyUpHandler = (event) => {
-        if(!(event.which in keyMap)){
+    const keyDownHandler = useCallback((event) => {
+        if (!(event.which in keyMap)) {
             return;
         }
 
         const key = keyMap[event.which];
-        const index = downKeys.indexOf(key);
+        if(metaDownKeys.includes(key)) return;
 
-        if(index > -1){
-            const newDownKeys = downKeys.filter(x => x !== key)
-            setDownKeys(newDownKeys);
+        const newMetaDownKeys = [...metaDownKeys]
+        newMetaDownKeys.push(key)
+
+        metaDownKeys = newMetaDownKeys;
+    }, [keyMap]);
+
+    const keyUpHandler = useCallback((event) => {
+        if (!(event.which in keyMap)) {
+            return;
         }
-    }
 
-    return (   
-        <ControlsContext.Provider value={{keyMap, downKeys}}>
-            <div onKeyDown={keyDownHandler} onKeyUp={keyUpHandler} tabIndex="0">
-                {children}
-            </div>
+        const key = keyMap[event.which];
+        const index = metaDownKeys.indexOf(key);
+
+        if (index > -1) {
+            const newMetaDownKeys = metaDownKeys.filter(x => x !== key)
+            metaDownKeys = newMetaDownKeys;
+        }
+    }, [keyMap]);
+
+    useBeforeRender(() => {
+        setDownKeys(metaDownKeys);
+    })
+
+    return (
+        <ControlsContext.Provider value={{ keyMap, setKeyMap, downKeys, keyDownHandler, keyUpHandler }}>
+            {children}
         </ControlsContext.Provider>
     )
 }
