@@ -1,8 +1,8 @@
 import { Vector3 } from '@babylonjs/core'
 import React, { useRef } from 'react'
 import {  useBeforeRender } from 'react-babylonjs';
-import { useConstants } from './hooks/useConstants';
-import { useControl } from './hooks/useControl';
+import { useConstants } from '../hooks/useConstants';
+import { useControl } from '../hooks/useControl';
 
 export const PlayerMovement = ({children}) => {
     const transformNodeRef = useRef();

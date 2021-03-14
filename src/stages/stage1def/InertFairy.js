@@ -7,37 +7,23 @@ export const InertFairy = (spawn, target) => {
                 type: "move",
                 variant: "slowToStop",
                 target: target,
-                wait: 1000,
+                wait: 5555,
+            },
+            {
+                type: "move",
+                variant: "slowToStop",
+                target: [0, 1, 0],
+                wait: 5555,
             },
             {
                 type: "move",
                 variant: "slowToStop",
                 target: spawn,
-                wait: 1000,
+                wait: 5555,
             },
             {
-                type: "move",
-                variant: "slowToStop",
-                target: target,
-                wait: 1000,
-            },
-            {
-                type: "move",
-                variant: "slowToStop",
-                target: spawn,
-                wait: 1000,
-            },
-            {
-                type: "move",
-                variant: "slowToStop",
-                target: target,
-                wait: 1000,
-            },
-            {
-                type: "move",
-                variant: "slowToStop",
-                target: spawn,
-                wait: 1000,
+                type: "remove",
+                wait:0
             }
         ]
     }

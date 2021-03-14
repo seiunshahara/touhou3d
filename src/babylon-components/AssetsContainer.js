@@ -1,13 +1,34 @@
-import { AssetsManager, Vector3 } from '@babylonjs/core';
+import { AssetsManager, Vector2, Vector3 } from '@babylonjs/core';
 import React, { useEffect, useState } from 'react'
-import { useScene } from 'react-babylonjs';
+import { useBeforeRender, useScene } from 'react-babylonjs';
+import {makeSpriteSheetAnimation} from "./BabylonUtils";
 
 export const AssetsContext = React.createContext();
 
 export const AssetsContainer = ({children}) => {
 
+    const [animatedTextures, setAnimatedTextures] = useState();
     const [assets, setAssets] = useState();
     const scene = useScene();
+
+    const loadAnimatedTextures = (tempAssets) => {
+        const tempAnimatedTextures = [];
+        const spriteSheetTexture = tempAssets["fairySpriteSheet"]
+        const blueFairyTexture = makeSpriteSheetAnimation({
+            name: "blueFairyTextureAnimation",
+            scene,
+            spriteSize: new Vector2(32, 32),
+            spriteSheetOffset: new Vector2(12, 264),
+            spriteSheetSize: new Vector2(1024, 1024),
+            totalFrames: 4,
+            frameRate: 10,
+            spriteSheetTexture: spriteSheetTexture,
+        })
+        tempAssets["blueFairyTexture"] = blueFairyTexture;
+        tempAnimatedTextures.push(blueFairyTexture);
+    
+        setAnimatedTextures(tempAnimatedTextures);
+    }
 
     useEffect(() => {
         const tempAssets = {};
@@ -35,13 +56,25 @@ export const AssetsContainer = ({children}) => {
         })
         
 
-        assetsManager.onFinish = () => {
+        assetsManager.onFinish = async () => {
+            loadAnimatedTextures(tempAssets);
             setAssets(tempAssets);
         }
 
         assetsManager.load();
         
     }, [scene])
+
+    useBeforeRender(() => {
+        if (!animatedTextures) return;
+        const now = Date.now();
+
+        animatedTextures.forEach(texture => {
+            const timeAlive = now - texture.startTime;
+            const frame = Math.floor(timeAlive/texture.frameTime) % texture.totalFrames;
+            texture.setFloat("frame", frame);
+        });
+    })
 
     return assets ? <AssetsContext.Provider value={assets}>
         {children}

@@ -1,7 +1,7 @@
 import { SceneLoader } from '@babylonjs/core';
 import { useEffect, useRef } from 'react';
 import { useScene } from 'react-babylonjs';
-import { useName } from './hooks/useName';
+import { useName } from '../hooks/useName';
 
 export const ReactInstancedMesh = ({rootUrl, sceneFilename, shadowGeneratorRef, positions, rotations, scalings}) => {
     const transformNodeRef = useRef();

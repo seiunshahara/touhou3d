@@ -6,6 +6,8 @@ import * as SPRITES from "../sprites";
 import { Enemy } from './Enemy';
 import {makeActionListTimeline, RandVector3} from './EnemyUtils'; 
 
+let metaEnemies = {};
+
 export const Enemies = ({source}) => {
     
     const currentActionList = useMemo(() => makeActionListTimeline(source.epochs), [source.epochs]);
@@ -14,9 +16,8 @@ export const Enemies = ({source}) => {
     const startTime = useMemo(() => Date.now(), []);
 
     const removeEnemy = (enemyName) => {
-        const newEnemies = {...enemies};
-        delete newEnemies[enemyName];
-        setEnemies(newEnemies);
+        metaEnemies = {...metaEnemies}
+        delete metaEnemies[enemyName];
     }
 
     const doSpawnAction = (enemy) => {
@@ -25,11 +26,10 @@ export const Enemies = ({source}) => {
         const enemyName = enemy.sprite + " " + v4()
 
         const enemyComponent = <Enemy removeMe={removeEnemy} name={enemyName} key={enemyName} SpriteClass={SpriteClass} actionList={enemy.actionList} startPosition={spawnVector}/>
-        const newEnemies = {
-            ...enemies, 
-            enemyName: enemyComponent
+        metaEnemies = {
+            ...metaEnemies, 
+            [enemyName]: enemyComponent
         };
-        setEnemies(newEnemies);
     }
 
     const executeAction = (action) => {
@@ -56,6 +56,11 @@ export const Enemies = ({source}) => {
         filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
     })
 
+    useBeforeRender(() => {
+        if(metaEnemies !== enemies){
+            setEnemies(metaEnemies);
+        }
+    })
 
     return Object.values(enemies);
 }

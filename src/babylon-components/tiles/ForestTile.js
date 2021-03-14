@@ -1,6 +1,6 @@
 import { Scalar, Vector3 } from '@babylonjs/core';
 import React, { useEffect, useState } from 'react'
-import { ReactInstancedMesh } from "../ReactInstancedMesh"
+import { ReactInstancedMesh } from "../actors/ReactInstancedMesh"
 import { Tiles } from "../Tiles"
 import { useConstants } from "../hooks/useConstants"
 
