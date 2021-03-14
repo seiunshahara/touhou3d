@@ -1,5 +1,5 @@
 import { AssetsManager, Vector2, Vector3 } from '@babylonjs/core';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useBeforeRender, useScene } from 'react-babylonjs';
 import {makeSpriteSheetAnimation} from "./BabylonUtils";
 
@@ -11,14 +11,14 @@ export const AssetsContainer = ({children}) => {
     const [assets, setAssets] = useState();
     const scene = useScene();
 
-    const loadAnimatedTextures = (tempAssets) => {
+    const loadAnimatedTextures = useCallback((tempAssets) => {
         const tempAnimatedTextures = [];
         const spriteSheetTexture = tempAssets["fairySpriteSheet"]
         const blueFairyTexture = makeSpriteSheetAnimation({
             name: "blueFairyTextureAnimation",
             scene,
             spriteSize: new Vector2(32, 32),
-            spriteSheetOffset: new Vector2(12, 264),
+            spriteSheetOffset: new Vector2(12, 40),
             spriteSheetSize: new Vector2(1024, 1024),
             totalFrames: 4,
             frameRate: 10,
@@ -28,7 +28,7 @@ export const AssetsContainer = ({children}) => {
         tempAnimatedTextures.push(blueFairyTexture);
     
         setAnimatedTextures(tempAnimatedTextures);
-    }
+    }, [scene])
 
     useEffect(() => {
         const tempAssets = {};
@@ -63,7 +63,7 @@ export const AssetsContainer = ({children}) => {
 
         assetsManager.load();
         
-    }, [scene])
+    }, [scene, loadAnimatedTextures])
 
     useBeforeRender(() => {
         if (!animatedTextures) return;

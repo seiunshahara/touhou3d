@@ -6,8 +6,8 @@ import {useWindowSize} from '../hooks/useWindowSize';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { ControlsContainer } from '../components/ControlsContainer';
 import { BindControls } from '../babylon-components/BindControls';
-import { ConstantsContainer } from '../components/ConstantsContainer';
 import { AssetsContainer } from '../babylon-components/AssetsContainer';
+import { BulletsPositionsAndConstantsContainer } from '../babylon-components/BulletsPositionsAndConstantsContainer';
 import "../babylon-components/Shaders"
 
 export const Game = () => {
@@ -24,8 +24,8 @@ export const Game = () => {
                     render
                 >   
                     <ControlsContainer>
-                        <ConstantsContainer>
-                            <AssetsContainer>
+                        <AssetsContainer>
+                            <BulletsPositionsAndConstantsContainer>
                                 <Suspense fallback={false}>
                                     <BindControls />
                                     <Router>
@@ -36,8 +36,8 @@ export const Game = () => {
                                         </Switch>
                                     </Router>
                                 </Suspense>
-                            </AssetsContainer>
-                        </ConstantsContainer>
+                            </BulletsPositionsAndConstantsContainer>
+                        </AssetsContainer>
                     </ControlsContainer>
                 </Scene>
             </Engine>

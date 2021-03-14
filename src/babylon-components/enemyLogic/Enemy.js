@@ -1,55 +1,22 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import {RandVector3, normalizePosition, unnormalizePosition, makeActionListTimeline} from "./EnemyUtils";
-import {useConstants} from "../hooks/useConstants";
+import {  makeActionListTimeline } from "./EnemyUtils";
+import { unnormalizePosition } from "../BabylonUtils"
 import { useBeforeRender } from 'react-babylonjs';
-import { Vector3 } from '@babylonjs/core';
+import { doMove, newMoveAction } from './EnemyMovementUtil';
+import { filterInPlace } from '../../utils/Utils';
+import { useConstants } from '../hooks/useConstants';
 
 export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) => {
     const [enemy, setEnemy] = useState({});
-    const [currentActionList, setCurrentActionList] = useState(makeActionListTimeline(actionList));
-    const {ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH} = useConstants(); 
-    const [moveType, setMoveType] = useState("stop");
-    const [moveTarget, setMoveTarget] = useState(new Vector3(0, 0, 0))
+    const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
+    const { ARENA_DIMS } = useConstants();
 
     const startTime = useMemo(() => Date.now(), []);
-
-    const setNormPosition = useCallback(norm => {
-        const newPosition = unnormalizePosition(norm, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH);
-        enemy.position.copyFrom(newPosition);
-    }, [enemy, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH]);
-
-    const doMove = useCallback((delta) => {
-        switch (moveType){
-            case "stop":
-                break;
-            case "slowToStop":
-                const normPosition = normalizePosition(enemy.position, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH);
-                const dx = moveTarget.subtract(normPosition);
-                const dxCoefficient = dx.length();
-                const newNormPosition = normPosition.add(dx.scale(dxCoefficient * delta));
-                setNormPosition(newNormPosition)
-                break;
-            default:
-                console.warn("Unsupported move type in doMove: " + moveType)
-        }
-    }, [moveTarget, moveType, setNormPosition, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH, enemy.position])
-
-    const doMoveAction = useCallback((action) => {
-        switch (action.variant){
-            case "slowToStop":
-                setMoveType("slowToStop");
-                const moveVector = new RandVector3(...action.target)
-                setMoveTarget(moveVector)
-                break;
-            default:
-                console.warn("Unsupported move type in doMoveAction: " + action.variant)
-        }
-    }, [])
 
     const executeAction = useCallback((action) => {
         switch (action.type){
             case "move":
-                doMoveAction(action);
+                newMoveAction(enemy, action, ...ARENA_DIMS);
                 break;
             case "remove":
                 removeMe(name);
@@ -57,15 +24,14 @@ export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) 
             default:
                 console.warn("Unsupported action type: " + action.type)
         }
-    }, [doMoveAction, removeMe])
+    }, [removeMe, enemy, name, ARENA_DIMS])
 
     useBeforeRender((scene) => {
         if(!enemy) return;
 
-        const delta = scene.getEngine().getDeltaTime() / 1000;
         const timeSinceStart = Date.now() - startTime;
-
-        doMove(delta);
+        const delta = scene.getEngine().getDeltaTime();
+        doMove(enemy, delta, ...ARENA_DIMS);
 
         currentActionList.some(action => {
             if(action.timeline < timeSinceStart) {
@@ -75,14 +41,10 @@ export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) 
             return true;
         })
 
-        const newCurrentActionList = currentActionList.filter(action => action.timeline >= timeSinceStart)
-
-        if(newCurrentActionList.length !== currentActionList.length){
-            setCurrentActionList(newCurrentActionList);
-        }
+        filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
     })
 
     return (
-        <SpriteClass position={unnormalizePosition(startPosition, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH)} ref={newRef => setEnemy(newRef)} />
+        <SpriteClass position={unnormalizePosition(startPosition, ...ARENA_DIMS)} ref={newRef => setEnemy(newRef)} />
     )
 }

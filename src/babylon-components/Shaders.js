@@ -1,4 +1,8 @@
 import { Effect } from "@babylonjs/core";
+import { linearBehaviourPositionPixelShader, linearBehaviourVelocityPixelShader } from "./bullets/behaviours/LinearBehaviour";
+
+Effect.ShadersStore["linearBehaviourPositionPixelShader"] = linearBehaviourPositionPixelShader();
+Effect.ShadersStore["linearBehaviourVelocityPixelShader"] = linearBehaviourVelocityPixelShader();
 
 //for glsl lint
 const glsl = x => x;

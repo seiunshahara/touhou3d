@@ -7,8 +7,8 @@ export const FightRoot = React.forwardRef(({children}, transformNodeRef) => {
     useBeforeRender((scene) => {
         if(!transformNodeRef.current) return;
 
-        const delta = scene.getEngine().getDeltaTime() / 1000;
-        transformNodeRef.current.position.addInPlace(Vector3.Forward().scale(10 * delta))
+        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        transformNodeRef.current.position.addInPlace(Vector3.Forward().scale(10 * deltaS))
     })
 
     return (

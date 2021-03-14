@@ -12,14 +12,14 @@ export const PlayerMovement = ({children}) => {
     useBeforeRender((scene) => {
         if(!transformNodeRef.current) return;
         
-        const delta = scene.getEngine().getDeltaTime() / 1000;
+        const deltaS = scene.getEngine().getDeltaTime() / 1000;
         const position = transformNodeRef.current.position;
         const slowFactor = SLOW ? 0.5 : 1;
 
-        if(UP) position.addInPlace(Vector3.Up().scale(delta * LATERAL_SPEED * slowFactor));
-        if(DOWN) position.addInPlace(Vector3.Down().scale(delta * LATERAL_SPEED * slowFactor));
-        if(LEFT) position.addInPlace(Vector3.Left().scale(delta * LATERAL_SPEED * slowFactor));
-        if(RIGHT) position.addInPlace(Vector3.Right().scale(delta * LATERAL_SPEED * slowFactor));
+        if(UP) position.addInPlace(Vector3.Up().scale(deltaS * LATERAL_SPEED * slowFactor));
+        if(DOWN) position.addInPlace(Vector3.Down().scale(deltaS * LATERAL_SPEED * slowFactor));
+        if(LEFT) position.addInPlace(Vector3.Left().scale(deltaS * LATERAL_SPEED * slowFactor));
+        if(RIGHT) position.addInPlace(Vector3.Right().scale(deltaS * LATERAL_SPEED * slowFactor));
 
         if(position.x > ARENA_WIDTH/2) position.x = ARENA_WIDTH/2
         if(position.x < -ARENA_WIDTH/2) position.x = -ARENA_WIDTH/2

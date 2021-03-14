@@ -4,7 +4,8 @@ import { v4 } from 'uuid';
 import { filterInPlace } from '../../utils/Utils';
 import * as SPRITES from "../sprites";
 import { Enemy } from './Enemy';
-import {makeActionListTimeline, RandVector3} from './EnemyUtils'; 
+import {makeActionListTimeline } from './EnemyUtils'; 
+import { RandVector3 } from '../BabylonUtils';
 
 let metaEnemies = {};
 
@@ -12,7 +13,6 @@ export const Enemies = ({source}) => {
     
     const currentActionList = useMemo(() => makeActionListTimeline(source.epochs), [source.epochs]);
     const [enemies, setEnemies] = useState({});
-
     const startTime = useMemo(() => Date.now(), []);
 
     const removeEnemy = (enemyName) => {
