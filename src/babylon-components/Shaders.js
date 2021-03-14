@@ -1,8 +1,12 @@
 import { Effect } from "@babylonjs/core";
 import { linearBehaviourPositionPixelShader, linearBehaviourVelocityPixelShader } from "./bullets/behaviours/LinearBehaviour";
+import { fresnelVertexShader, fresnelFragmentShader } from "./bullets/materials/Fresnel";
 
 Effect.ShadersStore["linearBehaviourPositionPixelShader"] = linearBehaviourPositionPixelShader();
 Effect.ShadersStore["linearBehaviourVelocityPixelShader"] = linearBehaviourVelocityPixelShader();
+
+Effect.ShadersStore["fresnelVertexShader"] = fresnelVertexShader();
+Effect.ShadersStore["fresnelFragmentShader"] = fresnelFragmentShader();
 
 //for glsl lint
 const glsl = x => x;
