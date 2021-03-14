@@ -397,7 +397,6 @@ export default class Enemy extends THREE.Mesh {
     }
 
     doMove = (deltaTime) => {
-
         const dx = this.target.clone().sub(this.normPosition);
         const dxCoefficient = dx.length();
 

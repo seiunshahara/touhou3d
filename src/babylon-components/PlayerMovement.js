@@ -4,9 +4,9 @@ import {  useBeforeRender } from 'react-babylonjs';
 import { useConstants } from './hooks/useConstants';
 import { useControl } from './hooks/useControl';
 
-const PlayerMovement = ({children}) => {
+export const PlayerMovement = ({children}) => {
     const transformNodeRef = useRef();
-    const {LATERAL_SPEED, ARENA_WIDTH, ARENA_HEIGHT, ARENA_FLOOR} = useConstants();
+    const {LATERAL_SPEED, ARENA_WIDTH, ARENA_HEIGHT, ARENA_FLOOR, ARENA_LENGTH} = useConstants();
     const [UP, DOWN, LEFT, RIGHT, SLOW] = useControl("UP", "DOWN", "LEFT", "RIGHT", "SLOW");
 
     useBeforeRender((scene) => {
@@ -27,9 +27,7 @@ const PlayerMovement = ({children}) => {
         if(position.y < ARENA_FLOOR) position.y = ARENA_FLOOR
     })
 
-    return <transformNode ref={transformNodeRef} name="playerTransform" position={new Vector3(0, 1, 0)}>
+    return <transformNode ref={transformNodeRef} name="playerTransform" position={new Vector3(0, 1, -ARENA_LENGTH/2)}>
         {children}
     </transformNode>
 }
-
-export default PlayerMovement

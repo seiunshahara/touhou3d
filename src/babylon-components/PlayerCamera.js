@@ -2,7 +2,7 @@ import { Matrix, Quaternion, Vector3 } from '@babylonjs/core'
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useEngine } from 'react-babylonjs';
 
-const PlayerCamera = () => {
+export const PlayerCamera = () => {
     const engine = useEngine();
     const canvas = engine.getRenderingCanvas();
     const cameraRef = useRef();
@@ -56,5 +56,3 @@ const PlayerCamera = () => {
         <universalCamera ref={cameraRef} name="camera" position={new Vector3(0, 0, 0)}/>
     </transformNode>
 }
-
-export default PlayerCamera
