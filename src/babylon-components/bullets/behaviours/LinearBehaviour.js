@@ -1,17 +1,20 @@
+import { BulletBehaviour } from "./BulletBehaviour";
+
 const glsl = x => x;
 
 export const linearBehaviourPositionPixelShader = () => {
     return glsl`
         uniform float delta;
-        uniform sampler2D positionTexture;
-        uniform sampler2D velocityTexture;
+        uniform vec2 resolution;
+        uniform sampler2D positionSampler;
+        uniform sampler2D velocitySampler;
 
         void main()	{
             vec2 uv = gl_FragCoord.xy / resolution.xy;
-            vec4 position = texture2D( positionTexture, uv ).xyz;
-            vec3 velocity = texture2D( velocityTexture, uv ).xyz;
+            vec3 position = texture2D( positionSampler, uv ).xyz;
+            vec3 velocity = texture2D( velocitySampler, uv ).xyz;
             
-            gl_FragColor = vec4( position + (velocity * delta), tmpPos.w )
+            gl_FragColor = vec4( position + (velocity * delta), 1.);
         }
     `
 }
@@ -19,15 +22,17 @@ export const linearBehaviourPositionPixelShader = () => {
 export const linearBehaviourVelocityPixelShader = () => {
     return glsl`
         uniform float delta;
-        uniform sampler2D positionTexture;
-        uniform sampler2D velocityTexture;
+        uniform vec2 resolution;
+        uniform sampler2D positionSampler;
+        uniform sampler2D velocitySampler;
+
         void main() {
-            vec2 uv = gl_FragCoord.xy / resolution.xy;
-            gl_FragColor = texture2D( textureVelocity, uv );
+            vec2 uv = gl_FragCoord.xy / resolution;
+            gl_FragColor = texture2D( velocitySampler, uv );
         }
     `
 }
 
-export const makeLinearBehaviour = (bulletPositions, positionBias, bulletVelocities, velocityBias) => {
-
+export const makeLinearBehaviour = (bulletMaterial, bulletPositions, bulletVelocities, scene) => {
+    return new BulletBehaviour(bulletMaterial, "linearBehaviourPosition", "linearBehaviourVelocity", bulletPositions, bulletVelocities, scene)
 }

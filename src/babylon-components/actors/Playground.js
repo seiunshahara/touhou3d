@@ -1,7 +1,8 @@
 import { MeshBuilder, SceneLoader, ShaderMaterial, Vector3, Color3, Vector2 } from '@babylonjs/core';
-import React, { useEffect, useRef } from 'react'
-import { useScene } from 'react-babylonjs';
-import { makeTextureFromVectors } from '../bullets/behaviours/BulletBehaviour';
+import React, { useEffect, useRef, useState } from 'react'
+import { useBeforeRender, useScene } from 'react-babylonjs';
+import { BulletBehaviour, makeTextureFromVectors } from '../bullets/behaviours/BulletBehaviour';
+import { makeLinearBehaviour } from '../bullets/behaviours/LinearBehaviour';
 import { burst } from '../bullets/BulletVectorFunctions';
 import { useName } from '../hooks/useName';
 
@@ -9,6 +10,7 @@ export const Playground = () => {
     const transformNodeRef = useRef();
     const scene = useScene();
     const name = useName();
+    const [bulletBehaviour, setBulletBehaviour] = useState();
 
     useEffect(()=> {
         if(!scene) return;
@@ -29,7 +31,7 @@ export const Playground = () => {
         );
 
         const positionsInit = burst(100, 0, 0, 0);
-        const positions = burst(100, 5, 0, 0);
+        const positions = burst(100, 1, 0, 0);
 
         const positionSampler = makeTextureFromVectors(positions, scene);
         fresnelMat.setTexture("positionSampler", positionSampler);
@@ -47,7 +49,17 @@ export const Playground = () => {
             newInstance.alwaysSelectAsActiveMesh = true;
         });
 
+        const bulletBehaviour = makeLinearBehaviour(fresnelMat, positions, positions, scene);
+        setBulletBehaviour(bulletBehaviour);
+
     }, [scene])
+
+    useBeforeRender((scene) => {
+        if(!bulletBehaviour) return;
+
+        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        bulletBehaviour.update(deltaS)
+    })
 
     return <transformNode position={new Vector3(0, 5, 0)} name={name} ref={transformNodeRef} />
 }
