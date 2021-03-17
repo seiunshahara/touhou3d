@@ -9,6 +9,7 @@ import { RepeatingArena } from '../babylon-components/actors/RepeatingArena';
 import { PlayerMovement } from '../babylon-components/actors/PlayerMovement';
 import stage1def from "./stage1def"
 import { Enemies } from '../babylon-components/enemyLogic/Enemies';
+import { Playground } from '../babylon-components/actors/Playground';
 
 export const Stage1 = () => {
   const scene = useScene();
@@ -25,16 +26,17 @@ export const Stage1 = () => {
 
   return <>
     <FightRoot ref={fightRootRef}>
+      <Playground />
       <Enemies source={stageSource} />
       <PlayerMovement>
         <PlayerCamera />
       </PlayerMovement>
     </FightRoot>
-    <RepeatingArena TileClass={ForestTile} fightRootRef={fightRootRef}/>
+    <RepeatingArena TileClass={ForestTile} fightRootRef={fightRootRef} />
     <hemisphericLight name='light1' intensity={0.2} direction={Vector3.Up()} />
     <directionalLight name="dl" intensity={1} direction={new Vector3(0, -0.5, 0.5)} position={new Vector3(0, 50, 5)}>
       {/* <shadowGenerator ref={shadowGeneratorRef} mapSize={4096} useBlurExponentialShadowMap blurKernel={32} /> */}
     </directionalLight>
-    
+
   </>
 }
