@@ -1,4 +1,5 @@
-import { Constants, CustomProceduralTexture, RawTexture, Vector2 } from "@babylonjs/core";
+import { Constants, CustomProceduralTexture, InternalTextureSource, RawTexture, Vector2 } from "@babylonjs/core";
+import { WoodProceduralTexture } from "@babylonjs/procedural-textures";
 import nextPOT from "next-power-of-two";
 import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
@@ -20,7 +21,7 @@ export const makeTextureFromVectors = (vectors, scene) => {
 }
 
 const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVelocityTexture, WIDTH, scene) => {
-    const proceduralTexture = new CustomCustomProceduralTexture(v4(), shader, WIDTH, scene, false, false, Constants.TEXTURE_NEAREST_NEAREST, Constants.TEXTURETYPE_FLOAT)
+    const proceduralTexture = new CustomCustomProceduralTexture(v4(), shader, WIDTH, scene, false, false, false, Constants.TEXTURETYPE_FLOAT)
     proceduralTexture.setTexture("velocitySampler", initialVelocityTexture);
     proceduralTexture.setTexture("positionSampler", initialPositionTexture);
     proceduralTexture.setVector2("resolution", new Vector2(WIDTH, WIDTH));
@@ -29,29 +30,51 @@ const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVel
 }
 
 export class BulletBehaviour{
-    constructor(bulletMaterial, positionShader, velocityShader, initialPositions, initialVelocities, scene){
+    constructor(positionShader, velocityShader){
+        this.positionShader = positionShader;
+        this.velocityShader = velocityShader;
+    }
+
+    init(bulletMaterial, initialPositions, initialVelocities, scene) {
         const num = initialPositions.length;
         const WIDTH = Math.max(nextPOT(Math.ceil(Math.sqrt(num))), 16)
+
         const initialPositionsTexture = makeTextureFromVectors(initialPositions, scene);
         const initialVelocityTexture = makeTextureFromVectors(initialVelocities, scene);
 
-        this.positionTexture1 = makeComputeProceduralTexture(positionShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-        this.positionTexture2 = makeComputeProceduralTexture(positionShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-        this.velocityTexture1 = makeComputeProceduralTexture(velocityShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-        this.velocityTexture2 = makeComputeProceduralTexture(velocityShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-
-        this.scene = scene
-        this.bulletMaterial = bulletMaterial;
+        this.positionTexture1 = makeComputeProceduralTexture(this.positionShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
+        this.velocityTexture1 = makeComputeProceduralTexture(this.velocityShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
+        this.positionTexture2 = makeComputeProceduralTexture(this.positionShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
+        this.velocityTexture2 = makeComputeProceduralTexture(this.velocityShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
+        
         this.justStarted = true;
         this.frame = 0;
+        this.bulletMaterial = bulletMaterial;
+        this.ready = true;
     }
 
     update(deltaS){
-        if(this.justStarted){
-            this.justStarted = false;
+        if( !this.ready){
             return;
         }
 
+        if( !this.positionTexture2.isReady() || 
+            !this.velocityTexture2.isReady() || 
+            !this.positionTexture1.isReady() || 
+            !this.velocityTexture1.isReady()
+        ){
+            return;
+        }
+
+        if(this.justStarted){
+            this.justStarted = false;
+            this.positionTexture2.isReady = () => true;
+            this.velocityTexture2.isReady = () => true;
+            this.positionTexture1.isReady = () => true;
+            this.velocityTexture1.isReady = () => true;
+        }
+
+        
         let inputPositionTexture;
         let outputPositionTexture;
         let inputVelocityTexture;
@@ -72,14 +95,22 @@ export class BulletBehaviour{
             this.frame = 0
         }
 
+        inputVelocityTexture.sleep = false;
+        inputPositionTexture.sleep = false;
+        outputVelocityTexture.sleep = true;
+        outputPositionTexture.sleep = true;
+
         outputPositionTexture.setTexture("positionSampler", inputPositionTexture);
         outputPositionTexture.setTexture("velocitySampler", inputVelocityTexture);
         outputPositionTexture.setFloat("delta", deltaS);
+        inputPositionTexture.setFloat("delta", deltaS);
         outputVelocityTexture.setTexture("positionSampler", inputPositionTexture);
         outputVelocityTexture.setTexture("velocitySampler", inputVelocityTexture);
         outputVelocityTexture.setFloat("delta", deltaS);
+        inputPositionTexture.setFloat("delta", deltaS);
 
-        this.bulletMaterial.setTexture("positionSampler", outputPositionTexture);
-        this.bulletMaterial.setTexture("velocitySampler", outputVelocityTexture);
+        this.bulletMaterial.setTexture("positionSampler", inputPositionTexture);
+        this.bulletMaterial.setTexture("velocitySampler", inputVelocityTexture);
+        
     }
 }

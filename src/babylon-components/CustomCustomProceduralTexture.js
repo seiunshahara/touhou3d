@@ -80,6 +80,7 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
      * @returns true if ready, otherwise, false.
      */
     CustomCustomProceduralTexture.prototype.isReady = function () {
+        if(this.sleep) return false;
         if (!_super.prototype.isReady.call(this)) {
             return false;
         }
@@ -96,6 +97,8 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
      * @param useCameraPostProcess Define if camera post process should be applied to the texture
      */
     CustomCustomProceduralTexture.prototype.render = function (useCameraPostProcess) {
+        if(this.sleep) return;
+        
         var scene = this.getScene();
         if (this._animate && scene) {
             this._time += scene.getAnimationRatio() * 0.03;

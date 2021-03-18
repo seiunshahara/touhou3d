@@ -1,23 +1,17 @@
-import { Vector3 } from "@babylonjs/core";
-import { randScalar, unnormalizePosition } from "../../BabylonUtils";
-import { makeLinearBehaviour } from "../behaviours/LinearBehaviour";
-import * as BulletVectorFunctions from "../BulletVectorFunctions";
+import { randScalar } from "../../BabylonUtils";
+import * as BulletVectorFunctions from "./BulletVectorFunctions";
 
-export const doBurst = (instruction, ARENA_DIMS) => {
-    const speed = randScalar(instruction.speed) * window.config.width;
-    let bulletVelocities = BulletVectorFunctions.burst(instruction.num, speed, instruction.startTheta, instruction.startPhi)
+export const makeBurstPattern = (patternOptions, parent, ARENA_DIMS) => {
+    if(!parent.velocity) throw new Error("PARENT MUST HAVE VELOCITY, PARENT IS: " + parent.name)
 
-    //Burst radius
-    instruction.radius = instruction.radius || 0;
-    let bulletPositions = bulletVelocities.map(vel => vel.clone().scale(instruction.radius))
+    const speed = randScalar(patternOptions.speed) * Math.max(...ARENA_DIMS);
+    let velocities = BulletVectorFunctions.burst(parent.velocity, patternOptions.num, speed, patternOptions.startTheta, patternOptions.startPhi)
 
-    let positionBias = instruction.position ? unnormalizePosition(instruction.position, ...ARENA_DIMS) : new Vector3();
-    let velocityBias = instruction.vel ? unnormalizePosition(instruction.vel, ...ARENA_DIMS) : new Vector3();
+    const radius = patternOptions.radius || 0;
+    let positions = BulletVectorFunctions.burst(parent.velocity, patternOptions.num, radius, patternOptions.startTheta, patternOptions.startPhi)
 
-    switch(instruction.behaviour){
-        case "linear":
-            return makeLinearBehaviour(bulletPositions, positionBias, bulletVelocities, velocityBias)
-        default:
-            throw new Error("Invalid behaviour for burst: " + instruction.behaviour);
+    return { 
+        positions: positions, 
+        velocities: velocities
     }
 }

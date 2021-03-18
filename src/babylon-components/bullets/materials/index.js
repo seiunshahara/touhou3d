@@ -1,10 +1,8 @@
 import { makeFresnelMaterial } from "./Fresnel"
 
-const makeMaterial = (materialOptions, scene) => {
+export const makeBulletMaterial = (materialOptions, scene) => {
     switch(materialOptions.material){
         case "fresnel": 
             return makeFresnelMaterial(scene)
     }
 }
-
-export default materials;

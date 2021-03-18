@@ -11,7 +11,6 @@ export const makeSpriteSheetAnimation = ({name, scene, spriteSheetOffset, sprite
     proceduralTexture.startTime = Date.now();
     proceduralTexture.frameTime = 1000/frameRate;
     proceduralTexture.totalFrames = totalFrames;
-    console.log(proceduralTexture.textureType)
 
     return proceduralTexture
 }
