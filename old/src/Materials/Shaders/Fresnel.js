@@ -8,16 +8,16 @@ const fresnelVS = `
     varying vec3 vPositionW;
     varying vec3 vNormalW;
 
-    void makeRotation(in vec3 direction, out mat3 rotation)
-    {
-        vec3 xaxis = cross(vec3(0., 1., 0.), direction);
-        xaxis = normalize(xaxis);
+    // void makeRotation(in vec3 direction, out mat3 rotation)
+    // {
+    //     vec3 xaxis = cross(vec3(0., 1., 0.), direction);
+    //     xaxis = normalize(xaxis);
 
-        vec3 yaxis = cross(direction, xaxis);
-        yaxis = normalize(yaxis);
+    //     vec3 yaxis = cross(direction, xaxis);
+    //     yaxis = normalize(yaxis);
 
-        rotation = mat3(xaxis, yaxis, direction);
-    }
+    //     rotation = mat3(xaxis, yaxis, direction);
+    // }
 
     void main() {
         int instance = gl_InstanceID;
@@ -31,10 +31,10 @@ const fresnelVS = `
 
         vec4 instVel = texture(velocityTexture, vec2(u, v));
 
-        mat3 rotation;
-        makeRotation(normalize(vec3(instVel) - spawnZVelocity), rotation);
+        // mat3 rotation;
+        // makeRotation(normalize(vec3(instVel) - spawnZVelocity), rotation);
         
-        vec4 rotatedVert = vec4(rotation * position, 1.0 );
+        vec4 rotatedVert = vec4(position, 1.0 );
         vec4 mvPosition = rotatedVert + instPos;
 
         vec4 modelViewPosition = modelViewMatrix * mvPosition;

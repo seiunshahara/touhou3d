@@ -17,3 +17,20 @@ export const useKeydown = (key, onKeydown) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [downKeys])
 }
+
+export const useKeyup = (key, onKeyup) => {
+    const {downKeys} = useContext(ControlsContext);
+    const [keyDown, setKeyDown] = useState(downKeys.includes(key));
+    useEffect(() => {
+        if(downKeys.includes(key)){
+            setKeyDown(true)
+        }
+        else{
+            if(keyDown === true){
+                onKeyup();
+            }
+            setKeyDown(false)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [downKeys])
+}

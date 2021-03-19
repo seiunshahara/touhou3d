@@ -3,13 +3,14 @@ import { useScene } from 'react-babylonjs'
 import { Vector3, Color3, Scene } from '@babylonjs/core'
 import '@babylonjs/loaders';
 import { ForestTile } from '../babylon-components/tiles/ForestTile';
-import { PlayerCamera } from '../babylon-components/actors/PlayerCamera';
+import { PlayerCamera } from '../babylon-components/actors/player/PlayerCamera';
 import { FightRoot } from '../babylon-components/actors/FightRoot';
 import { RepeatingArena } from '../babylon-components/actors/RepeatingArena';
-import { PlayerMovement } from '../babylon-components/actors/PlayerMovement';
+import { PlayerMovement } from '../babylon-components/actors/player/PlayerMovement';
 import stage1def from "./stage1def"
 import { Enemies } from '../babylon-components/enemyLogic/Enemies';
 import { Playground } from '../babylon-components/actors/Playground';
+import { Reimu } from '../babylon-components/actors/player/characters/Reimu';
 
 export const Stage1 = () => {
   const scene = useScene();
@@ -29,6 +30,7 @@ export const Stage1 = () => {
       <Playground />
       <Enemies source={stageSource} />
       <PlayerMovement>
+        <Reimu />
         <PlayerCamera />
       </PlayerMovement>
     </FightRoot>

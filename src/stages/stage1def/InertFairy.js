@@ -21,6 +21,30 @@ export const InertFairy = (spawn, target) => {
                 wait: 1000,
             },
             {
+                type: "shoot",
+                materialOptions: {
+                    material: "fresnel"
+                },
+                patternOptions: {
+                    pattern: "burst", 
+                    num: 100, 
+                    speed: 4, 
+                    radius: 0,
+                    startTheta: i * 0.1
+                },
+                meshOptions: {
+                    mesh: "knife", 
+                    diameter: 0.1, 
+                    segments: 4,
+                    updatable: true
+                },
+                behaviourOptions: {
+                    behaviour: "linear"
+                },
+                lifespan: 10000,
+                wait: 0
+            },
+            {
                 type: "move",
                 variant: "slowToStop",
                 target: spawn,

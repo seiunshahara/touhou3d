@@ -6,8 +6,7 @@ import {useWindowSize} from '../hooks/useWindowSize';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { ControlsContainer } from '../components/ControlsContainer';
 import { BindControls } from '../babylon-components/BindControls';
-import { AssetsContainer } from '../babylon-components/AssetsContainer';
-import { BulletsPositionsAndConstantsContainer } from '../babylon-components/BulletsPositionsAndConstantsContainer';
+import { GeneralContainer } from '../babylon-components/GeneralContainer';
 import "../babylon-components/Shaders"
 
 export const Game = () => {
@@ -24,20 +23,18 @@ export const Game = () => {
                     render
                 >   
                     <ControlsContainer>
-                        <AssetsContainer>
-                            <BulletsPositionsAndConstantsContainer>
-                                <Suspense fallback={false}>
-                                    <BindControls />
-                                    <Router>
-                                        <Switch>
-                                            <Route path="/game/stage1">
-                                                <Stage1 />
-                                            </Route>
-                                        </Switch>
-                                    </Router>
-                                </Suspense>
-                            </BulletsPositionsAndConstantsContainer>
-                        </AssetsContainer>
+                        <GeneralContainer>
+                            <Suspense fallback={false}>
+                                <BindControls />
+                                <Router>
+                                    <Switch>
+                                        <Route path="/game/stage1">
+                                            <Stage1 />
+                                        </Route>
+                                    </Switch>
+                                </Router>
+                            </Suspense>
+                        </GeneralContainer>
                     </ControlsContainer>
                 </Scene>
             </Engine>

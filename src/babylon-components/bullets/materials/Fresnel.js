@@ -7,13 +7,25 @@ export const fresnelVertexShader = () => {
         attribute vec3 position;
         attribute vec3 normal;
 
+        uniform vec3 initialVelocity;
         uniform mat4 view;
         uniform mat4 projection;
         uniform sampler2D positionSampler;
+        uniform sampler2D velocitySampler;
         
         varying vec3 vPositionW;
         varying vec3 vNormalW;
 
+        void makeRotation(in vec3 direction, out mat3 rotation)
+        {
+            vec3 xaxis = cross(vec3(0., 1., 0.), direction);
+            xaxis = normalize(xaxis);
+
+            vec3 yaxis = cross(direction, xaxis);
+            yaxis = normalize(yaxis);
+
+            rotation = mat3(xaxis, yaxis, direction);
+        }
 
         void main() {
 
@@ -24,7 +36,13 @@ export const fresnelVertexShader = () => {
             float u = (float(x) + 0.5) / float(width);           // map into 0-1 range
             float v = (float(y) + 0.5) / float(width);
             vec4 instPos = texture(positionSampler, vec2(u, v));
-            vec4 totalPos = vec4(position, 1.0) + instPos;
+            vec4 instVel = texture(velocitySampler, vec2(u, v));
+
+            mat3 rotation;
+            makeRotation(normalize(vec3(instVel) - initialVelocity), rotation);
+            vec4 rotatedVert = vec4(rotation * position, 1.0 );
+
+            vec4 totalPos = rotatedVert + instPos;
             totalPos.w = 1.;
 
             mat4 world = mat4(world0, world1, world2, world3);
@@ -34,7 +52,7 @@ export const fresnelVertexShader = () => {
             gl_Position = projection * modelViewPosition;
 
             vPositionW = vec3( world * totalPos ) ;
-            vNormalW = vec3(world * vec4(normal, 0.0));
+            vNormalW = vec3(world * vec4(rotation * normal, 0.0));
         }
     `
 }
@@ -51,7 +69,7 @@ export const fresnelFragmentShader = () => {
 
             vec3 viewDirectionW = normalize(cameraPosition - vPositionW);
             float fresnelTerm = dot(viewDirectionW, vNormalW);
-            fresnelTerm = clamp(1. - fresnelTerm, 0., 1.0);
+            fresnelTerm = clamp(-0.5 - fresnelTerm, 0., 1.0);
 
             gl_FragColor = vec4(mix(color, toColor, fresnelTerm), 1.);
         }

@@ -1,5 +1,4 @@
-import { Constants, CustomProceduralTexture, InternalTextureSource, RawTexture, Vector2 } from "@babylonjs/core";
-import { WoodProceduralTexture } from "@babylonjs/procedural-textures";
+import { Constants, RawTexture, Vector2 } from "@babylonjs/core";
 import nextPOT from "next-power-of-two";
 import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
@@ -39,20 +38,31 @@ export class BulletBehaviour{
         const num = initialPositions.length;
         const WIDTH = Math.max(nextPOT(Math.ceil(Math.sqrt(num))), 16)
 
-        const initialPositionsTexture = makeTextureFromVectors(initialPositions, scene);
-        const initialVelocityTexture = makeTextureFromVectors(initialVelocities, scene);
+        this.initialPositionsTexture = makeTextureFromVectors(initialPositions, scene);
+        this.initialVelocityTexture = makeTextureFromVectors(initialVelocities, scene);
 
-        this.positionTexture1 = makeComputeProceduralTexture(this.positionShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-        this.velocityTexture1 = makeComputeProceduralTexture(this.velocityShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-        this.positionTexture2 = makeComputeProceduralTexture(this.positionShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
-        this.velocityTexture2 = makeComputeProceduralTexture(this.velocityShader, initialPositionsTexture, initialVelocityTexture, WIDTH, scene)
+        this.positionTexture1 = makeComputeProceduralTexture(this.positionShader, this.initialPositionsTexture, this.initialVelocityTexture, WIDTH, scene)
+        this.velocityTexture1 = makeComputeProceduralTexture(this.velocityShader, this.initialPositionsTexture, this.initialVelocityTexture, WIDTH, scene)
+        this.positionTexture2 = makeComputeProceduralTexture(this.positionShader, this.initialPositionsTexture, this.initialVelocityTexture, WIDTH, scene)
+        this.velocityTexture2 = makeComputeProceduralTexture(this.velocityShader, this.initialPositionsTexture, this.initialVelocityTexture, WIDTH, scene)
         
+        bulletMaterial.setTexture("positionSampler", this.initialPositionsTexture);
+        bulletMaterial.setTexture("velocitySampler", this.initialVelocityTexture);
+
         this.justStarted = true;
         this.frame = 0;
         this.bulletMaterial = bulletMaterial;
         this.ready = true;
     }
-
+    dispose(){
+        this.positionTexture1.dispose();
+        this.velocityTexture1.dispose();
+        this.positionTexture2.dispose();
+        this.velocityTexture2.dispose();
+        this.initialPositionsTexture.dispose();
+        this.initialVelocityTexture.dispose();
+        this.ready = false;
+    }
     update(deltaS){
         if( !this.ready){
             return;

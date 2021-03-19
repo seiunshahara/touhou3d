@@ -1,7 +1,8 @@
 import { Matrix } from "@babylonjs/core";
 import { makeSphereMesh } from "./Sphere";
+import { makeKnifeMesh } from "./Knife";
 
-export const makeBulletMesh = (meshOptions, scene) => {
+export const makeBulletMesh = (meshOptions, assets, scene) => {
     const {mesh, ...rest} = meshOptions;
 
     let _mesh;
@@ -10,18 +11,21 @@ export const makeBulletMesh = (meshOptions, scene) => {
         case "sphere": 
             _mesh = makeSphereMesh(rest, scene)
             break;
+        case "knife": 
+            _mesh = makeKnifeMesh(rest, assets, scene)
+            break;
         default:
             throw new Error("Mesh type not supported: " + meshOptions.mesh);
     }
 
     _mesh.alwaysSelectAsActiveMesh = true;
 
-    _mesh.setInitialPositions = (initialPositions) => {
-        const bufferMatrices = new Float32Array(initialPositions.length * 16);
-        initialPositions.forEach((initialPosition, i) => {
-            const matrix = Matrix.Translation(initialPosition.x, initialPosition.y, initialPosition.z);
+    _mesh.makeInstances = (num) => {
+        const bufferMatrices = new Float32Array(num * 16);
+        for(let i = 0; i < num; i++){
+            const matrix = Matrix.Identity();
             matrix.copyToArray(bufferMatrices, i * 16);
-        });
+        };
 
         _mesh.thinInstanceSetBuffer("matrix", bufferMatrices, 16);
     }

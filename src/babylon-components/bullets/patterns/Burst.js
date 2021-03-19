@@ -1,14 +1,13 @@
 import { randScalar } from "../../BabylonUtils";
 import * as BulletVectorFunctions from "./BulletVectorFunctions";
 
-export const makeBurstPattern = (patternOptions, parent, ARENA_DIMS) => {
-    if(!parent.velocity) throw new Error("PARENT MUST HAVE VELOCITY, PARENT IS: " + parent.name)
+export const makeBurstPattern = (patternOptions) => {
 
-    const speed = randScalar(patternOptions.speed) * Math.max(...ARENA_DIMS);
-    let velocities = BulletVectorFunctions.burst(parent.velocity, patternOptions.num, speed, patternOptions.startTheta, patternOptions.startPhi)
+    const speed = randScalar(patternOptions.speed);
+    let velocities = BulletVectorFunctions.burst(patternOptions.num, speed, patternOptions.startTheta)
 
     const radius = patternOptions.radius || 0;
-    let positions = BulletVectorFunctions.burst(parent.velocity, patternOptions.num, radius, patternOptions.startTheta, patternOptions.startPhi)
+    let positions = BulletVectorFunctions.burst(patternOptions.num, radius, patternOptions.startTheta)
 
     return { 
         positions: positions, 

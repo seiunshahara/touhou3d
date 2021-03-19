@@ -5,11 +5,14 @@ import { useBeforeRender } from 'react-babylonjs';
 import { doMove, newMoveAction } from './EnemyMovementUtil';
 import { filterInPlace } from '../../utils/Utils';
 import { useConstants } from '../hooks/useConstants';
+import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
+import { Vector3 } from '@babylonjs/core';
 
 export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) => {
     const [enemy, setEnemy] = useState({});
     const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
     const { ARENA_DIMS } = useConstants();
+    const addBulletGroup = useAddBulletGroup();
 
     const startTime = useMemo(() => Date.now(), []);
 
@@ -18,16 +21,20 @@ export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) 
             case "move":
                 newMoveAction(enemy, action, ...ARENA_DIMS);
                 break;
+            case "shoot":
+                addBulletGroup(enemy, action)
+                break;
             case "remove":
                 removeMe(name);
                 break;
             default:
                 console.warn("Unsupported action type: " + action.type)
         }
-    }, [removeMe, enemy, name, ARENA_DIMS])
+    }, [removeMe, enemy, name, addBulletGroup, ARENA_DIMS])
 
     useBeforeRender((scene) => {
         if(!enemy) return;
+        enemy.velocity = new Vector3(0, 0, 10);
 
         const timeSinceStart = Date.now() - startTime;
         const delta = scene.getEngine().getDeltaTime();

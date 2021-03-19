@@ -137,6 +137,8 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
                     case "vector3":
                         this.setVector3(uniform.name, new Vector3(uniform.x, uniform.y, uniform.z));
                         break;
+                    default:
+                        throw new Error("Unsupported uniform type: " + uniform.type)
                 }
             }
         }

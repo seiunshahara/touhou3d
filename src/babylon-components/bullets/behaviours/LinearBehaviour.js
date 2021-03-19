@@ -33,6 +33,6 @@ export const linearBehaviourVelocityPixelShader = () => {
     `
 }
 
-export const makeLinearBehaviour = () => {
-    return new BulletBehaviour("linearBehaviourPosition", "linearBehaviourVelocity");
+export const makeLinearBehaviour = (parent) => {
+    return new BulletBehaviour("linearBehaviourPosition", "linearBehaviourVelocity", parent);
 }
