@@ -33,6 +33,12 @@ export const linearBehaviourVelocityPixelShader = () => {
     `
 }
 
+class LinearBehaviour extends BulletBehaviour{
+    constructor(parent){
+        super("linearBehaviourPosition", "linearBehaviourVelocity", parent)
+    }
+}
+
 export const makeLinearBehaviour = (parent) => {
-    return new BulletBehaviour("linearBehaviourPosition", "linearBehaviourVelocity", parent);
+    return new LinearBehaviour(parent);
 }

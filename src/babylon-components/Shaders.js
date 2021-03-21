@@ -1,12 +1,20 @@
 import { Effect } from "@babylonjs/core";
 import { linearBehaviourPositionPixelShader, linearBehaviourVelocityPixelShader } from "./bullets/behaviours/LinearBehaviour";
+import { playerShotBehaviourPositionPixelShader, playerShotBehaviourVelocityPixelShader } from "./bullets/behaviours/PlayerShotBehaviour";
 import { fresnelVertexShader, fresnelFragmentShader } from "./bullets/materials/Fresnel";
+import { textureFragmentShader, textureVertexShader } from "./bullets/materials/Texture";
 
 Effect.ShadersStore["linearBehaviourPositionPixelShader"] = linearBehaviourPositionPixelShader();
 Effect.ShadersStore["linearBehaviourVelocityPixelShader"] = linearBehaviourVelocityPixelShader();
 
+Effect.ShadersStore["playerShotBehaviourPositionPixelShader"] = playerShotBehaviourPositionPixelShader();
+Effect.ShadersStore["playerShotBehaviourVelocityPixelShader"] = playerShotBehaviourVelocityPixelShader();
+
 Effect.ShadersStore["fresnelVertexShader"] = fresnelVertexShader();
 Effect.ShadersStore["fresnelFragmentShader"] = fresnelFragmentShader();
+
+Effect.ShadersStore["textureVertexShader"] = textureVertexShader();
+Effect.ShadersStore["textureFragmentShader"] = textureFragmentShader();
 
 //for glsl lint
 const glsl = x => x;

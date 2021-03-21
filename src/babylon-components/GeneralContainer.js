@@ -1,5 +1,5 @@
 import { Vector3, Vector2, AssetsManager } from '@babylonjs/core';
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useCallback, useState, useEffect, useMemo } from 'react'
 import { useBeforeRender, useScene } from 'react-babylonjs';
 import { makeSpriteSheetAnimation } from './BabylonUtils';
 import { makeBulletBehaviour } from './bullets/behaviours';
@@ -14,6 +14,7 @@ export const BulletsContext = React.createContext();
 export const PositionsContext = React.createContext();
 export const ConstantsContext = React.createContext();
 export const AssetsContext = React.createContext();
+export const TargetContext = React.createContext();
 
 const allBullets = {};
 
@@ -32,6 +33,7 @@ export const GeneralContainer = ({children}) => {
     const scene = useScene();
     const [animatedTextures, setAnimatedTextures] = useState();
     const [assets, setAssets] = useState();
+    const target = useMemo(() => new Vector3(0, 0, 10));
 
     const disposeSingle = (id) => {
         allBullets[id].dispose();
@@ -50,11 +52,11 @@ export const GeneralContainer = ({children}) => {
 
         const preparedInstruction = prepareBulletInstruction(instruction);
     
-        const material =                makeBulletMaterial(preparedInstruction.materialOptions, parent, scene)
         const {positions, velocities} = makeBulletPattern(preparedInstruction.patternOptions, parent)
+        const material =                makeBulletMaterial(preparedInstruction.materialOptions, parent, assets, scene)
         const mesh =                    makeBulletMesh(preparedInstruction.meshOptions, assets, scene);
         const behaviour =               makeBulletBehaviour(preparedInstruction.behaviourOptions, parent);
-        
+
         mesh.makeInstances(positions.length);
         mesh.material = material
         behaviour.init(material, positions, velocities, scene);
@@ -104,6 +106,11 @@ export const GeneralContainer = ({children}) => {
             {
                 url: "/assets/spriteSheets/fairySpriteSheet.png",
                 name: "fairySpriteSheet",
+                type: "texture"
+            },
+            {
+                url: "/assets/bullets/ofuda/reimu_ofuda.jpg",
+                name: "reimu_ofuda",
                 type: "texture"
             },
             {
@@ -191,8 +198,10 @@ export const GeneralContainer = ({children}) => {
     return assets ? <AssetsContext.Provider value={assets}>
         <ConstantsContext.Provider value={CONSTANTS}>
             <PositionsContext.Provider value={{positions, setPositions}}>
-                <BulletsContext.Provider value={{dispose, disposeSingle, addBulletGroup}}>
-                    {children}
+                <BulletsContext.Provider value={{dispose, disposeSingle, addBulletGroup, allBullets}}>
+                    <TargetContext.Provider value={target}>
+                        {children}
+                    </TargetContext.Provider>
                 </BulletsContext.Provider>
             </PositionsContext.Provider>
         </ConstantsContext.Provider>

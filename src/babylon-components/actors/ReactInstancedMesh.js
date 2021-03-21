@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useScene } from 'react-babylonjs';
 import { useName } from '../hooks/useName';
 
-export const ReactInstancedMesh = ({rootUrl, sceneFilename, positions, rotations, scalings}) => {
+export const ReactInstancedMesh = ({rootUrl, sceneFilename, positions, rotations, scalings, isPickable}) => {
     const transformNodeRef = useRef();
     const scene = useScene();
     const name = useName();

@@ -1,5 +1,6 @@
 import { Matrix } from "@babylonjs/core";
 import { makeSphereMesh } from "./Sphere";
+import { makePlaneMesh } from "./Plane";
 import { makeKnifeMesh } from "./Knife";
 
 export const makeBulletMesh = (meshOptions, assets, scene) => {
@@ -10,6 +11,9 @@ export const makeBulletMesh = (meshOptions, assets, scene) => {
     switch(mesh){
         case "sphere": 
             _mesh = makeSphereMesh(rest, scene)
+            break;
+        case "plane": 
+            _mesh = makePlaneMesh(rest, scene)
             break;
         case "knife": 
             _mesh = makeKnifeMesh(rest, assets, scene)

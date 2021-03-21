@@ -1,18 +1,12 @@
 import { List, ListItem } from '@material-ui/core'
+import { isFunction } from 'lodash';
 import React, { useState } from 'react'
 import { useKeydown } from '../hooks/useKeydown';
-import MultiSound from '../sounds/MultiSound';
+import { choiceSound, selectSound } from '../sounds/SoundSystem';
 
 const mod = function (num, n) {
     return ((num % n) + n) % n;
 };
-
-const choiceSound = new MultiSound("sfx/select00.wav", 20, .20)
-const selectSound = new MultiSound("sfx/ok00.wav", 20, .20)
-
-const isFunction = (functionToCheck) => {
-    return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
-}
 
 export const VerticleMenuSingle = ({selected, menuKey, slanted, index}) => {
     const styleAddin = selected ? {
@@ -26,7 +20,8 @@ export const VerticleMenuSingle = ({selected, menuKey, slanted, index}) => {
         WebkitTextStrokeWidth: "1px",
         WebkitTextStrokeColor: "white",
         ...styleAddin
-    }}>
+    }}
+        key={menuKey}>
         {menuKey}
     </ListItem>)
 }
@@ -37,7 +32,8 @@ export const VerticleMenuArray = ({selected, menuKey, menuValue, slanted, index}
         transition: "left 2s",
         WebkitTextStrokeWidth: "1px",
         WebkitTextStrokeColor: "white",
-    }}>
+    }}
+        key={menuKey}>
         {menuKey + " " + menuValue.join(" ")}
     </ListItem>)
 }
@@ -82,9 +78,9 @@ export const VerticleMenu = ({ menuMap, active = true, slanted = false }) => {
                 }
 
                 if(isFunction(menuValue))
-                    return <VerticleMenuSingle {...menuItemProps}/>
+                    return <VerticleMenuSingle key={i} {...menuItemProps}/>
                 if(Array.isArray(menuValue))
-                    return <VerticleMenuArray {...menuItemProps}/>
+                    return <VerticleMenuArray  key={i} {...menuItemProps}/>
                 return false;
             })}
         </List>

@@ -1,6 +1,7 @@
 import { makeFresnelMaterial } from "./Fresnel"
+import { makeTextureMaterial } from "./Texture";
 
-export const makeBulletMaterial = (materialOptions, parent, scene) => {
+export const makeBulletMaterial = (materialOptions, parent, assets, scene) => {
 
     let _material;
 
@@ -8,10 +9,14 @@ export const makeBulletMaterial = (materialOptions, parent, scene) => {
         case "fresnel": 
             _material = makeFresnelMaterial(scene)
             break;
+        case "texture": 
+            _material = makeTextureMaterial(materialOptions, assets, scene)
+            break;
         default: 
             throw new Error("Unsupported bullet material option: " + materialOptions.material)
     }
 
+    _material.backFaceCulling = !materialOptions.doubleSided;
     _material.setVector3("initialVelocity", parent.velocity);
     return _material;
 }

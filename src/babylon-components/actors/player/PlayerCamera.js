@@ -1,12 +1,21 @@
 import { Matrix, Quaternion, Vector3 } from '@babylonjs/core'
 import React, { useCallback, useEffect, useRef } from 'react'
-import { useEngine } from 'react-babylonjs';
+import { useBeforeRender, useEngine } from 'react-babylonjs';
+import { useWindowSize } from '../../../hooks/useWindowSize';
+import { useTarget } from '../../hooks/useTarget';
+import { useConstants } from '../../hooks/useConstants';
+import { useName } from '../../hooks/useName';
 
 export const PlayerCamera = () => {
     const engine = useEngine();
     const canvas = engine.getRenderingCanvas();
     const cameraRef = useRef();
     const transformNodeRef = useRef();
+    const targetRef = useRef();
+    const target = useTarget();
+    const windowSize = useWindowSize();
+    const name = useName("camera");
+    const {ARENA_LENGTH} = useConstants()
 
     const cameraHandler = useCallback(e => {
         if(!transformNodeRef.current) return;
@@ -52,7 +61,18 @@ export const PlayerCamera = () => {
         }
     }, [canvas, cameraHandler])
 
+    useBeforeRender(() => {
+        target.copyFrom(targetRef.current.getAbsolutePosition());
+    })
+
     return <transformNode ref={transformNodeRef} name="cameraTransform" position={new Vector3(0, 0, 0)}>
+        <transformNode ref={targetRef} name="targetTransform" position={new Vector3(0, 0, ARENA_LENGTH)}>
+            <plane renderingGroupId={1} width={0.5} height={0.5} name="targetPlane">
+                <standardMaterial useAlphaFromDiffuseTexture name={"targetMat"}>
+                    <texture hasAlpha assignTo="diffuseTexture" url={"/assets/crossHair/crosshair.png"} />
+                </standardMaterial>
+            </plane>
+        </transformNode>
         <universalCamera ref={cameraRef} name="camera" minZ={0.01} position={new Vector3(0, 0, 0)}/>
     </transformNode>
 }

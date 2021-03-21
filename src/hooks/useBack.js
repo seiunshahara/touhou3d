@@ -1,8 +1,7 @@
 import { useHistory } from "react-router"
 import MultiSound from "../sounds/MultiSound"
+import { backSound } from "../sounds/SoundSystem"
 import { useKeydown } from "./useKeydown"
-
-const backSound = new MultiSound("sfx/cancel00.wav", 20, .20)
 
 export const useBack = (path) => {
     const history = useHistory()
