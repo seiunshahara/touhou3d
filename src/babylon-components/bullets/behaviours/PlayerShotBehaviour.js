@@ -127,7 +127,7 @@ class PlayerShotBehaviour extends BulletBehaviour{
 
         console.log(this.bulletFrame);
 
-        this.bulletFrame = ((this.bulletFrame + 1) % (1000 * this.shotSourcesNum));
+        this.bulletFrame = (this.bulletFrame + 1) % 1000;
     }
 }
 

@@ -22,6 +22,7 @@ export const makeTextureMaterial = (materialOptions, assets, scene) => {
     }, {
         attributes: ["position", "normal", "uv", "world0", "world1", "world2", "world3"],
         uniforms: ["worldView", "worldViewProjection", "view", "projection", "direction", "cameraPosition"],
+        needAlphaBlending: materialOptions.hasAlpha
     });
 
     _material.setTexture("textureSampler", assets[materialOptions.texture])
