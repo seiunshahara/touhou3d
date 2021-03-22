@@ -54,7 +54,7 @@ const shotInstruction = (power) => {
         },
         patternOptions: {
             pattern: "empty",
-            num: 1000 * shotSources.length,
+            num: 100 * shotSources.length,
         },
         meshOptions: {
             mesh: "plane",
@@ -115,7 +115,7 @@ export const Reimu = () => {
         setShot1Behaviour(shot1Behaviour)
         setShot2Behaviour(shot2Behaviour)
 
-    }, [])
+    }, [addBulletGroup, allBullets])
 
     useBeforeRender((scene) => {
         if (!sphereRef1.current || !sphereRef2.current || !transformNodeRef.current) return;

@@ -1,4 +1,4 @@
-import { Matrix, Vector3 } from "@babylonjs/core";
+import { Matrix } from "@babylonjs/core";
 import { makeName } from "../../hooks/useName";
 
 

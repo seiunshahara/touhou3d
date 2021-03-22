@@ -73,3 +73,11 @@ export const normalizePosition = (position, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LEN
 export const unnormalizePosition = (position, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH) => {
     return position.add(new Vector3(0, 1, 0)).multiplyByFloats(ARENA_WIDTH/2, ARENA_HEIGHT/2, ARENA_LENGTH/2)
 }
+
+export const glsl = (template, ...args) => {
+    let str = ""
+    for (let i = 0; i < args.length; i++) {
+        str += template[i] + String(args[i])
+    }
+    return str + template[template.length - 1]
+}

@@ -2,7 +2,7 @@ import React from 'react'
 import { useName } from '../hooks/useName';
 import { useAssets } from '../hooks/useAssets';
 
-export const BlueFairy = React.forwardRef(({...props}, ref) => {
+const BlueFairy = React.forwardRef(({...props}, ref) => {
     const name = useName();
     const blueFairy = useAssets("blueFairyTexture");
 
@@ -12,3 +12,6 @@ export const BlueFairy = React.forwardRef(({...props}, ref) => {
         </plane>
     )
 })
+
+BlueFairy.radius = 0.5;
+export {BlueFairy};

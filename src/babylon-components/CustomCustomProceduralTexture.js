@@ -10,6 +10,107 @@ import { WebRequest } from '@babylonjs/core/Misc/webRequest';
  * Custom Procedural textures are the easiest way to create your own procedural in your application.
  * @see https://doc.babylonjs.com/how_to/how_to_use_procedural_textures#creating-custom-procedural-textures
  */
+
+ const _clientWaitAsync = function (engine, sync, activePPB, flags, interval_ms) {
+    if (flags === void 0) { flags = 0; }
+    if (interval_ms === void 0) { interval_ms = 10; }
+    var gl = engine._gl;
+    return new Promise(function (resolve, reject) {
+        var check = function () {
+            var res = gl.clientWaitSync(sync, flags, 0);
+            if (res === gl.WAIT_FAILED) {
+                reject();
+                return;
+            }
+            if (res === gl.TIMEOUT_EXPIRED) {
+                setTimeout(check, interval_ms);
+                return;
+            }
+            resolve(activePPB);
+        };
+        check();
+    });
+};
+
+const _readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer) {
+    if (faceIndex === void 0) { faceIndex = -1; }
+    if (level === void 0) { level = 0; }
+    if (buffer === void 0) { buffer = null; }
+
+    const numPPB = 5;
+
+    var gl = engine._gl;
+    if (!gl) {
+        throw new Error("Engine does not have gl rendering context.");
+    }
+    if (!engine._dummyFramebuffer) {
+        var dummy = gl.createFramebuffer();
+        if (!dummy) {
+            throw new Error("Unable to create dummy framebuffer");
+        }
+        engine._dummyFramebuffer = dummy;
+    }
+    if (!texture._PPBWheel) {
+        texture._PPBWheel = [];
+        for(let i = 0; i < numPPB; i++){
+            const newPPB = gl.createBuffer();
+            if (!newPPB) {
+                throw new Error("Unable to create PPB");
+            }
+            texture._PPBWheel.push(newPPB);
+        }
+
+        texture._activePPB = texture._PPBWheel[0];
+        texture._activePPBIndex = 0;
+    }
+
+    //swap PIXEL_PACK_BUFFER
+    texture._activePPBIndex = (texture._activePPBIndex + 1) % texture._PPBWheel.length
+    texture._activePPB = texture._PPBWheel[texture._activePPBIndex];
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, engine._dummyFramebuffer);
+    if (faceIndex > -1) {
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, texture._webGLTexture, level);
+    }
+    else {
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture._webGLTexture, level);
+    }
+    var readType = (texture.type !== undefined) ? engine._getWebGLTextureType(texture.type) : gl.UNSIGNED_BYTE;
+    switch (readType) {
+        case gl.UNSIGNED_BYTE:
+            if (!buffer) {
+                buffer = new Uint8Array(4 * width * height);
+            }
+            readType = gl.UNSIGNED_BYTE;
+            break;
+        default:
+            if (!buffer) {
+                buffer = new Float32Array(4 * width * height);
+            }
+            readType = gl.FLOAT;
+            break;
+    }
+
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, texture._activePPB);
+    gl.bufferData(gl.PIXEL_PACK_BUFFER, buffer.byteLength, gl.STREAM_READ);
+    gl.readPixels(0, 0, width, height, gl.RGBA, readType, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, engine._currentFramebuffer);
+
+    var sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    if (!sync) {
+        return null;
+    }
+    gl.flush();
+
+    return _clientWaitAsync(engine, sync, texture._activePPB, 0, 10).then(function (activePPB) {
+        gl.deleteSync(sync);
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, activePPB);
+        gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, buffer);
+        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+        return buffer;
+    });
+};
+
 var CustomCustomProceduralTexture = /** @class */ (function (_super) {
     __extends(CustomCustomProceduralTexture, _super);
     /**
@@ -106,6 +207,17 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
         }
         _super.prototype.render.call(this, useCameraPostProcess);
     };
+
+    CustomCustomProceduralTexture.prototype.dispose = function () {
+        if(this._PPBWheel){
+            const engine = this._getEngine();
+            const gl = engine._gl;
+            for(let buf of this._PPBWheel){
+                gl.deleteBuffer(buf);
+            }
+        }
+        _super.prototype.dispose.call(this);
+    };
     /**
      * Update the list of dependant textures samplers in the shader.
      */
@@ -143,6 +255,37 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
             }
         }
         this.setFloat("time", this._time);
+    };
+    CustomCustomProceduralTexture.prototype.readPixels = function (faceIndex, level, buffer) {
+        if (faceIndex === void 0) { faceIndex = 0; }
+        if (level === void 0) { level = 0; }
+        if (buffer === void 0) { buffer = null; }
+        if (!this._texture) {
+            return null;
+        }
+        var size = this.getSize();
+        var width = size.width;
+        var height = size.height;
+        var engine = this._getEngine();
+        if (!engine) {
+            return null;
+        }
+        if (level !== 0) {
+            width = width / Math.pow(2, level);
+            height = height / Math.pow(2, level);
+            width = Math.round(width);
+            height = Math.round(height);
+        }
+        try {
+            if (this._texture.isCube) {
+                return _readTexturePixels(engine, this._texture, width, height, faceIndex, level, buffer);
+            }
+            return _readTexturePixels(engine, this._texture, width, height, -1, level, buffer);
+        }
+        catch (e) {
+            console.log(e)
+            return null;
+        }
     };
     Object.defineProperty(CustomCustomProceduralTexture.prototype, "animate", {
         /**

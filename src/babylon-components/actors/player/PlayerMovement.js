@@ -1,12 +1,11 @@
 import { Vector3 } from '@babylonjs/core'
 import React, { useRef } from 'react'
 import {  useBeforeRender } from 'react-babylonjs';
-import { useConstants } from '../../hooks/useConstants';
 import { useControl } from '../../hooks/useControl';
+import {LATERAL_SPEED, ARENA_WIDTH, ARENA_HEIGHT, ARENA_FLOOR, ARENA_LENGTH} from "../../../utils/Constants"
 
 export const PlayerMovement = ({children}) => {
     const transformNodeRef = useRef();
-    const {LATERAL_SPEED, ARENA_WIDTH, ARENA_HEIGHT, ARENA_FLOOR, ARENA_LENGTH} = useConstants();
     const [UP, DOWN, LEFT, RIGHT, SLOW] = useControl("UP", "DOWN", "LEFT", "RIGHT", "SLOW");
 
     useBeforeRender((scene) => {

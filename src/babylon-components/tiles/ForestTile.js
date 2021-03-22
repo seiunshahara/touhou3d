@@ -1,15 +1,14 @@
 import { Scalar, Vector3 } from '@babylonjs/core';
 import React, { useEffect, useState } from 'react'
+import { ARENA_WIDTH } from '../../utils/Constants';
 import { ReactInstancedMesh } from "../actors/ReactInstancedMesh"
 import { Tiles } from "../Tiles"
-import { useConstants } from "../hooks/useConstants"
 
 const ForestTile = ({...props}) => {
     
     const [positions, setPositions] = useState([]);
     const [rotations, setRotations] = useState([]);
     const [scalings, setScalings] = useState([]);
-    const {ARENA_WIDTH} = useConstants();
 
     useEffect(() => {
         const newPositions = [];
@@ -32,7 +31,7 @@ const ForestTile = ({...props}) => {
         setPositions(newPositions);
         setRotations(newRotations);
         setScalings(newScalings);
-    }, [ARENA_WIDTH])
+    }, [])
 
     return (
         <transformNode {...props}>

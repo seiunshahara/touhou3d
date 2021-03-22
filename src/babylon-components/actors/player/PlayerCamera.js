@@ -1,10 +1,8 @@
 import { Matrix, Quaternion, Vector3 } from '@babylonjs/core'
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useBeforeRender, useEngine } from 'react-babylonjs';
-import { useWindowSize } from '../../../hooks/useWindowSize';
 import { useTarget } from '../../hooks/useTarget';
-import { useConstants } from '../../hooks/useConstants';
-import { useName } from '../../hooks/useName';
+import { ARENA_LENGTH } from '../../../utils/Constants';
 
 export const PlayerCamera = () => {
     const engine = useEngine();
@@ -13,9 +11,6 @@ export const PlayerCamera = () => {
     const transformNodeRef = useRef();
     const targetRef = useRef();
     const target = useTarget();
-    const windowSize = useWindowSize();
-    const name = useName("camera");
-    const {ARENA_LENGTH} = useConstants()
 
     const cameraHandler = useCallback(e => {
         if(!transformNodeRef.current) return;

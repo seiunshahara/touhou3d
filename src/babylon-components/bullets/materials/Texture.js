@@ -1,4 +1,4 @@
-import { Material, ShaderMaterial } from "@babylonjs/core";
+import { ShaderMaterial } from "@babylonjs/core";
 import { v4 } from "uuid";
 import { commonVertexShader } from "./Common";
 

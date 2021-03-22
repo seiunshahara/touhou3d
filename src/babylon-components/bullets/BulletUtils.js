@@ -1,4 +1,4 @@
-import { Constants, RawTexture } from "@babylonjs/core";
+import { Constants, RawTexture, Vector3 } from "@babylonjs/core";
 import _ from "lodash";
 import nextPowerOfTwo from "next-power-of-two";
 
@@ -33,18 +33,69 @@ export const prepareBulletInstruction = (instruction) => {
     return defaultInstruction;
 }
 
-export const makeTextureFromVectors = (vectors, scene) => {
+export const makeTextureFromVectors = (vectors, scene, w = 1, fill = -1000000) => {
     const num = vectors.length;
     const WIDTH = Math.max(nextPowerOfTwo(Math.ceil(Math.sqrt(num))), 4);
     const data = new Float32Array(WIDTH * WIDTH * 4)
 
+    let offset;
+
     vectors.forEach((vector, i)=>{
-        const offset = i *4;
+        offset = i *4;
         data[offset + 0] = vector.x;
         data[offset + 1] = vector.y;
         data[offset + 2] = vector.z;
-        data[offset + 3] = 1;
+        data[offset + 3] = w;
     })
 
+    for(let i = (offset/4) + 1; i < WIDTH * WIDTH; i++){
+        offset = i *4;
+        data[offset + 0] = fill;
+        data[offset + 1] = fill;
+        data[offset + 2] = fill;
+        data[offset + 3] = w;
+    }
+
     return new RawTexture.CreateRGBATexture(data, WIDTH, WIDTH, scene, false, false, Constants.TEXTURE_NEAREST_NEAREST, Constants.TEXTURETYPE_FLOAT);
+}
+
+export const makeTextureFromBlank = (num, scene, w = 1, fill = -1000000) => {
+    const WIDTH = Math.max(nextPowerOfTwo(Math.ceil(Math.sqrt(num))), 4);
+    const data = new Float32Array(WIDTH * WIDTH * 4)
+
+    let offset;
+
+    for(let i = 0; i < num; i++){
+        offset = i * 4 ;
+        data[offset + 0] = 0;
+        data[offset + 1] = 0;
+        data[offset + 2] = 0;
+        data[offset + 3] = w;
+    }
+
+    for(let i = (offset/4) + 1; i < WIDTH * WIDTH; i++){
+        offset = i *4;
+        data[offset + 0] = fill;
+        data[offset + 1] = fill;
+        data[offset + 2] = fill;
+        data[offset + 3] = w;
+    }
+
+    return new RawTexture.CreateRGBATexture(data, WIDTH, WIDTH, scene, false, false, Constants.TEXTURE_NEAREST_NEAREST, Constants.TEXTURETYPE_FLOAT);
+}
+
+export const convertCollisions = (buffer) => {
+    const collisions = [];
+
+    for(let i = 0; i < buffer.length; i += 4){
+        const collisionID = buffer[i + 3];
+        if(collisionID !== 0){
+            collisions.push({
+                hit: new Vector3(buffer[i], buffer[i + 1], buffer[i + 2]),
+                collisionID: collisionID
+            })
+        }
+    }
+
+    return collisions;
 }

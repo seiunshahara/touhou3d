@@ -1,6 +1,8 @@
 import { Vector3, Vector2, AssetsManager } from '@babylonjs/core';
+import { times } from 'lodash';
 import React, { useCallback, useState, useEffect, useMemo } from 'react'
 import { useBeforeRender, useScene } from 'react-babylonjs';
+import { MAX_ENEMIES } from '../utils/Constants';
 import { makeSpriteSheetAnimation } from './BabylonUtils';
 import { makeBulletBehaviour } from './bullets/behaviours';
 import { BulletGroup } from './bullets/BulletGroup';
@@ -17,23 +19,21 @@ export const AssetsContext = React.createContext();
 export const TargetContext = React.createContext();
 
 const allBullets = {};
+const positions = {
+    player: new Vector3(0, 0, 0),
+    enemies: times(MAX_ENEMIES, () => new Vector3(-1000000, -1000000, -1000000)),
+    enemyRadii: times(MAX_ENEMIES, () => 0),
+    enemyKillSelfs: times(MAX_ENEMIES, () => () => {}),
+    enemyIndex: 0
+}
 
 export const GeneralContainer = ({children}) => {
-
-    const CONSTANTS = {
-        ARENA_WIDTH: 20,
-        ARENA_HEIGHT: 10,
-        ARENA_FLOOR: 1,
-        ARENA_LENGTH: 20,
-        LATERAL_SPEED: 10,
-    };
-
-    CONSTANTS.ARENA_DIMS = [CONSTANTS.ARENA_WIDTH, CONSTANTS.ARENA_HEIGHT, CONSTANTS.ARENA_LENGTH]
 
     const scene = useScene();
     const [animatedTextures, setAnimatedTextures] = useState();
     const [assets, setAssets] = useState();
-    const target = useMemo(() => new Vector3(0, 0, 10));
+    const target = useMemo(() => new Vector3(0, 0, 10), []);
+    const [environmentCollision, setEnvironmentCollision] = useState(new Vector3(1, 1, 1));
 
     const disposeSingle = (id) => {
         allBullets[id].dispose();
@@ -55,7 +55,7 @@ export const GeneralContainer = ({children}) => {
         const {positions, velocities} = makeBulletPattern(preparedInstruction.patternOptions, parent)
         const material =                makeBulletMaterial(preparedInstruction.materialOptions, parent, assets, scene)
         const mesh =                    makeBulletMesh(preparedInstruction.meshOptions, assets, scene);
-        const behaviour =               makeBulletBehaviour(preparedInstruction.behaviourOptions, parent);
+        const behaviour =               makeBulletBehaviour(preparedInstruction.behaviourOptions, environmentCollision, parent);
 
         mesh.makeInstances(positions.length);
         mesh.material = material
@@ -117,7 +117,7 @@ export const GeneralContainer = ({children}) => {
                 rootUrl: "/assets/bullets/knife/",
                 sceneFilename: "knife.glb",
                 name: "knife",
-                type: "model"
+                type:  "model"
             }
         ];
 
@@ -177,6 +177,8 @@ export const GeneralContainer = ({children}) => {
             texture.setFloat("frame", frame);
         });
 
+        console.log(positions);
+
         Object.keys(allBullets).forEach(bulletGroupIndex => {
             const bulletGroup = allBullets[bulletGroupIndex];
             if(now - bulletGroup.startTime > bulletGroup.lifespan){
@@ -190,20 +192,29 @@ export const GeneralContainer = ({children}) => {
         if(toRemove.length > 0) dispose(toRemove);
     })
 
-    const [positions, setPositions] =  useState({
-        player: new Vector3(0, 0, 0),
-        enemies: {}
-    })
+    
+
+    const addEnemy = useCallback((position, radius, killSelf) => {
+        const indexToAdd = positions.enemyIndex
+        positions.enemies[indexToAdd] = position;
+        positions.enemyRadii[indexToAdd] = radius;
+        positions.enemyKillSelfs[indexToAdd] = killSelf;
+        positions.enemyIndex = (positions.enemyIndex + 1) % MAX_ENEMIES;
+        return indexToAdd;
+    }, [])
+
+    const removeEnemy = useCallback((id) => {
+        positions.enemies[id] = new Vector3(-1000000, -1000000, -1000000);
+        positions.enemyKillSelfs[id] = () => {};
+    }, [])
 
     return assets ? <AssetsContext.Provider value={assets}>
-        <ConstantsContext.Provider value={CONSTANTS}>
-            <PositionsContext.Provider value={{positions, setPositions}}>
-                <BulletsContext.Provider value={{dispose, disposeSingle, addBulletGroup, allBullets}}>
-                    <TargetContext.Provider value={target}>
-                        {children}
-                    </TargetContext.Provider>
-                </BulletsContext.Provider>
-            </PositionsContext.Provider>
-        </ConstantsContext.Provider>
-    </AssetsContext.Provider> : <camera position={new Vector3(0, 0, 0)}/>
+        <PositionsContext.Provider value={{positions, addEnemy, removeEnemy}}>
+            <BulletsContext.Provider value={{dispose, disposeSingle, addBulletGroup, allBullets, setEnvironmentCollision}}>
+                <TargetContext.Provider value={target}>
+                    {children}
+                </TargetContext.Provider>
+            </BulletsContext.Provider>
+        </PositionsContext.Provider>
+    </AssetsContext.Provider> : <camera name="fallbackCamera" position={new Vector3(0, 0, 0)}/>
 }

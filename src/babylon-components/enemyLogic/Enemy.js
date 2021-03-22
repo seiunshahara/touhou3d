@@ -1,20 +1,21 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {  makeActionListTimeline } from "./EnemyUtils";
 import { unnormalizePosition } from "../BabylonUtils"
 import { useBeforeRender } from 'react-babylonjs';
 import { doMove, newMoveAction } from './EnemyMovementUtil';
-import { filterInPlace } from '../../utils/Utils';
-import { useConstants } from '../hooks/useConstants';
+import { filterInPlace, useEffectDebugger } from '../../utils/Utils';
 import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
+import { usePositions } from '../hooks/usePositions';
 import { Vector3 } from '@babylonjs/core';
+import { ARENA_DIMS } from '../../utils/Constants';
 
-export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) => {
-    const [enemy, setEnemy] = useState({});
+export const Enemy = ({SpriteClass, startPosition,  actionList, removeMe, name}) => {
+    const [enemy, setEnemy] = useState();
+    const [positionID, setPositionID] = useState();
     const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
-    const { ARENA_DIMS } = useConstants();
     const addBulletGroup = useAddBulletGroup();
-
     const startTime = useMemo(() => Date.now(), []);
+    const {addEnemy, removeEnemy} = usePositions();
 
     const executeAction = useCallback((action) => {
         switch (action.type){
@@ -25,12 +26,24 @@ export const Enemy = ({SpriteClass, startPosition, actionList, removeMe, name}) 
                 addBulletGroup(enemy, action)
                 break;
             case "remove":
+                removeEnemy(positionID)
                 removeMe(name);
                 break;
             default:
                 console.warn("Unsupported action type: " + action.type)
         }
-    }, [removeMe, enemy, name, addBulletGroup, ARENA_DIMS])
+    }, [removeMe, enemy, name, addBulletGroup, positionID, removeEnemy])
+
+    useEffect(() => {
+        if(!enemy) return;
+
+        const id = addEnemy(enemy.position, SpriteClass.radius, () => removeMe(name))
+        setPositionID(id)
+
+        return () => {
+            removeEnemy(id)
+        }
+    }, [enemy, removeEnemy, addEnemy, name, removeMe])
 
     useBeforeRender((scene) => {
         if(!enemy) return;

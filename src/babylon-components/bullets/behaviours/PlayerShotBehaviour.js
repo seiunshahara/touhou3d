@@ -1,8 +1,8 @@
 import { Vector3 } from "@babylonjs/core";
+import { glsl } from "../../BabylonUtils";
 import { makeTextureFromVectors } from "../BulletUtils";
 import { BulletBehaviour } from "./BulletBehaviour";
-
-const glsl = x => x;
+import { collisionSnippet } from "./Common";
 
 export const playerShotBehaviourPositionPixelShader = () => {
     return glsl`
@@ -10,6 +10,7 @@ export const playerShotBehaviourPositionPixelShader = () => {
         uniform vec2 resolution;
         uniform sampler2D positionSampler;
         uniform sampler2D velocitySampler;
+        uniform sampler2D collisionSampler;
 
         uniform float firing;
         uniform float frame;
@@ -23,6 +24,7 @@ export const playerShotBehaviourPositionPixelShader = () => {
 
             vec3 position = texture2D( positionSampler, uv ).xyz;
             vec3 velocity = texture2D( velocitySampler, uv ).xyz;
+            vec4 collision = texture2D( collisionSampler, uv );
 
             float currentWindowStart = frame * numSources;
             float currentWindowEnd = currentWindowStart + numSources;
@@ -41,7 +43,11 @@ export const playerShotBehaviourPositionPixelShader = () => {
             
             vec3 source = texture(sourceSampler, vec2(u, v)).xyz + sourceOffset;
 
-            gl_FragColor = bulletNotEnabled * vec4(position + (velocity * delta), 1.) + bulletEnabled * vec4(source, 1.);
+            vec4 out_Position = bulletNotEnabled * vec4(position + (velocity * delta), 1.) + bulletEnabled * vec4(source, 1.);
+
+            ${collisionSnippet}
+
+            gl_FragColor = out_Position;
         }
     `
 }
@@ -76,10 +82,10 @@ export const playerShotBehaviourVelocityPixelShader = () => {
 }
 
 class PlayerShotBehaviour extends BulletBehaviour{
-    constructor(behaviourOptions, parent){
+    constructor(behaviourOptions, environmentCollision, parent){
         const sourceSampler = makeTextureFromVectors(behaviourOptions.shotSources)
 
-        super("playerShotBehaviourPosition", "playerShotBehaviourVelocity", parent, (texture) => {
+        super("playerShotBehaviourPosition", "playerShotBehaviourVelocity", parent, environmentCollision, 1, 0, (texture) => {
             texture.setFloat("frame", 0)
             texture.setFloat("firing", 0)
             texture.setVector3("shotVector", new Vector3(0, 0, 0))
@@ -125,12 +131,10 @@ class PlayerShotBehaviour extends BulletBehaviour{
             this.velocityTexture2.setVector3("sourceOffset", sourceOffset)
         }
 
-        console.log(this.bulletFrame);
-
-        this.bulletFrame = (this.bulletFrame + 1) % 1000;
+        this.bulletFrame = (this.bulletFrame + 1) % 100;
     }
 }
 
-export const makePlayerShotBehaviour = (behaviourOptions, parent) => {
-    return new PlayerShotBehaviour(behaviourOptions, parent);
+export const makePlayerShotBehaviour = (behaviourOptions, environmentCollision, parent) => {
+    return new PlayerShotBehaviour(behaviourOptions, environmentCollision, parent);
 }
