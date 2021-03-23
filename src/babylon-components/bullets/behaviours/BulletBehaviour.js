@@ -3,36 +3,9 @@ import nextPOT from "next-power-of-two";
 import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
 import { makeTextureFromBlank, makeTextureFromVectors } from "../BulletUtils";
-import { glsl } from "../../BabylonUtils"
+import { actorPositions } from "../../GeneralContainer"
 import { ARENA_MAX, ARENA_MIN } from "../../../utils/Constants";
 
-
-export const collisionPixelShader = () => {
-    return glsl`
-        uniform vec2 resolution;
-        uniform sampler2D positionSampler;
-        uniform vec3 collideWithEnvironment;
-        uniform vec3 arenaMin;
-        uniform vec3 arenaMax;
-
-        void main(){
-            vec2 uv = gl_FragCoord.xy / resolution;
-            vec3 position = texture2D( positionSampler, uv ).xyz;
-
-            //Bullet colliding with floor?
-            float collision = collideWithEnvironment.x * float(position.y < arenaMin.y);
-            //Bullet colliding with walls?
-            collision = max(collision, collideWithEnvironment.y * float(position.x < arenaMin.x || position.x > arenaMax.x));
-            //Bullet colliding with ceiling?
-            collision = max(collision, collideWithEnvironment.z * float(position.y > arenaMax.y));
-
-            //Bullet exists in scene?
-            collision = min(collision, float(position.y > -500000.));
-
-            gl_FragColor = vec4(position, collision);
-        }
-    `
-}
 
 const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVelocityTexture, initialCollisionTexture, initialValuesFunction, WIDTH, scene) => {
     const proceduralTexture = new CustomCustomProceduralTexture(v4(), shader, WIDTH, scene, false, false, false, Constants.TEXTURETYPE_FLOAT)
@@ -50,7 +23,7 @@ const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVel
 }
 
 export class BulletBehaviour{
-    constructor(positionShader, velocityShader, parent, collideWithEnvironment, collideWithEnemy, collideWithPlayer, initialValuesFunction = null){
+    constructor(positionShader, velocityShader, parent, collideWithEnvironment, collideWithEnemy, collideWithPlayer, initialValuesFunction = null, isPlayerBullet = false){
         if(!collideWithEnvironment.x){
             throw new Error("collideWithEnvironment must be a vector")
         }
@@ -63,6 +36,7 @@ export class BulletBehaviour{
         this.collideWithPlayer = collideWithPlayer
 
         this.initialValuesFunction = initialValuesFunction;
+        this.isPlayerBullet = isPlayerBullet;
     }
 
     bindCollisionVars = (texture) => {
@@ -72,13 +46,20 @@ export class BulletBehaviour{
         texture.setVector3("collideWithEnvironment", this.collideWithEnvironment);
         texture.setFloat("collideWithEnemy", this.collideWithEnemy);
         texture.setFloat("collideWithPlayer", this.collideWithPlayer);
+
+        if(this.isPlayerBullet){
+            texture.setFloats("enemyPositions", actorPositions.enemiesBuffer);
+            texture.setFloats("enemyRadii", actorPositions.enemyRadii);
+        }
     }
 
     init(bulletMaterial, initialPositions, initialVelocities, scene) {
-        this.collisionShader = "collision"
+        this.collisionShader = this.isPlayerBullet ? "playerBulletCollision" : "enemyBulletCollision"
 
         const num = initialPositions.length;
         const WIDTH = Math.max(nextPOT(Math.ceil(Math.sqrt(num))), 4)
+
+        this.scene = scene;
 
         this.initialPositionsTexture = makeTextureFromVectors(initialPositions, scene);
         this.initialVelocityTexture = makeTextureFromVectors(initialVelocities, scene, 1., 0.);
@@ -161,6 +142,13 @@ export class BulletBehaviour{
             outputPositionTexture = this.positionTexture1;
             outputCollisionTexture = this.collisionTexture1;
             this.frame = 0
+        }
+
+        if(this.isPlayerBullet){
+            this.collisionTexture1.setFloats("enemyPositions", actorPositions.enemiesBuffer);
+            this.collisionTexture2.setFloats("enemyPositions", actorPositions.enemiesBuffer);
+            this.collisionTexture1.setFloats("enemyRadii", actorPositions.enemyRadii);
+            this.collisionTexture2.setFloats("enemyRadii", actorPositions.enemyRadii);
         }
 
         inputVelocityTexture.sleep = false;

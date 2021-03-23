@@ -92,7 +92,7 @@ class PlayerShotBehaviour extends BulletBehaviour{
             texture.setVector3("sourceOffset", new Vector3(0, 0, 0))
             texture.setTexture("sourceSampler", sourceSampler);
             texture.setFloat("numSources", behaviourOptions.shotSources.length)
-        })
+        }, true)
 
         this.bulletFrame = 0;
         this.shotSourcesNum = behaviourOptions.shotSources.length

@@ -8,8 +8,9 @@ import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
 import { usePositions } from '../hooks/usePositions';
 import { Vector3 } from '@babylonjs/core';
 import { ARENA_DIMS } from '../../utils/Constants';
+import { actorPositions } from '../GeneralContainer';
 
-export const Enemy = ({SpriteClass, startPosition,  actionList, removeMe, name}) => {
+export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe, name}) => {
     const [enemy, setEnemy] = useState();
     const [positionID, setPositionID] = useState();
     const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
@@ -37,7 +38,7 @@ export const Enemy = ({SpriteClass, startPosition,  actionList, removeMe, name})
     useEffect(() => {
         if(!enemy) return;
 
-        const id = addEnemy(enemy.position, SpriteClass.radius, () => removeMe(name))
+        const id = addEnemy(enemy.position, SpriteClass.radius, () => removeMe(name), health)
         setPositionID(id)
 
         return () => {
@@ -60,6 +61,9 @@ export const Enemy = ({SpriteClass, startPosition,  actionList, removeMe, name})
             }
             return true;
         })
+
+        const enemyWorldPosition = enemy.getAbsolutePosition();
+        actorPositions.enemies[positionID] = enemyWorldPosition;
 
         filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
     })

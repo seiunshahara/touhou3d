@@ -25,7 +25,7 @@ export const Enemies = ({source}) => {
         const spawnVector = new RandVector3(...enemy.spawn)
         const enemyName = enemy.sprite + " " + v4()
 
-        const enemyComponent = <Enemy removeMe={removeEnemy} name={enemyName} key={enemyName} SpriteClass={SpriteClass} actionList={enemy.actionList} startPosition={spawnVector}/>
+        const enemyComponent = <Enemy health={enemy.health} removeMe={removeEnemy} name={enemyName} key={enemyName} SpriteClass={SpriteClass} actionList={enemy.actionList} startPosition={spawnVector}/>
         metaEnemies = {
             ...metaEnemies, 
             [enemyName]: enemyComponent

@@ -1,12 +1,12 @@
 import { Vector3, Vector2, AssetsManager } from '@babylonjs/core';
 import { times } from 'lodash';
 import React, { useCallback, useState, useEffect, useMemo } from 'react'
-import { useBeforeRender, useScene } from 'react-babylonjs';
+import { useBeforeRender, useEngine, useScene } from 'react-babylonjs';
 import { MAX_ENEMIES } from '../utils/Constants';
 import { makeSpriteSheetAnimation } from './BabylonUtils';
 import { makeBulletBehaviour } from './bullets/behaviours';
 import { BulletGroup } from './bullets/BulletGroup';
-import { prepareBulletInstruction } from './bullets/BulletUtils';
+import { convertCollisions, prepareBulletInstruction } from './bullets/BulletUtils';
 import { makeBulletMaterial } from './bullets/materials';
 import { makeBulletMesh } from './bullets/meshes';
 import { makeBulletPattern } from './bullets/patterns';
@@ -19,10 +19,12 @@ export const AssetsContext = React.createContext();
 export const TargetContext = React.createContext();
 
 const allBullets = {};
-const positions = {
+export const actorPositions = {
     player: new Vector3(0, 0, 0),
     enemies: times(MAX_ENEMIES, () => new Vector3(-1000000, -1000000, -1000000)),
-    enemyRadii: times(MAX_ENEMIES, () => 0),
+    enemiesBuffer: new Float32Array(times(MAX_ENEMIES * 3, () => -1000000)),
+    enemyHealths: new Float32Array(times(MAX_ENEMIES, () => -1000000)),
+    enemyRadii: new Float32Array(times(MAX_ENEMIES, () => 0)),
     enemyKillSelfs: times(MAX_ENEMIES, () => () => {}),
     enemyIndex: 0
 }
@@ -33,7 +35,8 @@ export const GeneralContainer = ({children}) => {
     const [animatedTextures, setAnimatedTextures] = useState();
     const [assets, setAssets] = useState();
     const target = useMemo(() => new Vector3(0, 0, 10), []);
-    const [environmentCollision, setEnvironmentCollision] = useState(new Vector3(1, 1, 1));
+    const [environmentCollision, setEnvironmentCollision] = useState(new Vector3(1, 0, 0));
+    const engine = useEngine();
 
     const disposeSingle = (id) => {
         allBullets[id].dispose();
@@ -171,13 +174,36 @@ export const GeneralContainer = ({children}) => {
         const deltaS = scene.getEngine().getDeltaTime() / 1000;
         const toRemove = [];
 
+        actorPositions.enemies.forEach((vector, i) => {
+            actorPositions.enemiesBuffer[i * 3 + 0] = vector.x
+            actorPositions.enemiesBuffer[i * 3 + 1] = vector.y
+            actorPositions.enemiesBuffer[i * 3 + 2] = vector.z
+        })
+
+        //Collisions
+
+        Object.values(allBullets).forEach(bulletGroup => {
+            bulletGroup.behaviour.collisionTexture1.readPixels().then(buffer => {
+                const collisions = convertCollisions(buffer)
+                collisions.forEach(collision => {
+                    if(collision.collisionID > 10000 - MAX_ENEMIES){
+                        const enemyID = 10000 - collision.collisionID;
+                        actorPositions.enemyHealths[enemyID]--;
+                        if(actorPositions.enemyHealths[enemyID] <= 0){
+                            actorPositions.enemyKillSelfs[enemyID]();
+                        }
+                    }
+                })
+            })
+        })
+
+        console.log(engine.getFps().toFixed());
+
         animatedTextures.forEach(texture => {
             const timeAlive = now - texture.startTime;
             const frame = Math.floor(timeAlive/texture.frameTime) % texture.totalFrames;
             texture.setFloat("frame", frame);
         });
-
-        console.log(positions);
 
         Object.keys(allBullets).forEach(bulletGroupIndex => {
             const bulletGroup = allBullets[bulletGroupIndex];
@@ -194,22 +220,23 @@ export const GeneralContainer = ({children}) => {
 
     
 
-    const addEnemy = useCallback((position, radius, killSelf) => {
-        const indexToAdd = positions.enemyIndex
-        positions.enemies[indexToAdd] = position;
-        positions.enemyRadii[indexToAdd] = radius;
-        positions.enemyKillSelfs[indexToAdd] = killSelf;
-        positions.enemyIndex = (positions.enemyIndex + 1) % MAX_ENEMIES;
+    const addEnemy = useCallback((position, radius, killSelf, health) => {
+        const indexToAdd = actorPositions.enemyIndex
+        actorPositions.enemies[indexToAdd] = position;
+        actorPositions.enemyHealths[indexToAdd] = health;
+        actorPositions.enemyRadii[indexToAdd] = radius;
+        actorPositions.enemyKillSelfs[indexToAdd] = killSelf;
+        actorPositions.enemyIndex = (actorPositions.enemyIndex + 1) % MAX_ENEMIES;
         return indexToAdd;
     }, [])
 
     const removeEnemy = useCallback((id) => {
-        positions.enemies[id] = new Vector3(-1000000, -1000000, -1000000);
-        positions.enemyKillSelfs[id] = () => {};
+        actorPositions.enemies[id] = new Vector3(-1000000, -1000000, -1000000);
+        actorPositions.enemyKillSelfs[id] = () => {};
     }, [])
 
     return assets ? <AssetsContext.Provider value={assets}>
-        <PositionsContext.Provider value={{positions, addEnemy, removeEnemy}}>
+        <PositionsContext.Provider value={{addEnemy, removeEnemy}}>
             <BulletsContext.Provider value={{dispose, disposeSingle, addBulletGroup, allBullets, setEnvironmentCollision}}>
                 <TargetContext.Provider value={target}>
                     {children}

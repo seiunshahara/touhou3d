@@ -1,6 +1,7 @@
 export const InertFairy = (spawn, target) => {
     const map = {
         sprite: "BlueFairy",
+        health: 1,
         spawn: spawn,
         actionList: [
         ]
