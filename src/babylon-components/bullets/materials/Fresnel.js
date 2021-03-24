@@ -18,7 +18,7 @@ export const fresnelFragmentShader = () => {
 
             vec3 viewDirectionW = normalize(cameraPosition - vPositionW);
             float fresnelTerm = dot(viewDirectionW, vNormalW);
-            fresnelTerm = clamp(-0.5 - fresnelTerm, 0., 1.0);
+            fresnelTerm = clamp(1. - fresnelTerm, 0., 1.0);
 
             gl_FragColor = vec4(mix(color, toColor, fresnelTerm), 1.);
         }

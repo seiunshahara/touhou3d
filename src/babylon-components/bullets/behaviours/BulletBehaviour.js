@@ -3,7 +3,7 @@ import nextPOT from "next-power-of-two";
 import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
 import { makeTextureFromBlank, makeTextureFromVectors } from "../BulletUtils";
-import { actorPositions } from "../../GeneralContainer"
+import { actorPositions } from "../../gameLogic/StaticRefs"
 import { ARENA_MAX, ARENA_MIN } from "../../../utils/Constants";
 
 

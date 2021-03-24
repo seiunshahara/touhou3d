@@ -8,7 +8,7 @@ import { useNormalizedFrameSkip } from '../../../hooks/useNormalizedFrameSkip';
 import { useAddBulletGroup } from '../../../hooks/useAddBulletGroup'
 import { useControl } from '../../../hooks/useControl';
 import { useTarget } from '../../../hooks/useTarget';
-import { useAllBullets } from '../../../hooks/useAllBullets';
+import { allBullets } from '../../../gameLogic/StaticRefs';
 
 const z = new Vector3(0, 0, 1);
 const velocity = new Vector3(0, 0, 10);
@@ -80,7 +80,6 @@ export const Reimu = () => {
     const frameSkip = useNormalizedFrameSkip(bulletFrameSkip);
     const addBulletGroup = useAddBulletGroup();
     const SHOOT = useControl("SHOOT");
-    const allBullets = useAllBullets();
     const [shot1Behaviour, setShot1Behaviour] = useState();
     const [shot2Behaviour, setShot2Behaviour] = useState();
 
@@ -103,10 +102,10 @@ export const Reimu = () => {
         }
 
         const id1 = addBulletGroup(sphereRef1.current,
-            shotInstruction(0)
+            shotInstruction(2)
         )
         const id2 = addBulletGroup(sphereRef2.current,
-            shotInstruction(0)
+            shotInstruction(2)
         )
 
         const shot1Behaviour = allBullets[id1].behaviour;
@@ -115,7 +114,7 @@ export const Reimu = () => {
         setShot1Behaviour(shot1Behaviour)
         setShot2Behaviour(shot2Behaviour)
 
-    }, [addBulletGroup, allBullets])
+    }, [addBulletGroup])
 
     useBeforeRender((scene) => {
         if (!sphereRef1.current || !sphereRef2.current || !transformNodeRef.current) return;

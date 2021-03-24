@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {  makeActionListTimeline } from "./EnemyUtils";
 import { unnormalizePosition } from "../BabylonUtils"
 import { useBeforeRender } from 'react-babylonjs';
 import { doMove, newMoveAction } from './EnemyMovementUtil';
-import { filterInPlace, useEffectDebugger } from '../../utils/Utils';
+import { filterInPlace } from '../../utils/Utils';
 import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
-import { usePositions } from '../hooks/usePositions';
 import { Vector3 } from '@babylonjs/core';
 import { ARENA_DIMS } from '../../utils/Constants';
-import { actorPositions } from '../GeneralContainer';
+import { PositionsContext } from '../gameLogic/GeneralContainer';
+import { actorPositions } from '../gameLogic/StaticRefs';
 
 export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe, name}) => {
     const [enemy, setEnemy] = useState();
@@ -16,7 +16,7 @@ export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe,
     const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
     const addBulletGroup = useAddBulletGroup();
     const startTime = useMemo(() => Date.now(), []);
-    const {addEnemy, removeEnemy} = usePositions();
+    const {addEnemy, removeEnemy} = useContext(PositionsContext);
 
     const executeAction = useCallback((action) => {
         switch (action.type){
@@ -44,7 +44,7 @@ export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe,
         return () => {
             removeEnemy(id)
         }
-    }, [enemy, removeEnemy, addEnemy, name, removeMe])
+    }, [enemy, removeEnemy, addEnemy, name, removeMe, SpriteClass.radius, health])
 
     useBeforeRender((scene) => {
         if(!enemy) return;

@@ -1,19 +1,13 @@
 import { glsl } from "../../BabylonUtils";
 import { BulletBehaviour } from "./BulletBehaviour";
-import { collisionSnippet } from "./Common";
+import { collisionSnippet, mainHeaderSnippet, uniformSnippet } from "./Common";
 
 export const linearBehaviourPositionPixelShader = () => {
     return glsl`
-        uniform float delta;
-        uniform vec2 resolution;
-        uniform sampler2D positionSampler;
-        uniform sampler2D velocitySampler;
-        uniform sampler2D collisionSampler;
+        ${uniformSnippet}
 
         void main()	{
-            vec2 uv = gl_FragCoord.xy / resolution.xy;
-            vec3 position = texture2D( positionSampler, uv ).xyz;
-            vec3 velocity = texture2D( velocitySampler, uv ).xyz;
+            ${mainHeaderSnippet}
 
             vec4 out_Position = vec4( position + (velocity * delta), 1.);
 

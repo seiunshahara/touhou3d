@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AssetsContext } from "../GeneralContainer";
+import { AssetsContext } from "../gameLogic/GeneralContainer";
 
 export const useAssets = (...names) => {
     const assets = useContext(AssetsContext);

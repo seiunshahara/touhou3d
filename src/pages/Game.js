@@ -6,7 +6,7 @@ import {useWindowSize} from '../hooks/useWindowSize';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { ControlsContainer } from '../components/ControlsContainer';
 import { BindControls } from '../babylon-components/BindControls';
-import { GeneralContainer } from '../babylon-components/GeneralContainer';
+import { GeneralContainer } from '../babylon-components/gameLogic/GeneralContainer';
 import "../babylon-components/Shaders"
 
 export const Game = () => {

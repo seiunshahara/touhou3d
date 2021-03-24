@@ -2,15 +2,11 @@ import { Vector3 } from "@babylonjs/core";
 import { glsl } from "../../BabylonUtils";
 import { makeTextureFromVectors } from "../BulletUtils";
 import { BulletBehaviour } from "./BulletBehaviour";
-import { collisionSnippet } from "./Common";
+import { collisionSnippet, mainHeaderSnippet, uniformSnippet } from "./Common";
 
 export const playerShotBehaviourPositionPixelShader = () => {
     return glsl`
-        uniform float delta;
-        uniform vec2 resolution;
-        uniform sampler2D positionSampler;
-        uniform sampler2D velocitySampler;
-        uniform sampler2D collisionSampler;
+        ${uniformSnippet}
 
         uniform float firing;
         uniform float frame;
@@ -19,12 +15,7 @@ export const playerShotBehaviourPositionPixelShader = () => {
         uniform sampler2D sourceSampler;
 
         void main()	{
-            vec2 uv = gl_FragCoord.xy / resolution.xy;
-            float id = (gl_FragCoord.x - 0.5) + ((gl_FragCoord.y - 0.5) * resolution.x) - 1.;
-
-            vec3 position = texture2D( positionSampler, uv ).xyz;
-            vec3 velocity = texture2D( velocitySampler, uv ).xyz;
-            vec4 collision = texture2D( collisionSampler, uv );
+            ${mainHeaderSnippet}
 
             float currentWindowStart = frame * numSources;
             float currentWindowEnd = currentWindowStart + numSources;
