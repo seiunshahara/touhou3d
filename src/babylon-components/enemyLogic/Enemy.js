@@ -6,7 +6,6 @@ import { doMove, newMoveAction } from './EnemyMovementUtil';
 import { filterInPlace } from '../../utils/Utils';
 import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
 import { Vector3 } from '@babylonjs/core';
-import { ARENA_DIMS } from '../../utils/Constants';
 import { PositionsContext } from '../gameLogic/GeneralContainer';
 import { actorPositions } from '../gameLogic/StaticRefs';
 
@@ -21,7 +20,7 @@ export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe,
     const executeAction = useCallback((action) => {
         switch (action.type){
             case "move":
-                newMoveAction(enemy, action, ...ARENA_DIMS);
+                newMoveAction(enemy, action);
                 break;
             case "shoot":
                 addBulletGroup(enemy, action)
@@ -52,7 +51,7 @@ export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe,
 
         const timeSinceStart = Date.now() - startTime;
         const delta = scene.getEngine().getDeltaTime();
-        doMove(enemy, delta, ...ARENA_DIMS);
+        doMove(enemy, delta);
 
         currentActionList.some(action => {
             if(action.timeline < timeSinceStart) {
@@ -69,6 +68,6 @@ export const Enemy = ({SpriteClass, health, startPosition, actionList, removeMe,
     })
 
     return (
-        <SpriteClass position={unnormalizePosition(startPosition, ...ARENA_DIMS)} ref={newRef => setEnemy(newRef)} />
+        <SpriteClass position={unnormalizePosition(startPosition)} ref={newRef => setEnemy(newRef)} />
     )
 }

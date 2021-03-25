@@ -26,10 +26,12 @@ export const fresnelFragmentShader = () => {
 }
 
 export const makeFresnelMaterial = (scene) => {
-    return new ShaderMaterial(v4() + "fresnel", scene, {
+    const _material = new ShaderMaterial(v4() + "fresnel", scene, {
         vertex: "fresnel", fragment: "fresnel"
     }, {
         attributes: ["position", "normal", "uv", "world0", "world1", "world2", "world3"],
         uniforms: ["worldView", "worldViewProjection", "view", "projection", "direction", "cameraPosition"],
     });
+
+    return _material;
 }

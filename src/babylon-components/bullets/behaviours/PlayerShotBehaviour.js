@@ -1,8 +1,8 @@
 import { Vector3 } from "@babylonjs/core";
 import { glsl } from "../../BabylonUtils";
 import { makeTextureFromVectors } from "../BulletUtils";
-import { BulletBehaviour } from "./BulletBehaviour";
 import { collisionSnippet, mainHeaderSnippet, uniformSnippet } from "./Common";
+import { PlayerBulletBehaviour } from "./PlayerBulletBehaviour";
 
 export const playerShotBehaviourPositionPixelShader = () => {
     return glsl`
@@ -72,18 +72,18 @@ export const playerShotBehaviourVelocityPixelShader = () => {
     `
 }
 
-class PlayerShotBehaviour extends BulletBehaviour{
+class PlayerShotBehaviour extends PlayerBulletBehaviour{
     constructor(behaviourOptions, environmentCollision, parent){
         const sourceSampler = makeTextureFromVectors(behaviourOptions.shotSources)
-
-        super("playerShotBehaviourPosition", "playerShotBehaviourVelocity", parent, environmentCollision, 1, 0, (texture) => {
+        
+        super("playerShotBehaviourPosition", "playerShotBehaviourVelocity", parent, environmentCollision, (texture) => {
             texture.setFloat("frame", 0)
             texture.setFloat("firing", 0)
             texture.setVector3("shotVector", new Vector3(0, 0, 0))
             texture.setVector3("sourceOffset", new Vector3(0, 0, 0))
             texture.setTexture("sourceSampler", sourceSampler);
             texture.setFloat("numSources", behaviourOptions.shotSources.length)
-        }, true)
+        })
 
         this.bulletFrame = 0;
         this.shotSourcesNum = behaviourOptions.shotSources.length

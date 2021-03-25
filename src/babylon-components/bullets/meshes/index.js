@@ -1,38 +1,39 @@
 import { Matrix } from "@babylonjs/core";
 import { makeSphereMesh } from "./Sphere";
-import { makePlaneMesh } from "./Plane";
+import { makeCardMesh } from "./Card";
 import { makeKnifeMesh } from "./Knife";
+import { bufferMatricesSource } from "../../gameLogic/StaticRefs";
 
-export const makeBulletMesh = (meshOptions, assets, scene) => {
-    const {mesh, ...rest} = meshOptions;
+export const makeBulletMesh = (meshOptions, assets) => {
+    const {mesh, radius} = meshOptions;
 
     let _mesh;
     
     switch(mesh){
         case "sphere": 
-            _mesh = makeSphereMesh(rest, scene)
+            _mesh = makeSphereMesh(assets)
             break;
-        case "plane": 
-            _mesh = makePlaneMesh(rest, scene)
+        case "card": 
+            _mesh = makeCardMesh(assets)
             break;
         case "knife": 
-            _mesh = makeKnifeMesh(rest, assets, scene)
+            _mesh = makeKnifeMesh(assets)
             break;
         default:
             throw new Error("Mesh type not supported: " + meshOptions.mesh);
     }
 
+    const scaleMatrix = Matrix.Scaling(radius, radius, radius);
+    _mesh.bakeTransformIntoVertices(scaleMatrix);
+
     _mesh.alwaysSelectAsActiveMesh = true;
+    _mesh.doNotSyncBoundingInfo = true;
 
     _mesh.makeInstances = (num) => {
-        const bufferMatrices = new Float32Array(num * 16);
-        for(let i = 0; i < num; i++){
-            const matrix = Matrix.Identity();
-            matrix.copyToArray(bufferMatrices, i * 16);
-        };
+        const bufferMatrices = bufferMatricesSource.slice(num * 16);
 
         _mesh.thinInstanceSetBuffer("matrix", bufferMatrices, 16);
     }
 
-    return _mesh;
+    return {mesh: _mesh, radius};
 }

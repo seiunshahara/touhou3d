@@ -10,3 +10,6 @@ export const ARENA_MAX = new Vector3(ARENA_WIDTH/2, ARENA_HEIGHT + ARENA_FLOOR, 
 export const ARENA_MIN = new Vector3(-ARENA_WIDTH/2, ARENA_FLOOR, -ARENA_LENGTH/2)
 
 export const MAX_ENEMIES = 200;
+export const MAX_BULLETS_PER_GROUP = 10000;
+
+export const GRAZE_DISTANCE = 0.3;

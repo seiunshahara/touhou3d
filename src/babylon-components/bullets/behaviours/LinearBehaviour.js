@@ -1,6 +1,6 @@
 import { glsl } from "../../BabylonUtils";
-import { BulletBehaviour } from "./BulletBehaviour";
 import { collisionSnippet, mainHeaderSnippet, uniformSnippet } from "./Common";
+import { EnemyBulletBehaviour } from "./EnemyBulletBehaviour";
 
 export const linearBehaviourPositionPixelShader = () => {
     return glsl`
@@ -32,12 +32,12 @@ export const linearBehaviourVelocityPixelShader = () => {
     `
 }
 
-class LinearBehaviour extends BulletBehaviour{
-    constructor(environmentCollision, parent){
-        super("linearBehaviourPosition", "linearBehaviourVelocity", parent, environmentCollision, 0, 1)
+class LinearBehaviour extends EnemyBulletBehaviour{
+    constructor(environmentCollision, radius, parent){
+        super("linearBehaviourPosition", "linearBehaviourVelocity", parent, environmentCollision, null, radius)
     }
 }
 
-export const makeLinearBehaviour = (environmentCollision, parent) => {
-    return new LinearBehaviour(environmentCollision, parent);
+export const makeLinearBehaviour = (environmentCollision, radius, parent) => {
+    return new LinearBehaviour(environmentCollision, radius, parent);
 }

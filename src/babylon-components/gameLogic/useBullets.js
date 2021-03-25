@@ -2,7 +2,7 @@ import { useBeforeRender, useScene } from 'react-babylonjs';
 import { MAX_ENEMIES } from '../../utils/Constants';
 import { makeBulletBehaviour } from '../bullets/behaviours';
 import { BulletGroup } from '../bullets/BulletGroup';
-import { convertCollisions, prepareBulletInstruction } from '../bullets/BulletUtils';
+import { convertPlayerBulletCollisions, convertEnemyBulletCollisions, prepareBulletInstruction } from '../bullets/BulletUtils';
 import { makeBulletMaterial } from '../bullets/materials';
 import { makeBulletMesh } from '../bullets/meshes';
 import { makeBulletPattern } from '../bullets/patterns';
@@ -31,8 +31,8 @@ export const useBullets = (assets, environmentCollision) => {
     
         const {positions, velocities} = makeBulletPattern(preparedInstruction.patternOptions, parent)
         const material =                makeBulletMaterial(preparedInstruction.materialOptions, parent, assets, scene)
-        const mesh =                    makeBulletMesh(preparedInstruction.meshOptions, assets, scene);
-        const behaviour =               makeBulletBehaviour(preparedInstruction.behaviourOptions, environmentCollision, parent);
+        const {mesh, radius} =          makeBulletMesh(preparedInstruction.meshOptions, assets, scene);
+        const behaviour =               makeBulletBehaviour(preparedInstruction.behaviourOptions, environmentCollision, radius, parent);
 
         mesh.makeInstances(positions.length);
         mesh.material = material
@@ -60,18 +60,26 @@ export const useBullets = (assets, environmentCollision) => {
         //Collisions
 
         Object.values(allBullets).forEach(bulletGroup => {
-            bulletGroup.behaviour.collisionTexture1.readPixels().then(buffer => {
-                const collisions = convertCollisions(buffer)
-                collisions.forEach(collision => {
-                    if(collision.collisionID > 10000 - MAX_ENEMIES){
-                        const enemyID = 10000 - collision.collisionID;
-                        actorPositions.enemyHealths[enemyID]--;
-                        if(actorPositions.enemyHealths[enemyID] <= 0){
-                            actorPositions.enemyKillSelfs[enemyID]();
+            if(bulletGroup.behaviour.isPlayerBullet){
+                bulletGroup.behaviour.collisionTexture1.readPixels().then(buffer => {
+                    const collisions = convertPlayerBulletCollisions(buffer)
+                    collisions.forEach(collision => {
+                        if(collision.collisionID > 10000 - MAX_ENEMIES){
+                            const enemyID = 10000 - collision.collisionID;
+                            actorPositions.enemyHealths[enemyID]--;
+                            if(actorPositions.enemyHealths[enemyID] <= 0){
+                                actorPositions.enemyKillSelfs[enemyID]();
+                            }
                         }
-                    }
+                    })
                 })
-            })
+            }
+            else{
+                bulletGroup.behaviour.collisionTexture1.readPixels().then(buffer => {
+                    const collisions = convertEnemyBulletCollisions(buffer)
+                    if(collisions.length > 0) console.log(collisions)
+                })
+            }
         })
 
         //Lifespans

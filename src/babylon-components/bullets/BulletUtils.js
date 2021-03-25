@@ -1,9 +1,9 @@
 import { Constants, RawTexture, Vector3 } from "@babylonjs/core";
 import _ from "lodash";
 import nextPowerOfTwo from "next-power-of-two";
+import { MAX_BULLETS_PER_GROUP } from "../../utils/Constants";
 
 export const prepareBulletInstruction = (instruction) => {
-    if(instruction.prepared) return instruction;
 
     const defaultInstruction = {
         materialOptions: {
@@ -17,15 +17,12 @@ export const prepareBulletInstruction = (instruction) => {
         },
         meshOptions: {
             mesh: "sphere", 
-            diameter: 1, 
-            segments: 4,
-            updatable: true
+            radius: 1, 
         },
         behaviourOptions: {
             behaviour: "linear"
         },
         lifespan: 10000,
-        prepared: true
     }
 
     _.merge(defaultInstruction, instruction);
@@ -84,7 +81,7 @@ export const makeTextureFromBlank = (num, scene, w = 1, fill = -1000000) => {
     return new RawTexture.CreateRGBATexture(data, WIDTH, WIDTH, scene, false, false, Constants.TEXTURE_NEAREST_NEAREST, Constants.TEXTURETYPE_FLOAT);
 }
 
-export const convertCollisions = (buffer) => {
+export const convertPlayerBulletCollisions = (buffer) => {
     const collisions = [];
 
     for(let i = 0; i < buffer.length; i += 4){
@@ -93,6 +90,31 @@ export const convertCollisions = (buffer) => {
             collisions.push({
                 hit: new Vector3(buffer[i], buffer[i + 1], buffer[i + 2]),
                 collisionID: collisionID
+            })
+        }
+    }
+
+    return collisions;
+}
+
+export const convertEnemyBulletCollisions = (buffer) => {
+    const collisions = [];
+
+    for(let i = 0; i < buffer.length; i += 4){
+        const pointGraze = buffer[i];
+        const bombLife = buffer[i + 1];
+        const powerSpecial = buffer[i + 2];
+        const environmentPlayer = buffer[i + 3];
+        const player = Math.floor(environmentPlayer / MAX_BULLETS_PER_GROUP);
+        if(pointGraze || bombLife || powerSpecial || player){
+            collisions.push({
+                player,
+                point: pointGraze % MAX_BULLETS_PER_GROUP,
+                graze: Math.floor(pointGraze / MAX_BULLETS_PER_GROUP),
+                bomb: bombLife % 1000,
+                life: Math.floor(bombLife / 1000),
+                power: powerSpecial % 1000,
+                Special: Math.floor(powerSpecial / 1000),
             })
         }
     }

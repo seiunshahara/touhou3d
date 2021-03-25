@@ -1,4 +1,4 @@
-import { AssetsManager, Vector2 } from "@babylonjs/core";
+import { AssetsManager, Matrix, MeshBuilder, Vector2 } from "@babylonjs/core";
 import { useCallback, useState, useEffect } from "react";
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";
@@ -45,6 +45,32 @@ export const useLoadAssets = () => {
                 sceneFilename: "knife.glb",
                 name: "knife",
                 type:  "model"
+            },
+            {
+                type: "function",
+                name: "sphere",
+                generator: () => MeshBuilder.CreateSphere("sphere", {
+                    diameter: 2., 
+                    segments: 4,
+                    updatable: true
+                }, scene)
+            }, 
+            {
+                type: "function",
+                name: "card",
+                generator: () => {
+                    const mesh = MeshBuilder.CreatePlane("card", {
+                        width: .3,
+                        height: .6,
+                        updatable: true
+                    }, scene)
+                    const matrixX = Matrix.RotationX(Math.PI/2);
+                    const matrixZ = Matrix.RotationZ(Math.PI/2);
+
+                    const matrix = matrixX.multiply(matrixZ);  
+                    mesh.bakeTransformIntoVertices(matrix);
+                    return mesh;
+                }
             }
         ];
 
@@ -59,6 +85,9 @@ export const useLoadAssets = () => {
                     assetTask.onSuccess = (task) => {
                         tempAssets[task.name] = task.texture;
                     }
+                    break;
+                case "function":
+                    tempAssets[asset.name] = asset.generator();
                     break;
                 case "model":
                     assetTask = assetsManager.addMeshTask(asset.name, "", asset.rootUrl, asset.sceneFilename);
@@ -76,6 +105,7 @@ export const useLoadAssets = () => {
                     throw new Error("Invalid asset type: " + asset.type);
             }
 
+            if(!assetTask) return;
             assetTask.onError = (error) => {
                 console.error(error);
             }

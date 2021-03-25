@@ -1,4 +1,5 @@
 import { CustomProceduralTexture, Scalar, Vector3 } from '@babylonjs/core';
+import { ARENA_HEIGHT, ARENA_LENGTH, ARENA_WIDTH } from '../utils/Constants';
 
 export const makeSpriteSheetAnimation = ({name, scene, spriteSheetOffset, spriteSheetSize, spriteSize, totalFrames, frameRate, spriteSheetTexture}) => {
     const proceduralTexture = new CustomProceduralTexture(name, "SpriteSheet", spriteSize.x, scene);
@@ -66,11 +67,11 @@ export function randScalar(x) {
     return x;
 }
 
-export const normalizePosition = (position, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH) => {
+export const normalizePosition = (position) => {
     return position.multiplyByFloats(2/ARENA_WIDTH, 2/ARENA_HEIGHT, 2/ARENA_LENGTH).subtractFromFloats(0, 1, 0)
 }
 
-export const unnormalizePosition = (position, ARENA_WIDTH, ARENA_HEIGHT, ARENA_LENGTH) => {
+export const unnormalizePosition = (position) => {
     return position.add(new Vector3(0, 1, 0)).multiplyByFloats(ARENA_WIDTH/2, ARENA_HEIGHT/2, ARENA_LENGTH/2)
 }
 

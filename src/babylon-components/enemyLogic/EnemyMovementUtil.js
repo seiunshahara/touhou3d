@@ -1,35 +1,35 @@
 import { RandVector3, normalizePosition, unnormalizePosition } from "../BabylonUtils";
 
-export const setNormPosition = (enemy, norm, ...ARENA_DIMS) => {
-    const newPosition = unnormalizePosition(norm, ...ARENA_DIMS);
+export const setNormPosition = (enemy, norm) => {
+    const newPosition = unnormalizePosition(norm);
     enemy.position.copyFrom(newPosition);
 }
 
-export const doMove = (enemy, delta, ...ARENA_DIMS) => {
+export const doMove = (enemy, delta) => {
     let normPosition, dx, dxCoefficient, newNormPosition;
 
     switch (enemy.moveType) {
         case "stop":
             break;
         case "slowToStop":
-            normPosition = normalizePosition(enemy.position, ...ARENA_DIMS);
+            normPosition = normalizePosition(enemy.position);
             dx = enemy.moveTarget.subtract(normPosition);
             dxCoefficient = dx.length();
             newNormPosition = normPosition.add(dx.scale(dxCoefficient * delta / 1000));
-            setNormPosition(enemy, newNormPosition, ...ARENA_DIMS);
+            setNormPosition(enemy, newNormPosition);
             break;
         case "linear":
-            normPosition = normalizePosition(enemy.position, ...ARENA_DIMS);
+            normPosition = normalizePosition(enemy.position);
             dx = enemy.moveTarget.subtract(enemy.moveStartPosition);
             newNormPosition = normPosition.add(dx.scale(delta / enemy.moveTimeLength));
-            setNormPosition(enemy, newNormPosition, ...ARENA_DIMS);
+            setNormPosition(enemy, newNormPosition);
             break;
         default:
             break;
     }
 }
 
-export const newMoveAction = (enemy, moveAction, ...ARENA_DIMS) => {
+export const newMoveAction = (enemy, moveAction) => {
     if (!enemy.position) return;
 
     let moveVector, normPosition;
@@ -44,7 +44,7 @@ export const newMoveAction = (enemy, moveAction, ...ARENA_DIMS) => {
             enemy.moveType = "linear";
             moveVector = new RandVector3(...moveAction.target)
             enemy.moveTarget = moveVector;
-            normPosition = normalizePosition(enemy.position, ...ARENA_DIMS);
+            normPosition = normalizePosition(enemy.position);
             enemy.moveStartPosition = normPosition;
             if (moveAction.timeLength) {
                 enemy.moveTimeLength = moveAction.timeLength;

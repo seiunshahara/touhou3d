@@ -37,7 +37,7 @@ const _readTexturePixels = function (engine, texture, width, height, faceIndex, 
     if (level === void 0) { level = 0; }
     if (buffer === void 0) { buffer = null; }
 
-    const numPPB = 5;
+    const numPPB = 8;
 
     var gl = engine._gl;
     if (!gl) {

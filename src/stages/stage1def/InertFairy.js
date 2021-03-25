@@ -13,13 +13,7 @@ export const InertFairy = (spawn, target) => {
                 type: "move",
                 variant: "slowToStop",
                 target: target,
-                wait: 100,
-            },
-            {
-                type: "move",
-                variant: "linear",
-                target: [0, 1, 0],
-                wait: 100,
+                wait: 1000,
             },
             {
                 type: "shoot",
@@ -28,23 +22,34 @@ export const InertFairy = (spawn, target) => {
                 },
                 patternOptions: {
                     pattern: "burst", 
-                    num: 10000, 
-                    speed: 10, 
-                    radius: 0.1
+                    num: 5000, 
+                    speed: 5, 
+                    radius: 1
                 },
                 meshOptions: {
                     mesh: "sphere", 
-                    diameter: 0.1, 
-                    segments: 4,
-                    updatable: true
+                    radius: .1
                 },
                 behaviourOptions: {
                     behaviour: "linear"
                 },
-                lifespan: 1000,
+                lifespan: 3000,
                 prepared: true,
-                wait: 100,
-            }
+                wait: 1000,
+            },
+            {
+                type: "move",
+                variant: "linear",
+                target: [0, 1, 0],
+                wait: 1000,
+            },
+            {
+                type: "move",
+                variant: "linear",
+                target: spawn,
+                wait: 1000,
+            },
+        
         )
     }
 

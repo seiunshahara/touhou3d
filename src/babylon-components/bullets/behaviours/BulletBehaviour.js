@@ -3,7 +3,6 @@ import nextPOT from "next-power-of-two";
 import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
 import { makeTextureFromBlank, makeTextureFromVectors } from "../BulletUtils";
-import { actorPositions } from "../../gameLogic/StaticRefs"
 import { ARENA_MAX, ARENA_MIN } from "../../../utils/Constants";
 
 
@@ -23,39 +22,28 @@ const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVel
 }
 
 export class BulletBehaviour{
-    constructor(positionShader, velocityShader, parent, collideWithEnvironment, collideWithEnemy, collideWithPlayer, initialValuesFunction = null, isPlayerBullet = false){
+    constructor(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction = null, radius = 1, bulletType = 0){
         if(!collideWithEnvironment.x){
             throw new Error("collideWithEnvironment must be a vector")
         }
-        
+
         this.parent = parent
         this.positionShader = positionShader;
         this.velocityShader = velocityShader;
         this.collideWithEnvironment = collideWithEnvironment;
-        this.collideWithEnemy = collideWithEnemy;
-        this.collideWithPlayer = collideWithPlayer
+        this.radius = radius;
+        this.bulletType = bulletType;
 
         this.initialValuesFunction = initialValuesFunction;
-        this.isPlayerBullet = isPlayerBullet;
     }
 
-    bindCollisionVars = (texture) => {
+    bindCollisionVars(texture){
         texture.setVector3("arenaMin", ARENA_MIN);
         texture.setVector3("arenaMax", ARENA_MAX);
-
         texture.setVector3("collideWithEnvironment", this.collideWithEnvironment);
-        texture.setFloat("collideWithEnemy", this.collideWithEnemy);
-        texture.setFloat("collideWithPlayer", this.collideWithPlayer);
-
-        if(this.isPlayerBullet){
-            texture.setFloats("enemyPositions", actorPositions.enemiesBuffer);
-            texture.setFloats("enemyRadii", actorPositions.enemyRadii);
-        }
     }
 
     init(bulletMaterial, initialPositions, initialVelocities, scene) {
-        this.collisionShader = this.isPlayerBullet ? "playerBulletCollision" : "enemyBulletCollision"
-
         const num = initialPositions.length;
         const WIDTH = Math.max(nextPOT(Math.ceil(Math.sqrt(num))), 4)
 
@@ -142,13 +130,6 @@ export class BulletBehaviour{
             outputPositionTexture = this.positionTexture1;
             outputCollisionTexture = this.collisionTexture1;
             this.frame = 0
-        }
-
-        if(this.isPlayerBullet){
-            this.collisionTexture1.setFloats("enemyPositions", actorPositions.enemiesBuffer);
-            this.collisionTexture2.setFloats("enemyPositions", actorPositions.enemiesBuffer);
-            this.collisionTexture1.setFloats("enemyRadii", actorPositions.enemyRadii);
-            this.collisionTexture2.setFloats("enemyRadii", actorPositions.enemyRadii);
         }
 
         inputVelocityTexture.sleep = false;

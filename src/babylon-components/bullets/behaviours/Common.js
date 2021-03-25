@@ -1,4 +1,4 @@
-import { MAX_ENEMIES } from "../../../utils/Constants";
+import { GRAZE_DISTANCE, MAX_BULLETS_PER_GROUP, MAX_ENEMIES } from "../../../utils/Constants";
 import { glsl } from "../../BabylonUtils"
 
 export const uniformSnippet = glsl`
@@ -64,22 +64,22 @@ export const playerBulletCollisionPixelShader = () => {
 }
 
 /**
- * x: 0 is no collision, 1x is points
+ * x: 0 is no collision, 1x is points, ${MAX_BULLETS_PER_GROUP}x is graze
  * y: 0 is no collision, 1x is bomb, 1000x is life
  * z: 0 is no collision, 1x is power, 1000x is special
- * w: 0 is no collision, 1x is environment, 100x is graze, 1000000x collidingWithPlayer
+ * w: 0 is no collision, 1x is environment, ${MAX_BULLETS_PER_GROUP}x is collidingWithPlayer
  * 
  */
 
 export const enemyBulletCollisionPixelShader = () => {
     return glsl`
+        uniform float bulletRadius;
         uniform vec2 resolution;
         uniform sampler2D positionSampler;
         uniform vec3 bulletTypePack1;
         uniform vec3 bulletTypePack2;
         uniform vec3 collideWithEnvironment;
         uniform vec3 playerPosition;
-        uniform float bulletRadius;
         uniform vec3 arenaMin;
         uniform vec3 arenaMax;
 
@@ -97,19 +97,19 @@ export const enemyBulletCollisionPixelShader = () => {
             float isBullet = bulletTypePack1.x;
             float isLife = bulletTypePack1.y;
             float isBomb = bulletTypePack1.z;
-            float isPower = bulletTypePack1.x;
-            float isPoint = bulletTypePack1.y;
-            float isSpecial = bulletTypePack1.z;
+            float isPower = bulletTypePack2.x;
+            float isPoint = bulletTypePack2.y;
+            float isSpecial = bulletTypePack2.z;
 
-            float graze = distance(playerPosition, position) - (bulletRadius + 1.);
+            float graze = (bulletRadius + ${GRAZE_DISTANCE}) - distance(playerPosition, position);
             float isGraze = float(graze > 0.);
             float collidingWithPlayer = float(distance(playerPosition, position) < bulletRadius);
 
-            float w = collidingWithEnvironment + isBullet * isGraze * max(100. * graze, 10.) + isBullet * collidingWithPlayer * 1000000.;
-            float x = isPoint * collidingWithPlayer;
+            float w = isBullet * collidingWithEnvironment + ${MAX_BULLETS_PER_GROUP}. * collidingWithPlayer;
+            float x = isPoint * collidingWithPlayer + ${MAX_BULLETS_PER_GROUP}. * isBullet * isGraze;
             float y = isBomb * collidingWithPlayer + 1000. * isLife * collidingWithPlayer;
             float z = isPower * collidingWithPlayer + 1000. * isSpecial * collidingWithPlayer;
-            
+
             vec4 collision = vec4(x, y, z, w);
 
             //Bullet exists in scene?

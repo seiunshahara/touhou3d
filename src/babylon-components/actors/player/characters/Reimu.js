@@ -57,10 +57,7 @@ const shotInstruction = (power) => {
             num: 100 * shotSources.length,
         },
         meshOptions: {
-            mesh: "plane",
-            rotationZ: Math.PI / 2,
-            width: .3,
-            height: .6
+            mesh: "card",
         },
         behaviourOptions: {
             behaviour: "playerShot",
