@@ -7,15 +7,22 @@ import {makeActionListTimeline } from './EnemyUtils';
 import { RandVector3 } from '../BabylonUtils';
 
 let metaEnemies = {};
+let metaDeathAnims = {};
 
 export const Enemies = ({source}) => {
     
     const currentActionList = useMemo(() => makeActionListTimeline(source.epochs), [source.epochs]);
     const [enemies, setEnemies] = useState({});
+    const [deathAnims, setDeathAnims] = useState({});
     const startTime = useMemo(() => Date.now(), []);
 
-    const removeEnemy = (enemyName) => {
+    const removeEnemy = (enemyName, wasKilled = false) => {
         metaEnemies = {...metaEnemies}
+
+        if(wasKilled){
+            const enemyToRemove = metaEnemies[enemyName];
+        }
+        
         delete metaEnemies[enemyName];
     }
 
@@ -61,7 +68,11 @@ export const Enemies = ({source}) => {
         if(metaEnemies !== enemies){
             setEnemies(metaEnemies);
         }
+
+        if(metaDeathAnims !== deathAnims){
+            setDeathAnims(metaDeathAnims);
+        }
     })
 
-    return Object.values(enemies);
+    return [...Object.values(enemies), ...Object.values(deathAnims)];
 }

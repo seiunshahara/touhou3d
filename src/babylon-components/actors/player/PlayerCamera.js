@@ -68,6 +68,6 @@ export const PlayerCamera = () => {
                 </standardMaterial>
             </plane>
         </transformNode>
-        <universalCamera ref={cameraRef} name="camera" minZ={0.01} position={new Vector3(0, 0, 0)}/>
+        <universalCamera ref={cameraRef} name="camera" minZ={0.01} maxZ={100} position={new Vector3(0, 0, 0)}/>
     </transformNode>
 }

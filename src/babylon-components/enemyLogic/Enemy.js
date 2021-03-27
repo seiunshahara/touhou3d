@@ -41,7 +41,7 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
     useEffect(() => {
         if(!enemy) return;
 
-        const id = addEnemy(enemy.position, radius, () => removeMe(name), health)
+        const id = addEnemy(enemy.position, radius, () => removeMe(name, true), health)
         setPositionID(id)
 
         return () => {

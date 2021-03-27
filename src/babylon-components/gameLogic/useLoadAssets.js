@@ -36,6 +36,12 @@ export const useLoadAssets = () => {
         const tempAssets = {};
         const assetList = [
             {
+                rootUrl: "/assets/temp/",
+                sceneFilename: "deathSystem.babylon",
+                name: "deathParticles",
+                type:  "model"
+            },
+            {
                 rootUrl: "/assets/enemies/fairies/",
                 sceneFilename: "blueFairy.glb",
                 name: "blueFairy",

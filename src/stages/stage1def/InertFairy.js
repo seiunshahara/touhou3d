@@ -17,28 +17,28 @@ export const InertFairy = (spawn, target) => {
                 target: [[-1, 1], [-1, 1], [-1, 1]],
                 wait: 1000,
             },
-            {
-                type: "shoot",
-                materialOptions: {
-                    material: "fresnel"
-                },
-                patternOptions: {
-                    pattern: "burst", 
-                    num: 5000, 
-                    speed: 5, 
-                    radius: 1
-                },
-                meshOptions: {
-                    mesh: "sphere", 
-                    radius: .1
-                },
-                behaviourOptions: {
-                    behaviour: "linear"
-                },
-                lifespan: 10000,
-                prepared: true,
-                wait: 1000,
-            },
+            // {
+            //     type: "shoot",
+            //     materialOptions: {
+            //         material: "fresnel"
+            //     },
+            //     patternOptions: {
+            //         pattern: "burst", 
+            //         num: 5000, 
+            //         speed: 5, 
+            //         radius: 1
+            //     },
+            //     meshOptions: {
+            //         mesh: "sphere", 
+            //         radius: .1
+            //     },
+            //     behaviourOptions: {
+            //         behaviour: "linear"
+            //     },
+            //     lifespan: 10000,
+            //     prepared: true,
+            //     wait: 1000,
+            // },
         
         )
     }
