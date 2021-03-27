@@ -75,9 +75,9 @@ export const useBullets = (assets, environmentCollision) => {
                 })
             }
             else{
-                bulletGroup.behaviour.collisionTexture1.readPixels().then(buffer => {
+                bulletGroup.behaviour.collisionResult.readPixels().then(buffer => {
                     const collisions = convertEnemyBulletCollisions(buffer)
-                    if(collisions.length > 0) console.log(collisions)
+                    if(collisions.length > 0) console.log(collisions[0])
                 })
             }
         })

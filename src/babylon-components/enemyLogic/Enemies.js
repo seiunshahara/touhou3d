@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react'
 import { useBeforeRender } from 'react-babylonjs';
 import { v4 } from 'uuid';
 import { filterInPlace } from '../../utils/Utils';
-import * as SPRITES from "../sprites";
 import { Enemy } from './Enemy';
 import {makeActionListTimeline } from './EnemyUtils'; 
 import { RandVector3 } from '../BabylonUtils';
@@ -21,11 +20,13 @@ export const Enemies = ({source}) => {
     }
 
     const doSpawnAction = (enemy) => {
-        const SpriteClass = SPRITES[enemy.sprite]
+        const type = enemy.type;
+        const asset = enemy.asset;
+        const radius = enemy.radius;
         const spawnVector = new RandVector3(...enemy.spawn)
         const enemyName = enemy.sprite + " " + v4()
 
-        const enemyComponent = <Enemy health={enemy.health} removeMe={removeEnemy} name={enemyName} key={enemyName} SpriteClass={SpriteClass} actionList={enemy.actionList} startPosition={spawnVector}/>
+        const enemyComponent = <Enemy health={enemy.health} removeMe={removeEnemy} name={enemyName} key={enemyName} radius={radius} type={type} asset={asset} actionList={enemy.actionList} startPosition={spawnVector}/>
         metaEnemies = {
             ...metaEnemies, 
             [enemyName]: enemyComponent

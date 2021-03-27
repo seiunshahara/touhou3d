@@ -1,21 +1,55 @@
-import { Constants, RawTexture, Vector3 } from "@babylonjs/core";
+import { Constants, RawTexture, Vector2, Vector3 } from "@babylonjs/core";
 import _ from "lodash";
 import nextPowerOfTwo from "next-power-of-two";
 import { MAX_BULLETS_PER_GROUP } from "../../utils/Constants";
 import { glsl } from "../BabylonUtils";
+import { CustomCustomProceduralTexture } from "../CustomCustomProceduralTexture";
+import { makeName } from "../hooks/useName";
 
 export const addReducerPixelShader = () => glsl`
     uniform sampler2D source;
     uniform vec2 sourceResolution;
 
     void main() {
+        vec2 offset = ((gl_FragCoord.xy - vec2(0.5, 0.5)) * 2.) + vec2(0.5, 0.5);
 
-        vec2 uv = gl_FragCoord.xy / sourceResolution;
-        vec4 outValue = texture2D( source, uv );
+        vec4 outValue = vec4(0., 0., 0., 0.);
 
+        for(float i = 0.; i < 2.; i++){
+            for(float j = 0.; j < 2.; j++){
+                vec2 curPixel = offset + vec2(i, j);
+                vec2 uv = curPixel / sourceResolution;
+                outValue += texture2D( source, uv );
+            }
+        }
+        
         gl_FragColor = outValue;
     }
 `
+
+export const parallelReducer = (source, sourceResolution, scene) => {
+
+    const reducerName = makeName("reducer")
+    let reducer = new CustomCustomProceduralTexture(reducerName, "addReducer", sourceResolution/2, scene, false, false, false, Constants.TEXTURETYPE_FLOAT)
+    reducer.setTexture("source", source);
+    reducer.setVector2("sourceResolution", new Vector2(sourceResolution, sourceResolution));
+
+    const reducerLayers = [reducer];
+
+    for(let newResolution = sourceResolution/2; newResolution > 1; newResolution /= 2){
+        const newReducerName = makeName("reducer")
+        let newReducer = new CustomCustomProceduralTexture(newReducerName, "addReducer", newResolution/2, scene, false, false, false, Constants.TEXTURETYPE_FLOAT)
+        newReducer.setTexture("source", reducer);
+        newReducer.setVector2("sourceResolution", new Vector2(newResolution, newResolution));
+        reducer = newReducer;
+
+        if(newResolution > 2){
+            reducerLayers.push(newReducer)
+        }
+    }
+
+    return [reducer, reducerLayers];
+}
 
 export const prepareBulletInstruction = (instruction) => {
 

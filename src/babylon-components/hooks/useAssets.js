@@ -1,16 +1,40 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AssetsContext } from "../gameLogic/GeneralContainer";
 
 export const useAssets = (...names) => {
     const assets = useContext(AssetsContext);
 
-    if(names.length === 0){
-        return assets;
-    }
+    let [results, setResults] = useState();
 
-    if(names.length === 1){
-        return assets[names[0]]
-    }
+    useEffect(() => {
+        let containers;
+        if(names.length === 0){
+            containers = assets;
+        }
 
-    return names.map(name => assets[name])
+        if(names.length === 1){
+            containers = [assets[names[0]]]
+        }
+
+        containers = names.map(name => assets[name])
+
+        const outResults = [];
+
+        containers.forEach(container => {
+            const newInstance = container.instantiateModelsToScene()
+            const mesh = newInstance.rootNodes[0];
+            mesh.animationGroups = newInstance.animationGroups;
+            mesh.animationSkeleton = newInstance.skeletons[0]
+            outResults.push(mesh);
+        })
+
+        if(outResults.length === 1){
+            setResults(outResults[0])
+            return;
+        }
+        setResults(outResults)
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [assets])
+
+    return results
 }

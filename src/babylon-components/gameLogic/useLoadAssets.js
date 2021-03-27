@@ -1,4 +1,4 @@
-import { AssetsManager, Matrix, MeshBuilder, Vector2 } from "@babylonjs/core";
+import { AnimationPropertiesOverride, AssetsManager, Matrix, MeshBuilder, Vector2 } from "@babylonjs/core";
 import { useCallback, useState, useEffect } from "react";
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";
@@ -28,8 +28,19 @@ export const useLoadAssets = () => {
     }, [scene])
 
     useEffect(() => {
+        //Anim setup 
+        Animation.AllowMatricesInterpolation = true;
+        scene.animationPropertiesOverride = new AnimationPropertiesOverride()
+        scene.animationPropertiesOverride.enableBlending = true;
+
         const tempAssets = {};
         const assetList = [
+            {
+                rootUrl: "/assets/enemies/fairies/",
+                sceneFilename: "blueFairy.glb",
+                name: "blueFairy",
+                type:  "model"
+            },
             {
                 url: "/assets/spriteSheets/fairySpriteSheet.png",
                 name: "fairySpriteSheet",
@@ -51,7 +62,7 @@ export const useLoadAssets = () => {
                 name: "sphere",
                 generator: () => MeshBuilder.CreateSphere("sphere", {
                     diameter: 2., 
-                    segments: 4,
+                    segments: 10,
                     updatable: true
                 }, scene)
             }, 
@@ -90,15 +101,9 @@ export const useLoadAssets = () => {
                     tempAssets[asset.name] = asset.generator();
                     break;
                 case "model":
-                    assetTask = assetsManager.addMeshTask(asset.name, "", asset.rootUrl, asset.sceneFilename);
+                    assetTask = assetsManager.addContainerTask(asset.name, "", asset.rootUrl, asset.sceneFilename);
                     assetTask.onSuccess = (task) => {
-                        task.loadedMeshes.some(mesh => {
-                            if(mesh.geometry){
-                                tempAssets[task.name] = mesh;
-                                return true;
-                            }
-                            return false;
-                        })
+                        tempAssets[task.name] = task.loadedContainer;
                     }
                     break;
                 default:

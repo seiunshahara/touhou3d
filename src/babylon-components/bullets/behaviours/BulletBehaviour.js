@@ -2,8 +2,8 @@ import { Constants, Vector2 } from "@babylonjs/core";
 import nextPOT from "next-power-of-two";
 import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
-import { makeTextureFromBlank, makeTextureFromVectors } from "../BulletUtils";
-import { ARENA_MAX, ARENA_MIN } from "../../../utils/Constants";
+import { makeTextureFromBlank, makeTextureFromVectors, parallelReducer } from "../BulletUtils";
+import { ARENA_MAX, ARENA_MIN, REDUCER_ENABLED } from "../../../utils/Constants";
 
 
 const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVelocityTexture, initialCollisionTexture, initialValuesFunction, WIDTH, scene) => {
@@ -60,6 +60,15 @@ export class BulletBehaviour{
         this.velocityTexture2 = makeComputeProceduralTexture(this.velocityShader, this.initialPositionsTexture, this.initialVelocityTexture, this.initialCollisionTexture, this.initialValuesFunction, WIDTH, scene)
         this.collisionTexture2 = makeComputeProceduralTexture(this.collisionShader, this.initialPositionsTexture, this.initialVelocityTexture, this.initialCollisionTexture, this.bindCollisionVars, WIDTH, scene)
 
+        if(REDUCER_ENABLED){
+            const [collisionResult, reducerLayers] = parallelReducer(this.collisionTexture1, WIDTH, scene);
+            this.collisionResult = collisionResult;
+            this.reducerLayers = reducerLayers;
+        }
+        else{
+            this.collisionResult = this.collisionTexture1;
+        }
+        
         bulletMaterial.setTexture("positionSampler", this.initialPositionsTexture);
         bulletMaterial.setTexture("velocitySampler", this.initialVelocityTexture);
         bulletMaterial.setTexture("collisionSampler", this.initialVelocityTexture);
@@ -79,6 +88,14 @@ export class BulletBehaviour{
         this.initialPositionsTexture.dispose();
         this.initialVelocityTexture.dispose();
         this.initialCollisionTexture.dispose();
+
+        if(REDUCER_ENABLED){
+            this.collisionResult.dispose();
+            this.reducerLayers.forEach(reducer => {
+                reducer.dispose();
+            })
+        }
+
         this.ready = false;
     }
     update(deltaS){

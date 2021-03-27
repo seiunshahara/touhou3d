@@ -103,7 +103,7 @@ export const enemyBulletCollisionPixelShader = () => {
 
             float graze = (bulletRadius + ${GRAZE_DISTANCE}) - distance(playerPosition, position);
             float isGraze = float(graze > 0.);
-            float collidingWithPlayer = float(distance(playerPosition, position) < bulletRadius);
+            float collidingWithPlayer = float(distance(playerPosition, position) < (bulletRadius));
 
             float w = isBullet * collidingWithEnvironment + ${MAX_BULLETS_PER_GROUP}. * collidingWithPlayer;
             float x = isPoint * collidingWithPlayer + ${MAX_BULLETS_PER_GROUP}. * isBullet * isGraze;

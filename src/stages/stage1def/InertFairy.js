@@ -1,6 +1,8 @@
 export const InertFairy = (spawn, target) => {
     const map = {
-        sprite: "BlueFairy",
+        type: "fairy",
+        asset: "blueFairy",
+        radius: 0.5,
         health: 1,
         spawn: spawn,
         actionList: [
@@ -12,7 +14,7 @@ export const InertFairy = (spawn, target) => {
             {
                 type: "move",
                 variant: "slowToStop",
-                target: target,
+                target: [[-1, 1], [-1, 1], [-1, 1]],
                 wait: 1000,
             },
             {
@@ -33,20 +35,8 @@ export const InertFairy = (spawn, target) => {
                 behaviourOptions: {
                     behaviour: "linear"
                 },
-                lifespan: 3000,
+                lifespan: 10000,
                 prepared: true,
-                wait: 1000,
-            },
-            {
-                type: "move",
-                variant: "linear",
-                target: [0, 1, 0],
-                wait: 1000,
-            },
-            {
-                type: "move",
-                variant: "linear",
-                target: spawn,
                 wait: 1000,
             },
         
