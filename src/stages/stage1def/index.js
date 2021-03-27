@@ -12,11 +12,11 @@ const stage1def = () => {
             enemy: InertFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
             wait: 0
         })
-        map.epochs.push({
-            type: 'spawn',
-            enemy: InertFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-            wait: 1255
-        })
+        // map.epochs.push({
+        //     type: 'spawn',
+        //     enemy: InertFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+        //     wait: 1255
+        // })
     }
 
     return map;

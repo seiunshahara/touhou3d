@@ -2,6 +2,20 @@ import { Constants, RawTexture, Vector3 } from "@babylonjs/core";
 import _ from "lodash";
 import nextPowerOfTwo from "next-power-of-two";
 import { MAX_BULLETS_PER_GROUP } from "../../utils/Constants";
+import { glsl } from "../BabylonUtils";
+
+export const addReducerPixelShader = () => glsl`
+    uniform sampler2D source;
+    uniform vec2 sourceResolution;
+
+    void main() {
+
+        vec2 uv = gl_FragCoord.xy / sourceResolution;
+        vec4 outValue = texture2D( source, uv );
+
+        gl_FragColor = outValue;
+    }
+`
 
 export const prepareBulletInstruction = (instruction) => {
 

@@ -12,7 +12,6 @@ export const TargetContext = React.createContext();
 export const GeneralContainer = ({children}) => {
     const target = useMemo(() => new Vector3(0, 0, 10), []);
     const [environmentCollision, setEnvironmentCollision] = useState(new Vector3(1, 0, 0));
-
     const assets = useLoadAssets();
     const bulletsObject = useBullets(assets, environmentCollision);
     const positionsObject = usePositions();

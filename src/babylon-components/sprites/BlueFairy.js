@@ -1,15 +1,15 @@
-import React from 'react'
-import { useName } from '../hooks/useName';
-import { useAssets } from '../hooks/useAssets';
+import React, { Suspense } from 'react'
+import { Vector3 } from '@babylonjs/core';
+import { Model } from 'react-babylonjs';
 
 const BlueFairy = React.forwardRef(({...props}, ref) => {
-    const name = useName();
-    const blueFairy = useAssets("blueFairyTexture");
 
     return (
-        <plane ref={ref} name={name} width={0.5} height={0.5} {...props}>
-            <standardMaterial diffuseTexture={blueFairy} name={name + "mat"} />
-        </plane>
+        <Suspense fallback={<box name='fallback' position={new Vector3(0, 0, 0)} {...props}/>}>
+            <transformNode ref = {ref} {...props}>
+                <Model rootUrl={`/assets/temp/`} sceneFilename='fairy.glb' scaling={new Vector3(0.5, 0.5, 0.5)} rotation={new Vector3(0, Math.PI, 0)} position={new Vector3(0, -0.5, 0)}/>
+            </transformNode>
+        </Suspense>
     )
 })
 

@@ -15,13 +15,13 @@ const ForestTile = ({...props}) => {
         const newRotations = [];
         const newScalings = [];
 
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 20; i++) {
             newPositions.push(new Vector3(Scalar.RandomRange(ARENA_WIDTH/2, 75), 0, Math.random() * 150 - 75))
             newRotations.push(new Vector3(-Math.PI/2, Math.random() * Math.PI * 2, 0))
             let scale = .015 * Math.random() + 0.05
             newScalings.push(new Vector3(scale, scale, scale))
         }
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 20; i++) {
             newPositions.push(new Vector3(Scalar.RandomRange(-75, -ARENA_WIDTH/2), 0, Math.random() * 150 - 75))
             newRotations.push(new Vector3(-Math.PI/2, Math.random() * Math.PI * 2, 0))
             let scale = .015 * Math.random() + 0.05

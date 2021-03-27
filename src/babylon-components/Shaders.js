@@ -2,8 +2,11 @@ import { Effect } from "@babylonjs/core";
 import { enemyBulletCollisionPixelShader, playerBulletCollisionPixelShader } from "./bullets/behaviours/Common";
 import { linearBehaviourPositionPixelShader, linearBehaviourVelocityPixelShader } from "./bullets/behaviours/LinearBehaviour";
 import { playerShotBehaviourPositionPixelShader, playerShotBehaviourVelocityPixelShader } from "./bullets/behaviours/PlayerShotBehaviour";
+import { addReducerPixelShader } from "./bullets/BulletUtils";
 import { fresnelVertexShader, fresnelFragmentShader } from "./bullets/materials/Fresnel";
 import { textureFragmentShader, textureVertexShader } from "./bullets/materials/Texture";
+
+Effect.ShadersStore["addReducerPixelShader"] = addReducerPixelShader();
 
 Effect.ShadersStore["playerBulletCollisionPixelShader"] = playerBulletCollisionPixelShader();
 Effect.ShadersStore["enemyBulletCollisionPixelShader"] = enemyBulletCollisionPixelShader();
