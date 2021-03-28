@@ -11,7 +11,7 @@ export const useLifeAndDeath = () => {
     const [enemies, setEnemies] = useState({});
     const addEffect = useAddEffect();
 
-    const removeEnemy = (enemyName, deathLocation = false) => {
+    const removeEnemyFromScene = (enemyName, deathLocation = false) => {
         metaEnemies = {...metaEnemies}
 
         if(deathLocation){
@@ -29,7 +29,7 @@ export const useLifeAndDeath = () => {
         const spawnVector = new RandVector3(...enemy.spawn)
         const enemyName = makeName(enemy.asset);
 
-        const enemyComponent = <Enemy health={enemy.health} removeMe={removeEnemy} name={enemyName} key={enemyName} radius={radius} type={type} asset={asset} actionList={enemy.actionList} startPosition={spawnVector}/>
+        const enemyComponent = <Enemy health={enemy.health} removeEnemyFromScene={removeEnemyFromScene} name={enemyName} key={enemyName} radius={radius} type={type} asset={asset} actionList={enemy.actionList} startPosition={spawnVector}/>
         metaEnemies = {
             ...metaEnemies, 
             [enemyName]: enemyComponent

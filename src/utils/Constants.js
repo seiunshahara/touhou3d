@@ -15,3 +15,4 @@ export const MAX_BULLETS_PER_GROUP = 10000;
 export const GRAZE_DISTANCE = 0.3;
 export const REDUCER_ENABLED = true;
 export const SYSTEMS_PER_WHEEL = 10;
+export const TARGET_LENGTH = 15;

@@ -83,6 +83,7 @@ class PlayerShotBehaviour extends PlayerBulletBehaviour{
 
         this.bulletFrame = 0;
         this.shotSourcesNum = behaviourOptions.shotSources.length
+        this.shotSpeed = behaviourOptions.shotSpeed || 20;
         this.firing = true;
     }
 
@@ -94,7 +95,7 @@ class PlayerShotBehaviour extends PlayerBulletBehaviour{
             }
 
             const sourceOffset = this.parent.getAbsolutePosition();
-            const shotVector = this.target.subtract(sourceOffset).normalize().scale(20)
+            const shotVector = this.target.subtract(sourceOffset).normalize().scale(this.shotSpeed)
 
             this.positionTexture1.setFloat("frame", this.bulletFrame)
             this.velocityTexture1.setFloat("frame", this.bulletFrame)

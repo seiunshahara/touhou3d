@@ -60,7 +60,8 @@ const shotInstruction = (power) => {
         },
         behaviourOptions: {
             behaviour: "playerShot",
-            shotSources: shotSources
+            shotSources: shotSources,
+            shotSpeed: 20
         },
         lifespan: Infinity,
         wait: 0
@@ -92,10 +93,10 @@ export const Reimu = () => {
         if (!sphereRef1.current || !sphereRef2.current) return;
 
         const id1 = addBulletGroup(sphereRef1.current,
-            shotInstruction(2)
+            shotInstruction(0)
         )
         const id2 = addBulletGroup(sphereRef2.current,
-            shotInstruction(2)
+            shotInstruction(0)
         )
 
         const shot1Behaviour = allBullets[id1].behaviour;

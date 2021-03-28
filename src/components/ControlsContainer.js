@@ -20,7 +20,7 @@ export const ControlsContainer = ({ children }) => {
         65: "LEFT", //a
         68: "RIGHT", //d
         16: "SLOW", //shift
-        32: "SHOOT", //space
+        1: "SHOOT", //click
     });
 
     const keyDownHandler = useCallback((event) => {

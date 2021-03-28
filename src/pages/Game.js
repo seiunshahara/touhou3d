@@ -17,7 +17,6 @@ export const Game = () => {
                 width={windowSize.width} 
                 height={windowSize.height}
                 antialias
-                
                 canvasId='babylonJS' >
                 <Scene 
                     clearColor={new Color3(.529, .808, .922)}

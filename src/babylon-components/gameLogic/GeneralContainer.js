@@ -14,13 +14,14 @@ export const TargetContext = React.createContext();
 export const GeneralContainer = ({children}) => {
     const target = useMemo(() => new Vector3(0, 0, 10), []);
     const [environmentCollision, setEnvironmentCollision] = useState(new Vector3(1, 0, 0));
+
     const assets = useLoadAssets();
-    const bulletsObject = useBullets(assets, environmentCollision);
-    const positionsObject = usePositions();
+    const {addEnemy, removeEnemy} = usePositions();
+    const bulletsObject = useBullets(assets, environmentCollision, removeEnemy);
     const addEffect = useEffects(assets);
 
     return assets ? <AssetsContext.Provider value={assets}>
-        <PositionsContext.Provider value={positionsObject}>
+        <PositionsContext.Provider value={{addEnemy, removeEnemy}}>
             <BulletsContext.Provider value={{...bulletsObject, setEnvironmentCollision}}>
                 <EffectsContext.Provider value={addEffect}>
                     <TargetContext.Provider value={target}>

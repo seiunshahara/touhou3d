@@ -2,7 +2,7 @@ import { Matrix, Quaternion, Vector3 } from '@babylonjs/core'
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useBeforeRender, useEngine } from 'react-babylonjs';
 import { useTarget } from '../../hooks/useTarget';
-import { ARENA_LENGTH } from '../../../utils/Constants';
+import { TARGET_LENGTH } from '../../../utils/Constants';
 
 export const PlayerCamera = () => {
     const engine = useEngine();
@@ -37,22 +37,11 @@ export const PlayerCamera = () => {
     }, []);
 
     useEffect(() => {
-        if(!cameraRef.current) return;
-        const camera = cameraRef.current;
-        const inputs = camera.inputs;
-        const attached = inputs.attached;
-        for(let attachIndex in attached) {
-            let attach = attached[attachIndex];
-            inputs.remove(attach);
-        }
-    }, [])
-
-    useEffect(() => {
         if(!canvas) return;
-        canvas.addEventListener('mousemove', cameraHandler)
+        canvas.addEventListener('pointermove', cameraHandler)
 
         return () => {
-            canvas.removeEventListener('mousemove', cameraHandler)
+            canvas.removeEventListener('pointermove', cameraHandler)
         }
     }, [canvas, cameraHandler])
 
@@ -61,13 +50,13 @@ export const PlayerCamera = () => {
     })
 
     return <transformNode ref={transformNodeRef} name="cameraTransform" position={new Vector3(0, 0, 0)}>
-        <transformNode ref={targetRef} name="targetTransform" position={new Vector3(0, 0, ARENA_LENGTH)}>
-            <plane renderingGroupId={1} width={0.5} height={0.5} name="targetPlane">
+        <transformNode ref={targetRef} name="targetTransform" position={new Vector3(0, 0, TARGET_LENGTH)}>
+            <plane renderingGroupId={1} width={0.3} height={0.3} name="targetPlane">
                 <standardMaterial useAlphaFromDiffuseTexture name={"targetMat"}>
                     <texture hasAlpha assignTo="diffuseTexture" url={"/assets/crossHair/crosshair.png"} />
                 </standardMaterial>
             </plane>
         </transformNode>
-        <universalCamera ref={cameraRef} name="camera" minZ={0.01} maxZ={100} position={new Vector3(0, 0, 0)}/>
+        <targetCamera ref={cameraRef} name="camera" minZ={0.01} maxZ={100} position={new Vector3(0, 0, 0)}/>
     </transformNode>
 }

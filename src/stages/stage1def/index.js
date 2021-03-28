@@ -6,16 +6,16 @@ const stage1def = () => {
         ],
 };
 
-    for(let i = 0; i < 20; i++){
+    for(let i = 0; i < 100; i++){
         map.epochs.push({
             type: 'spawn',
             enemy: InertFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-            wait: 125
+            wait: 120
         })
         map.epochs.push({
             type: 'spawn',
             enemy: InertFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-            wait: 268
+            wait: 260
         })
     }
 

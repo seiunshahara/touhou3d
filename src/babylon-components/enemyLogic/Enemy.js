@@ -32,7 +32,7 @@ const deathInstruction = {
     wait: 0
 }
 
-export const Enemy = ({type, asset, radius, health, startPosition, actionList, removeMe, name}) => {
+export const Enemy = ({type, asset, radius, health, startPosition, actionList, removeEnemyFromScene, name}) => {
     const enemyRef = useRef();
     const [enemy, setEnemy] = useState();
     const mesh = useAssets(asset);
@@ -52,25 +52,22 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
                 break;
             case "remove":
                 removeEnemy(positionID)
-                removeMe(name);
+                removeEnemyFromScene(name);
                 break;
             default:
                 console.warn("Unsupported action type: " + action.type)
         }
-    }, [enemy, removeMe, name, addBulletGroup, positionID, removeEnemy])
+    }, [enemy, removeEnemyFromScene, name, addBulletGroup, positionID, removeEnemy])
 
     useEffect(() => {
         if(!enemy) return;                          //on death
         const id = addEnemy(enemy.position, radius, () => {
             addBulletGroup(enemy, deathInstruction);
-            removeMe(name, enemy.position)
+            removeEnemyFromScene(name, enemy.position)
         }, health)
         setPositionID(id)
 
-        return () => {
-            removeEnemy(id)
-        }
-    }, [enemy, radius, removeEnemy, addEnemy, name, removeMe, health])
+    }, [enemy, radius, removeEnemy, addEnemy, name, removeEnemyFromScene, health, addBulletGroup])
 
     useBeforeRender((scene) => {
         if(enemyRef.current && !enemy){

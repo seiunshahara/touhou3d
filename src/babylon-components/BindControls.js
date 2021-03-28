@@ -12,10 +12,14 @@ export const BindControls = () => {
 
         canvas.addEventListener('keyup', keyUpHandler)
         canvas.addEventListener('keydown', keyDownHandler)
+        canvas.addEventListener('pointerup', keyUpHandler)
+        canvas.addEventListener('pointerdown', keyDownHandler)
 
         return () => {
             canvas.removeEventListener('keyup', keyUpHandler)
             canvas.removeEventListener('keydown', keyDownHandler)
+            canvas.addEventListener('pointerup', keyUpHandler)
+            canvas.addEventListener('pointerdown', keyDownHandler)
         }
     }, [canvas, keyDownHandler, keyUpHandler])
 

@@ -1,10 +1,8 @@
 import { __extends } from "tslib";
-import { Logger } from "@babylonjs/core/Misc/logger";
 import { Vector3, Vector2 } from "@babylonjs/core/Maths/math.vector";
 import { Color4, Color3 } from '@babylonjs/core/Maths/math.color';
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { ProceduralTexture } from "@babylonjs/core/Materials/Textures/Procedurals/proceduralTexture";
-import { WebRequest } from '@babylonjs/core/Misc/webRequest';
 /**
  * Procedural texturing is a way to programmatically create a texture. There are 2 types of procedural textures: code-only, and code that references some classic 2D images, sometimes called 'refMaps' or 'sampler' images.
  * Custom Procedural textures are the easiest way to create your own procedural in your application.
@@ -13,7 +11,7 @@ import { WebRequest } from '@babylonjs/core/Misc/webRequest';
 
  const _clientWaitAsync = function (engine, sync, activePPB, flags, interval_ms) {
     if (flags === void 0) { flags = 0; }
-    if (interval_ms === void 0) { interval_ms = 10; }
+    if (interval_ms === void 0) { interval_ms = 50; }
     var gl = engine._gl;
     return new Promise(function (resolve, reject) {
         var check = function () {
@@ -28,7 +26,7 @@ import { WebRequest } from '@babylonjs/core/Misc/webRequest';
             }
             resolve(activePPB);
         };
-        check();
+        setTimeout(check, interval_ms);
     });
 };
 
@@ -102,7 +100,7 @@ const _readTexturePixels = function (engine, texture, width, height, faceIndex, 
     }
     gl.flush();
 
-    return _clientWaitAsync(engine, sync, texture._activePPB, 0, 10).then(function (activePPB) {
+    return _clientWaitAsync(engine, sync, texture._activePPB, 0).then(function (activePPB) {
         gl.deleteSync(sync);
         gl.bindBuffer(gl.PIXEL_PACK_BUFFER, activePPB);
         gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, buffer);
@@ -131,51 +129,10 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
         _this._time = 0;
         _this._texturePath = texturePath;
         //Try to load json
-        _this._loadJson(texturePath);
+        _this.setFragment(_this._texturePath);
         _this.refreshRate = 1;
         return _this;
     }
-    CustomCustomProceduralTexture.prototype._loadJson = function (jsonUrl) {
-        var _this = this;
-        var noConfigFile = function () {
-            try {
-                _this.setFragment(_this._texturePath);
-            }
-            catch (ex) {
-                Logger.Error("No json or ShaderStore or DOM element found for CustomCustomProceduralTexture");
-            }
-        };
-        var configFileUrl = jsonUrl + "/config.json";
-        var xhr = new WebRequest();
-        xhr.open("GET", configFileUrl);
-        xhr.addEventListener("load", function () {
-            if (xhr.status === 200 || (xhr.responseText && xhr.responseText.length > 0)) {
-                try {
-                    _this._config = JSON.parse(xhr.response);
-                    _this.updateShaderUniforms();
-                    _this.updateTextures();
-                    _this.setFragment(_this._texturePath + "/custom");
-                    _this._animate = _this._config.animate;
-                    _this.refreshRate = _this._config.refreshrate;
-                }
-                catch (ex) {
-                    noConfigFile();
-                }
-            }
-            else {
-                noConfigFile();
-            }
-        }, false);
-        xhr.addEventListener("error", function () {
-            noConfigFile();
-        }, false);
-        try {
-            xhr.send();
-        }
-        catch (ex) {
-            Logger.Error("CustomCustomProceduralTexture: Error on XHR send request.");
-        }
-    };
     /**
      * Is the texture ready to be used ? (rendered at least once)
      * @returns true if ready, otherwise, false.

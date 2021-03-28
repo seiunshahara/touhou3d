@@ -10,9 +10,7 @@ import { makeBulletPattern } from '../bullets/patterns';
 import { makeName } from '../hooks/useName';
 import { actorPositions, allBullets } from './StaticRefs';
 
-let points = 0;
-
-export const useBullets = (assets, environmentCollision) => {
+export const useBullets = (assets, environmentCollision, removeEnemy) => {
     const scene = useScene();
 
     const disposeSingle = (id) => {
@@ -71,7 +69,11 @@ export const useBullets = (assets, environmentCollision) => {
                             const enemyID = 10000 - collision.collisionID;
                             actorPositions.enemyHealths[enemyID]--;
                             if(actorPositions.enemyHealths[enemyID] <= 0){
-                                actorPositions.enemyKillSelfs[enemyID]();
+                                if(!actorPositions.enemyKillSelfs[enemyID].dead){
+                                    actorPositions.enemyKillSelfs[enemyID]();
+                                    actorPositions.enemyKillSelfs[enemyID].dead = true;
+                                    removeEnemy(enemyID);
+                                }
                             }
                         }
                     })
@@ -85,8 +87,7 @@ export const useBullets = (assets, environmentCollision) => {
                         if(collision.point){
                             itemGet.play();
                         }
-                        points += collision.point;
-                        console.log("Points: " + points * 100);
+                        //points += collision.point;
                     }
                 })
             }
