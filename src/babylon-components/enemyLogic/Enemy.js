@@ -1,11 +1,10 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {  makeActionListTimeline } from "./EnemyUtils";
 import { unnormalizePosition } from "../BabylonUtils"
-import { useBeforeRender, useScene } from 'react-babylonjs';
+import { useBeforeRender } from 'react-babylonjs';
 import { doMove, newMoveAction } from './EnemyMovementUtil';
 import { filterInPlace } from '../../utils/Utils';
 import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
-import { AnimationGroup, Vector3 } from '@babylonjs/core';
 import { PositionsContext } from '../gameLogic/GeneralContainer';
 import { actorPositions } from '../gameLogic/StaticRefs';
 import { FairyBase } from '../enemyActors/FairyBase';
@@ -19,7 +18,6 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
     const addBulletGroup = useAddBulletGroup();
     const startTime = useMemo(() => Date.now(), []);
     const {addEnemy, removeEnemy} = useContext(PositionsContext);
-    const scene = useScene();
 
     const executeAction = useCallback((action) => {
         switch (action.type){
@@ -41,7 +39,7 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
     useEffect(() => {
         if(!enemy) return;
 
-        const id = addEnemy(enemy.position, radius, () => removeMe(name, true), health)
+        const id = addEnemy(enemy.position, radius, () => removeMe(name, enemy.position), health)
         setPositionID(id)
 
         return () => {
@@ -54,6 +52,7 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
         mesh.animationGroups.forEach(animationGroup => {
             switch(animationGroup.name){
                 case "fly": mesh.animFly = animationGroup; break;
+                default: break;
             }
         })
 
@@ -63,7 +62,6 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
 
     useBeforeRender((scene) => {
         if(!enemy) return;
-        enemy.velocity = new Vector3(0, 0, 10);
 
         const timeSinceStart = Date.now() - startTime;
         const delta = scene.getEngine().getDeltaTime();

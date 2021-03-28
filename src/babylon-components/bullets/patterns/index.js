@@ -31,9 +31,5 @@ export const makeBulletPattern = (patternOptions, parent) => {
         position.addInPlace(parentPosition)
     })
 
-    _pattern.velocities.forEach(velocity => {
-        velocity.addInPlace(parent.velocity)
-    })
-
     return _pattern;
 }

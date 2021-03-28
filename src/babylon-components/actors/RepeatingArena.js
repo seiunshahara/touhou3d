@@ -8,6 +8,7 @@ export const RepeatingArena = ({TileClass, fightRootRef}) => {
         new Vector3(0, 0, 0), 
         new Vector3(0, 0, TileClass.tileLength),
     ])
+
     const [lastTilePosition, setLastTilePosition] = useState(0);
 
     useBeforeRender(() => {

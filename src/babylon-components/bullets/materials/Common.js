@@ -6,7 +6,6 @@ export const commonVertexShader = glsl`
     attribute vec3 normal;
     attribute vec2 uv;
 
-    uniform vec3 initialVelocity;
     uniform mat4 view;
     uniform mat4 projection;
     uniform sampler2D positionSampler;
@@ -40,7 +39,7 @@ export const commonVertexShader = glsl`
         vec4 instVel = texture(velocitySampler, vec2(u, v));
 
         mat3 rotation;
-        makeRotation(normalize(vec3(instVel) - initialVelocity), rotation);
+        makeRotation(normalize(vec3(instVel)), rotation);
         vec4 rotatedVert = vec4(rotation * position, 1.0 );
 
         vec4 totalPos = rotatedVert + instPos;

@@ -99,7 +99,6 @@ class PlayerShotBehaviour extends PlayerBulletBehaviour{
 
             const sourceOffset = this.parent.getAbsolutePosition();
             const shotVector = this.target.subtract(sourceOffset).normalize().scale(20)
-            shotVector.addInPlace(this.parent.velocity);
 
             this.positionTexture1.setFloat("frame", this.bulletFrame)
             this.velocityTexture1.setFloat("frame", this.bulletFrame)

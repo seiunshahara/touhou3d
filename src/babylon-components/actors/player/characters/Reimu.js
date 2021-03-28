@@ -11,7 +11,6 @@ import { useTarget } from '../../../hooks/useTarget';
 import { allBullets } from '../../../gameLogic/StaticRefs';
 
 const z = new Vector3(0, 0, 1);
-const velocity = new Vector3(0, 0, 10);
 const focusPosition1 = new Vector3(0.5, 0, 1)
 const focusPosition2 = new Vector3(-0.5, 0, 1)
 const unfocusPosition1 = new Vector3(1, 0, 1)
@@ -91,12 +90,6 @@ export const Reimu = () => {
 
     useEffect(() => {
         if (!sphereRef1.current || !sphereRef2.current) return;
-        if (!sphereRef1.current.velocity) {
-            sphereRef1.current.velocity = velocity;
-        }
-        if (!sphereRef2.current.velocity) {
-            sphereRef2.current.velocity = velocity;
-        }
 
         const id1 = addBulletGroup(sphereRef1.current,
             shotInstruction(2)

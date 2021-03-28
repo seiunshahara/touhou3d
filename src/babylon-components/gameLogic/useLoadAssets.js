@@ -1,4 +1,4 @@
-import { AnimationPropertiesOverride, AssetsManager, Matrix, MeshBuilder, Vector2 } from "@babylonjs/core";
+import { AnimationPropertiesOverride, AssetsManager, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2 } from "@babylonjs/core";
 import { useCallback, useState, useEffect } from "react";
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";
@@ -33,19 +33,22 @@ export const useLoadAssets = () => {
         scene.animationPropertiesOverride = new AnimationPropertiesOverride()
         scene.animationPropertiesOverride.enableBlending = true;
 
+        //Particles
+        ParticleHelper.BaseAssetsUrl = "/assets/particles";
+        ParticleSystemSet.BaseAssetsUrl = "/assets/particles";
+
         const tempAssets = {};
         const assetList = [
-            {
-                rootUrl: "/assets/temp/",
-                sceneFilename: "deathSystem.babylon",
-                name: "deathParticles",
-                type:  "model"
-            },
             {
                 rootUrl: "/assets/enemies/fairies/",
                 sceneFilename: "blueFairy.glb",
                 name: "blueFairy",
                 type:  "model"
+            },
+            {
+                url: "/assets/enemies/textures/blueMagicCircle.png",
+                name: "blueMagicCircle",
+                type:  "texture"
             },
             {
                 url: "/assets/spriteSheets/fairySpriteSheet.png",
@@ -100,6 +103,7 @@ export const useLoadAssets = () => {
                 case "texture":
                     assetTask = assetsManager.addTextureTask(asset.name, asset.url);
                     assetTask.onSuccess = (task) => {
+                        task.texture.hasAlpha = true;
                         tempAssets[task.name] = task.texture;
                     }
                     break;

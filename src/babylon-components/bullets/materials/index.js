@@ -17,6 +17,5 @@ export const makeBulletMaterial = (materialOptions, parent, assets, scene) => {
     }
 
     _material.backFaceCulling = !materialOptions.doubleSided;
-    _material.setVector3("initialVelocity", parent.velocity);
     return _material;
 }

@@ -1,8 +1,5 @@
-import { Constants, RawTexture, Vector2, Vector3 } from '@babylonjs/core';
-import React, { useEffect, useRef, useState } from 'react'
-import { useBeforeRender, useScene } from 'react-babylonjs';
-import { parallelReducer } from '../bullets/BulletUtils';
-import { CustomCustomProceduralTexture } from '../CustomCustomProceduralTexture';
+import { Vector3 } from '@babylonjs/core';
+import React, { useRef } from 'react'
 import { useName } from '../hooks/useName';
 
 
