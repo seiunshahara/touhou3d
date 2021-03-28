@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {  makeActionListTimeline } from "./EnemyUtils";
 import { unnormalizePosition } from "../BabylonUtils"
 import { useBeforeRender } from 'react-babylonjs';
@@ -10,7 +10,30 @@ import { actorPositions } from '../gameLogic/StaticRefs';
 import { FairyBase } from '../enemyActors/FairyBase';
 import { useAssets } from '../hooks/useAssets';
 
+const deathInstruction = {
+    type: "shoot",
+    materialOptions: {
+        material: "item",
+        texture: "point",
+        doubleSided: true,
+        hasAlpha: true
+    },
+    patternOptions: {
+        pattern: "burst",
+        num: 5,
+    },
+    meshOptions: {
+        mesh: "item",
+    },
+    behaviourOptions: {
+        behaviour: "item",
+    },
+    lifespan: 10000,
+    wait: 0
+}
+
 export const Enemy = ({type, asset, radius, health, startPosition, actionList, removeMe, name}) => {
+    const enemyRef = useRef();
     const [enemy, setEnemy] = useState();
     const mesh = useAssets(asset);
     const [positionID, setPositionID] = useState();
@@ -34,12 +57,14 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
             default:
                 console.warn("Unsupported action type: " + action.type)
         }
-    }, [removeMe, enemy, name, addBulletGroup, positionID, removeEnemy])
+    }, [enemy, removeMe, name, addBulletGroup, positionID, removeEnemy])
 
     useEffect(() => {
-        if(!enemy) return;
-
-        const id = addEnemy(enemy.position, radius, () => removeMe(name, enemy.position), health)
+        if(!enemy) return;                          //on death
+        const id = addEnemy(enemy.position, radius, () => {
+            addBulletGroup(enemy, deathInstruction);
+            removeMe(name, enemy.position)
+        }, health)
         setPositionID(id)
 
         return () => {
@@ -47,20 +72,10 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
         }
     }, [enemy, radius, removeEnemy, addEnemy, name, removeMe, health])
 
-    useEffect(() => {
-        if(!mesh) return;
-        mesh.animationGroups.forEach(animationGroup => {
-            switch(animationGroup.name){
-                case "fly": mesh.animFly = animationGroup; break;
-                default: break;
-            }
-        })
-
-        mesh.animFly.start(true);
-
-    }, [mesh])
-
     useBeforeRender((scene) => {
+        if(enemyRef.current && !enemy){
+            setEnemy(enemyRef.current);
+        }
         if(!enemy) return;
 
         const timeSinceStart = Date.now() - startTime;
@@ -79,26 +94,12 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
         actorPositions.enemies[positionID] = enemyWorldPosition;
 
         filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
-
-        if(!mesh) return;
-
-        if(!enemy.lastPosition){
-            enemy.lastPosition = enemy.position.clone();
-            return;
-        }
-
-        const curPosition = enemy.position;
-        const dPosition = curPosition.subtract(enemy.lastPosition)
-        enemy.lastPosition = curPosition.clone();
-
-        if(!mesh.animFly) return;
-        mesh.animFly.speedRatio = dPosition.length() * 15 + 0.5;
     })
 
     switch(type){
         case "fairy":
             return (
-                <FairyBase mesh={mesh} radius={radius} assetName={asset} position={unnormalizePosition(startPosition)} ref={newRef => setEnemy(newRef)} />
+                <FairyBase mesh={mesh} radius={radius} assetName={asset} position={unnormalizePosition(startPosition)} ref={enemyRef} />
             )
         default:
             throw new Error("Unknown Enemy type: " + type)

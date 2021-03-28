@@ -3,6 +3,7 @@ import { makeSphereMesh } from "./Sphere";
 import { makeCardMesh } from "./Card";
 import { makeKnifeMesh } from "./Knife";
 import { bufferMatricesSource } from "../../gameLogic/StaticRefs";
+import { makeItemMesh } from "./Item";
 
 export const makeBulletMesh = (meshOptions, assets) => {
     const {mesh, radius} = meshOptions;
@@ -15,6 +16,9 @@ export const makeBulletMesh = (meshOptions, assets) => {
             break;
         case "card": 
             _mesh = makeCardMesh(assets)
+            break;
+        case "item": 
+            _mesh = makeItemMesh(assets)
             break;
         case "knife": 
             _mesh = makeKnifeMesh(assets)

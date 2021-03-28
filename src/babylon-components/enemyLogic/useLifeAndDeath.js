@@ -2,33 +2,21 @@ import React, { useState } from 'react'
 import { useBeforeRender } from 'react-babylonjs';
 import { RandVector3 } from '../BabylonUtils';
 import { makeName } from '../hooks/useName';
-import { DeathAnim } from './DeathAnim';
+import { useAddEffect } from '../hooks/useAddEffect';
 import { Enemy } from './Enemy';
 
 let metaEnemies = {};
-let metaDeathAnims = {};
 
 export const useLifeAndDeath = () => {
     const [enemies, setEnemies] = useState({});
-    const [deathAnims, setDeathAnims] = useState({});
-
-    const removeDeathAnim = (deathAnimName) => {
-        metaDeathAnims = {...metaDeathAnims}
-        delete metaDeathAnims[deathAnimName];
-    }
+    const addEffect = useAddEffect();
 
     const removeEnemy = (enemyName, deathLocation = false) => {
         metaEnemies = {...metaEnemies}
 
         if(deathLocation){
             const deathStartLocation = deathLocation.clone();
-            const deathAnimName = makeName("");
-
-            const deathAnimComponent = <DeathAnim key={deathAnimName} startPosition={deathStartLocation} removeMe={removeDeathAnim} name={deathAnimName}/>
-            metaDeathAnims = {
-                ...metaDeathAnims, 
-                [deathAnimName]: deathAnimComponent
-            };
+            addEffect(deathStartLocation, "deathParticles")
         }
         
         delete metaEnemies[enemyName];
@@ -52,11 +40,7 @@ export const useLifeAndDeath = () => {
         if(metaEnemies !== enemies){
             setEnemies(metaEnemies);
         }
-
-        if(metaDeathAnims !== deathAnims){
-            setDeathAnims(metaDeathAnims);
-        }
     })
 
-    return {doSpawnAction, enemies, deathAnims};
+    return {doSpawnAction, enemies};
 }

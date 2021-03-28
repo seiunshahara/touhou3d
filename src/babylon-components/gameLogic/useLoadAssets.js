@@ -1,7 +1,9 @@
-import { AnimationPropertiesOverride, AssetsManager, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2 } from "@babylonjs/core";
+import { AnimationPropertiesOverride, AssetsManager, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2, Vector3 } from "@babylonjs/core";
 import { useCallback, useState, useEffect } from "react";
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";
+import { makeParticleSystemFromSingle } from "../effects/makeParticleSystem";
+import {SYSTEMS_PER_WHEEL} from "../../utils/Constants"
 
 export const useLoadAssets = () => {
     const scene = useScene();
@@ -40,6 +42,11 @@ export const useLoadAssets = () => {
         const tempAssets = {};
         const assetList = [
             {
+                json: "deathParticles",
+                name: "deathParticles",
+                type: "particles"
+            },
+            {
                 rootUrl: "/assets/enemies/fairies/",
                 sceneFilename: "blueFairy.glb",
                 name: "blueFairy",
@@ -58,6 +65,11 @@ export const useLoadAssets = () => {
             {
                 url: "/assets/bullets/ofuda/reimu_ofuda.jpg",
                 name: "reimu_ofuda",
+                type: "texture"
+            },
+            {
+                url: "/assets/items/point.png",
+                name: "point",
                 type: "texture"
             },
             {
@@ -91,6 +103,18 @@ export const useLoadAssets = () => {
                     mesh.bakeTransformIntoVertices(matrix);
                     return mesh;
                 }
+            },
+            {
+                type: "function",
+                name: "item",
+                generator: () => {
+                    const mesh = MeshBuilder.CreatePlane("item", {
+                        width: .25,
+                        height: .25,
+                        updatable: true
+                    }, scene)
+                    return mesh;
+                }
             }
         ];
 
@@ -100,6 +124,18 @@ export const useLoadAssets = () => {
             let assetTask;
 
             switch(asset.type){
+                case "particles":
+                    new ParticleHelper.CreateAsync(asset.json, scene, true).then(function(set) {
+                        set.systems[0].emitter =new Vector3(0, 0, 0);
+                        tempAssets[asset.name] = [];
+
+                        for(let i = 0; i < SYSTEMS_PER_WHEEL; i++){
+                            tempAssets[asset.name].push(makeParticleSystemFromSingle(set.systems[0], asset.name + i))
+                        }
+
+                        tempAssets[asset.name].curWheelIndex = 0;
+                    });
+                    break;
                 case "texture":
                     assetTask = assetsManager.addTextureTask(asset.name, asset.url);
                     assetTask.onSuccess = (task) => {

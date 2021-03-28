@@ -10,7 +10,7 @@ export const Enemies = ({source}) => {
     const currentActionList = useMemo(() => makeActionListTimeline(source.epochs), [source.epochs]);
     const startTime = useMemo(() => Date.now(), []);
 
-    const {doSpawnAction, enemies, deathAnims} = useLifeAndDeath()
+    const {doSpawnAction, enemies} = useLifeAndDeath()
 
     const executeAction = (action) => {
         switch (action.type){
@@ -36,5 +36,5 @@ export const Enemies = ({source}) => {
         filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
     })
 
-    return [...Object.values(enemies), ...Object.values(deathAnims)];
+    return Object.values(enemies);
 }

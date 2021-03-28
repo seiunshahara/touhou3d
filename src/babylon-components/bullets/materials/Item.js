@@ -1,10 +1,10 @@
 import { ShaderMaterial } from "@babylonjs/core";
-import { v4 } from "uuid";
 import { glsl } from "../../BabylonUtils";
-import { commonVertexShader } from "./Common";
+import { makeName } from "../../hooks/useName";
+import { commonItemVertexShader } from "./Common";
 
-export const textureVertexShader = commonVertexShader
-export const textureFragmentShader = glsl`
+export const itemVertexShader = commonItemVertexShader
+export const itemFragmentShader = glsl`
     uniform sampler2D textureSampler;
     varying vec2 vUV;
 
@@ -13,9 +13,11 @@ export const textureFragmentShader = glsl`
     }
 `
 
-export const makeTextureMaterial = (materialOptions, assets, scene) => {
-    const _material = new ShaderMaterial(v4() + "texture", scene, {
-        vertex: "texture", fragment: "texture"
+export const makeItemMaterial = (materialOptions, assets, scene) => {
+    const matName = makeName("itemMat")
+
+    const _material = new ShaderMaterial(matName, scene, {
+        vertex: "item", fragment: "item"
     }, {
         attributes: ["position", "normal", "uv", "world0", "world1", "world2", "world3"],
         uniforms: ["worldView", "worldViewProjection", "view", "projection", "direction", "cameraPosition"],

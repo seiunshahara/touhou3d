@@ -4,6 +4,7 @@ import { v4 } from "uuid";
 import { CustomCustomProceduralTexture } from "../../CustomCustomProceduralTexture";
 import { makeTextureFromBlank, makeTextureFromVectors, parallelReducer } from "../BulletUtils";
 import { ARENA_MAX, ARENA_MIN, REDUCER_ENABLED } from "../../../utils/Constants";
+import { actorPositions } from "../../gameLogic/StaticRefs";
 
 
 const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVelocityTexture, initialCollisionTexture, initialValuesFunction, WIDTH, scene) => {
@@ -11,6 +12,7 @@ const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVel
     proceduralTexture.setTexture("velocitySampler", initialVelocityTexture);
     proceduralTexture.setTexture("positionSampler", initialPositionTexture);
     proceduralTexture.setTexture("collisionSampler", initialCollisionTexture);
+    proceduralTexture.setVector3("playerPosition", actorPositions.player);
     proceduralTexture.setVector2("resolution", new Vector2(WIDTH, WIDTH));
     proceduralTexture.setFloat("delta", 0);
 
@@ -22,7 +24,7 @@ const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVel
 }
 
 export class BulletBehaviour{
-    constructor(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction = null, radius = 1, bulletType = 0){
+    constructor(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction = null, radius = 1){
         if(!collideWithEnvironment.x){
             throw new Error("collideWithEnvironment must be a vector")
         }
@@ -32,7 +34,6 @@ export class BulletBehaviour{
         this.velocityShader = velocityShader;
         this.collideWithEnvironment = collideWithEnvironment;
         this.radius = radius;
-        this.bulletType = bulletType;
 
         this.initialValuesFunction = initialValuesFunction;
     }
@@ -160,12 +161,12 @@ export class BulletBehaviour{
         outputPositionTexture.setTexture("velocitySampler", inputVelocityTexture);
         outputPositionTexture.setTexture("collisionSampler", inputCollisionTexture);
         outputPositionTexture.setFloat("delta", deltaS);
-        inputPositionTexture.setFloat("delta", deltaS);
+        outputPositionTexture.setVector3("playerPosition", actorPositions.player);
         outputVelocityTexture.setTexture("positionSampler", inputPositionTexture);
         outputVelocityTexture.setTexture("velocitySampler", inputVelocityTexture);
         outputVelocityTexture.setTexture("collisionSampler", inputCollisionTexture);
         outputVelocityTexture.setFloat("delta", deltaS);
-        inputVelocityTexture.setFloat("delta", deltaS);
+        outputVelocityTexture.setVector3("playerPosition", actorPositions.player);
 
         outputCollisionTexture.setTexture("positionSampler", inputPositionTexture);
         outputCollisionTexture.setTexture("velocitySampler", inputVelocityTexture);

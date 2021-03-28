@@ -1,27 +1,35 @@
 import { Effect } from "@babylonjs/core";
 import { enemyBulletCollisionPixelShader, playerBulletCollisionPixelShader } from "./bullets/behaviours/Common";
+import { itemBehaviourPositionPixelShader, itemBehaviourVelocityPixelShader } from "./bullets/behaviours/ItemBehaviour";
 import { linearBehaviourPositionPixelShader, linearBehaviourVelocityPixelShader } from "./bullets/behaviours/LinearBehaviour";
 import { playerShotBehaviourPositionPixelShader, playerShotBehaviourVelocityPixelShader } from "./bullets/behaviours/PlayerShotBehaviour";
 import { addReducerPixelShader } from "./bullets/BulletUtils";
 import { fresnelVertexShader, fresnelFragmentShader } from "./bullets/materials/Fresnel";
 import { textureFragmentShader, textureVertexShader } from "./bullets/materials/Texture";
+import { itemFragmentShader, itemVertexShader } from "./bullets/materials/Item";
 
-Effect.ShadersStore["addReducerPixelShader"] = addReducerPixelShader();
+Effect.ShadersStore["addReducerPixelShader"] = addReducerPixelShader;
 
-Effect.ShadersStore["playerBulletCollisionPixelShader"] = playerBulletCollisionPixelShader();
-Effect.ShadersStore["enemyBulletCollisionPixelShader"] = enemyBulletCollisionPixelShader();
+Effect.ShadersStore["playerBulletCollisionPixelShader"] = playerBulletCollisionPixelShader;
+Effect.ShadersStore["enemyBulletCollisionPixelShader"] = enemyBulletCollisionPixelShader;
 
-Effect.ShadersStore["linearBehaviourPositionPixelShader"] = linearBehaviourPositionPixelShader();
-Effect.ShadersStore["linearBehaviourVelocityPixelShader"] = linearBehaviourVelocityPixelShader();
+Effect.ShadersStore["linearBehaviourPositionPixelShader"] = linearBehaviourPositionPixelShader;
+Effect.ShadersStore["linearBehaviourVelocityPixelShader"] = linearBehaviourVelocityPixelShader;
 
-Effect.ShadersStore["playerShotBehaviourPositionPixelShader"] = playerShotBehaviourPositionPixelShader();
-Effect.ShadersStore["playerShotBehaviourVelocityPixelShader"] = playerShotBehaviourVelocityPixelShader();
+Effect.ShadersStore["itemBehaviourPositionPixelShader"] = itemBehaviourPositionPixelShader;
+Effect.ShadersStore["itemBehaviourVelocityPixelShader"] = itemBehaviourVelocityPixelShader;
 
-Effect.ShadersStore["fresnelVertexShader"] = fresnelVertexShader();
-Effect.ShadersStore["fresnelFragmentShader"] = fresnelFragmentShader();
+Effect.ShadersStore["playerShotBehaviourPositionPixelShader"] = playerShotBehaviourPositionPixelShader;
+Effect.ShadersStore["playerShotBehaviourVelocityPixelShader"] = playerShotBehaviourVelocityPixelShader;
 
-Effect.ShadersStore["textureVertexShader"] = textureVertexShader();
-Effect.ShadersStore["textureFragmentShader"] = textureFragmentShader();
+Effect.ShadersStore["fresnelVertexShader"] = fresnelVertexShader;
+Effect.ShadersStore["fresnelFragmentShader"] = fresnelFragmentShader;
+
+Effect.ShadersStore["textureVertexShader"] = textureVertexShader;
+Effect.ShadersStore["textureFragmentShader"] = textureFragmentShader;
+
+Effect.ShadersStore["itemVertexShader"] = itemVertexShader;
+Effect.ShadersStore["itemFragmentShader"] = itemFragmentShader;
 
 //for glsl lint
 const glsl = x => x;

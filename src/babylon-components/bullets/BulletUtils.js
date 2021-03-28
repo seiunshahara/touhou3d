@@ -6,7 +6,7 @@ import { glsl } from "../BabylonUtils";
 import { CustomCustomProceduralTexture } from "../CustomCustomProceduralTexture";
 import { makeName } from "../hooks/useName";
 
-export const addReducerPixelShader = () => glsl`
+export const addReducerPixelShader = glsl`
     uniform sampler2D source;
     uniform vec2 sourceResolution;
 
@@ -60,7 +60,7 @@ export const prepareBulletInstruction = (instruction) => {
         patternOptions: {
             pattern: "burst", 
             num: 100, 
-            speed: .01, 
+            speed: 1, 
             radius: 1
         },
         meshOptions: {

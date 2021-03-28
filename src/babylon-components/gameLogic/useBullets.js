@@ -1,4 +1,5 @@
 import { useBeforeRender, useScene } from 'react-babylonjs';
+import { itemGet } from '../../sounds/SoundSystem';
 import { MAX_ENEMIES } from '../../utils/Constants';
 import { makeBulletBehaviour } from '../bullets/behaviours';
 import { BulletGroup } from '../bullets/BulletGroup';
@@ -8,6 +9,8 @@ import { makeBulletMesh } from '../bullets/meshes';
 import { makeBulletPattern } from '../bullets/patterns';
 import { makeName } from '../hooks/useName';
 import { actorPositions, allBullets } from './StaticRefs';
+
+let points = 0;
 
 export const useBullets = (assets, environmentCollision) => {
     const scene = useScene();
@@ -77,7 +80,14 @@ export const useBullets = (assets, environmentCollision) => {
             else{
                 bulletGroup.behaviour.collisionResult.readPixels().then(buffer => {
                     const collisions = convertEnemyBulletCollisions(buffer)
-                    if(collisions.length > 0) console.log(collisions[0])
+                    if(collisions.length > 0) {
+                        const collision = collisions[0];
+                        if(collision.point){
+                            itemGet.play();
+                        }
+                        points += collision.point;
+                        console.log("Points: " + points * 100);
+                    }
                 })
             }
         })
