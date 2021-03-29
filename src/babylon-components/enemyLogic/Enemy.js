@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {  makeActionListTimeline } from "./EnemyUtils";
-import { unnormalizePosition } from "../BabylonUtils"
+import { RandVector3, unnormalizePosition } from "../BabylonUtils"
 import { useBeforeRender } from 'react-babylonjs';
 import { doMove, newMoveAction } from './EnemyMovementUtil';
 import { filterInPlace } from '../../utils/Utils';
@@ -32,7 +32,7 @@ const deathInstruction = {
     wait: 0
 }
 
-export const Enemy = ({type, asset, radius, health, startPosition, actionList, removeEnemyFromScene, name}) => {
+export const Enemy = ({type, name, asset, radius, health, actionList, removeEnemyFromScene, spawn}) => {
     const enemyRef = useRef();
     const [enemy, setEnemy] = useState();
     const mesh = useAssets(asset);
@@ -40,6 +40,7 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
     const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
     const addBulletGroup = useAddBulletGroup();
     const startTime = useMemo(() => Date.now(), []);
+    const startPosition = useMemo(() => new RandVector3(...spawn), [spawn])
     const {addEnemy, removeEnemy} = useContext(PositionsContext);
 
     const executeAction = useCallback((action) => {
@@ -92,7 +93,6 @@ export const Enemy = ({type, asset, radius, health, startPosition, actionList, r
 
         filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
     })
-
     switch(type){
         case "fairy":
             return (
