@@ -1,14 +1,12 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import {  makeActionListTimeline } from "./EnemyUtils";
-import { RandVector3, unnormalizePosition } from "../BabylonUtils"
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useBeforeRender } from 'react-babylonjs';
-import { doMove, newMoveAction } from './EnemyMovementUtil';
-import { filterInPlace } from '../../utils/Utils';
 import { useAddBulletGroup } from '../hooks/useAddBulletGroup';
 import { PositionsContext } from '../gameLogic/GeneralContainer';
 import { actorPositions } from '../gameLogic/StaticRefs';
 import { FairyBase } from '../enemyActors/FairyBase';
 import { useAssets } from '../hooks/useAssets';
+import { RandomEnemyBehaviour } from '../enemyBehaviours/RandomEnemyBehaviour'
+import { DefaultFairyBehaviour } from '../enemyBehaviours/DefaultFairyBehaviour';
 
 const deathInstruction = {
     type: "shoot",
@@ -32,74 +30,64 @@ const deathInstruction = {
     wait: 0
 }
 
-export const Enemy = ({type, name, asset, radius, health, actionList, removeEnemyFromScene, spawn}) => {
+export const Enemy = ({type, name, asset, behaviour, radius, health, removeEnemyFromScene, spawn}) => {
     const enemyRef = useRef();
     const [enemy, setEnemy] = useState();
     const mesh = useAssets(asset);
     const [positionID, setPositionID] = useState();
-    const currentActionList = useMemo(() => makeActionListTimeline(actionList), [actionList]);
     const addBulletGroup = useAddBulletGroup();
-    const startTime = useMemo(() => Date.now(), []);
-    const startPosition = useMemo(() => new RandVector3(...spawn), [spawn])
     const {addEnemy, removeEnemy} = useContext(PositionsContext);
 
-    const executeAction = useCallback((action) => {
-        switch (action.type){
-            case "move":
-                newMoveAction(enemy, action);
-                break;
-            case "shoot":
-                addBulletGroup(enemy, action)
-                break;
-            case "remove":
-                removeEnemy(positionID)
-                removeEnemyFromScene(name);
-                break;
-            default:
-                console.warn("Unsupported action type: " + action.type)
-        }
-    }, [enemy, removeEnemyFromScene, name, addBulletGroup, positionID, removeEnemy])
+    const leaveScene = useCallback(() => {
+        removeEnemy(positionID)
+        removeEnemyFromScene(name);
+    }, [removeEnemyFromScene, name, positionID, removeEnemy])
 
     useEffect(() => {
         if(!enemy) return;                          //on death
         const id = addEnemy(enemy.position, radius, () => {
             addBulletGroup(enemy, deathInstruction);
-            removeEnemyFromScene(name, enemy.position)
+            removeEnemyFromScene(name, enemy.getAbsolutePosition())
         }, health)
         setPositionID(id)
 
-    }, [enemy, radius, removeEnemy, addEnemy, name, removeEnemyFromScene, health, addBulletGroup])
+    }, [enemy, radius, addEnemy, name, removeEnemyFromScene, health, addBulletGroup])
 
-    useBeforeRender((scene) => {
+    useBeforeRender(() => {
         if(enemyRef.current && !enemy){
             setEnemy(enemyRef.current);
         }
         if(!enemy) return;
 
-        const timeSinceStart = Date.now() - startTime;
-        const delta = scene.getEngine().getDeltaTime();
-        doMove(enemy, delta);
-
-        currentActionList.some(action => {
-            if(action.timeline < timeSinceStart) {
-                executeAction(action);
-                return false;
-            }
-            return true;
-        })
-
         const enemyWorldPosition = enemy.getAbsolutePosition();
         actorPositions.enemies[positionID] = enemyWorldPosition;
-
-        filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
     })
+
+    let enemyMesh;
+    
     switch(type){
         case "fairy":
-            return (
-                <FairyBase mesh={mesh} radius={radius} assetName={asset} position={unnormalizePosition(startPosition)} ref={enemyRef} />
-            )
+            enemyMesh = <FairyBase mesh={mesh} radius={radius} assetName={asset} ref={enemyRef} />
+            break;
         default:
             throw new Error("Unknown Enemy type: " + type)
     }
+
+    let BehaviourClass;
+    
+    switch(behaviour){
+        case "random":
+            BehaviourClass = RandomEnemyBehaviour
+            break;
+        case "defaultFairy":
+            BehaviourClass = DefaultFairyBehaviour
+            break;
+        default:
+            throw new Error("Unknown Behaviour type: " + type)
+    }
+
+    return <BehaviourClass leaveScene={leaveScene} spawn={spawn}>
+        {enemyMesh}
+    </BehaviourClass>
     
 }

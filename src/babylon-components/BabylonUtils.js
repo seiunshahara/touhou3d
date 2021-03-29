@@ -75,6 +75,11 @@ export const unnormalizePosition = (position) => {
     return position.add(new Vector3(0, 1, 0)).multiplyByFloats(ARENA_WIDTH/2, ARENA_HEIGHT/2, ARENA_LENGTH/2)
 }
 
+export const randVectorToPosition = (randVector) => {
+    const position = new RandVector3(...randVector);
+    return unnormalizePosition(position);
+}
+
 export const glsl = (template, ...args) => {
     let str = ""
     for (let i = 0; i < args.length; i++) {

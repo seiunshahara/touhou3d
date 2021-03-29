@@ -87,7 +87,6 @@ export const useBullets = (assets, environmentCollision, removeEnemy) => {
                         if(collision.point){
                             itemGet.play();
                         }
-                        //points += collision.point;
                     }
                 })
             }

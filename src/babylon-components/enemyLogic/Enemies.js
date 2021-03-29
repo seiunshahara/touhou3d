@@ -29,7 +29,7 @@ export const Enemies = ({source}) => {
 
     const doSpawnAction = (enemy) => {
         const enemyName = makeName(enemy.asset);
-        const enemyComponent = <Enemy removeEnemyFromScene={removeEnemyFromScene} name={enemyName} {...enemy}/>
+        const enemyComponent = <Enemy removeEnemyFromScene={removeEnemyFromScene} key={enemyName} name={enemyName} {...enemy}/>
         metaEnemies = {
             ...metaEnemies, 
             [enemyName]: enemyComponent

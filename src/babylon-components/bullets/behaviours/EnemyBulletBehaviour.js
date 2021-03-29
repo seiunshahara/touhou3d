@@ -3,7 +3,7 @@ import { actorPositions } from "../../gameLogic/StaticRefs";
 import { BulletBehaviour } from "./BulletBehaviour";
 
 export class EnemyBulletBehaviour extends BulletBehaviour{
-    constructor(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction, radius, bulletType){
+    constructor(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction, radius, bulletType = 0){
         super(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction, radius);
         this.collisionShader = "enemyBulletCollision";
         this.isEnemyBullet = true;

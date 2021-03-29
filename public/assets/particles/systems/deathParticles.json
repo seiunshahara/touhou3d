@@ -34,7 +34,7 @@
 			"maxEmitPower": 10,
 			"minLifeTime": 1,
 			"maxLifeTime": 1,
-			"emitRate": 400,
+			"emitRate": 50,
 			"gravity": [
 				0,
 				0,

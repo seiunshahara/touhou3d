@@ -28,11 +28,11 @@ export const FairyBase = React.forwardRef(({assetName, radius, mesh, ...props}, 
         if(!ref.current) return;
 
         if(!ref.current.lastPosition){
-            ref.current.lastPosition = ref.current.position.clone();
+            ref.current.lastPosition = ref.current.getAbsolutePosition().clone();
             return;
         }
 
-        const curPosition = ref.current.position;
+        const curPosition = ref.current.getAbsolutePosition();
         const dPosition = curPosition.subtract(ref.current.lastPosition)
         ref.current.lastPosition = curPosition.clone();
 

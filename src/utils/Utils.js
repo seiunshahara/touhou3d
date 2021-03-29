@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react";
 
+export const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export const filterInPlace = (a, condition) => {
     let i = 0, j = 0;
 
