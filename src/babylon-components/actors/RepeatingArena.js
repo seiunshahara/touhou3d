@@ -1,33 +1,32 @@
 import { Vector3 } from '@babylonjs/core';
-import React, { useState } from 'react'
-import { useBeforeRender } from 'react-babylonjs'
+import React, { useMemo, useRef, useState } from 'react'
+import { useBeforeRender } from 'react-babylonjs';
+import { ClonedMesh } from "../actors/ClonedMesh"
 
-export const RepeatingArena = ({TileClass, fightRootRef}) => {
+export const RepeatingArena = ({tileAssetNameA, tileAssetNameB, velocity}) => {
 
-    const [positions, setPositions] = useState([
+    const positions = useMemo(() => [
+        new Vector3(0, 0, -100),
         new Vector3(0, 0, 0), 
-        new Vector3(0, 0, TileClass.tileLength),
-    ])
+        new Vector3(0, 0, 100),
+    ], [])
 
-    const [lastTilePosition, setLastTilePosition] = useState(0);
+    const transformNodeRef = useRef();
 
-    useBeforeRender(() => {
-        if(!fightRootRef.current) return;
+    useBeforeRender((scene) => {
+        if(!transformNodeRef.current) return;
 
-        const fightPosition = fightRootRef.current.position;
-        const tileLength = TileClass.tileLength;
-        const tilePosition = Math.floor((fightPosition.z + tileLength/2) / tileLength)
+        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        transformNodeRef.current.position.addInPlace(velocity.scale(-deltaS))
 
-        if(tilePosition === lastTilePosition) return;
-        setLastTilePosition(tilePosition);
-
-        const newPositions = [...positions];
-        newPositions[(tilePosition + 1) % 2] = new Vector3(0, 0, ((tilePosition + 1) * tileLength) - (tileLength/2))
-        setPositions(newPositions);
+        if(transformNodeRef.current.position.z < -75){
+            transformNodeRef.current.position.z += 200
+        }
     })
 
-    return <>
-        <TileClass name="tile1" position={positions[0]}/>
-        <TileClass name="tile2" position={positions[1]}/>
-    </>
+    return <transformNode name="repeatingArena" ref={transformNodeRef}>
+        <ClonedMesh assetName={tileAssetNameA} position={positions[0]}/>
+        <ClonedMesh assetName={tileAssetNameB} position={positions[1]}/>
+        <ClonedMesh assetName={tileAssetNameA} position={positions[2]}/>
+    </transformNode>
 }

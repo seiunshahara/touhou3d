@@ -7,7 +7,13 @@ import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { ControlsContainer } from '../components/ControlsContainer';
 import { BindControls } from '../babylon-components/BindControls';
 import { GeneralContainer } from '../babylon-components/gameLogic/GeneralContainer';
+import { Playground } from '../babylon-components/actors/Playground';
+import { Reimu } from '../babylon-components/actors/player/characters/Reimu';
+import { PlayerMovement } from '../babylon-components/actors/player/PlayerMovement';
+import { PlayerCamera } from '../babylon-components/actors/player/PlayerCamera';
+import { FightRoot } from '../babylon-components/actors/FightRoot';
 import "../babylon-components/Shaders"
+import { UI } from '../babylon-components/ui/UI';
 
 export const Game = () => {
     const windowSize = useWindowSize();
@@ -26,6 +32,14 @@ export const Game = () => {
                         <GeneralContainer>
                             <Suspense fallback={false}>
                                 <BindControls />
+                                <FightRoot>
+                                    <UI charactersInDialogue={["reimu", "wriggle"]} activeCharacter={"reimu"} activeCharacterEmotion="neutral"/>
+                                    <Playground />
+                                    <PlayerMovement>
+                                        <Reimu />
+                                        <PlayerCamera />
+                                    </PlayerMovement>
+                                </FightRoot>
                                 <Router>
                                     <Switch>
                                         <Route path="/game/stage1">

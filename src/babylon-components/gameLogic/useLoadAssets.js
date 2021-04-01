@@ -53,6 +53,18 @@ export const useLoadAssets = () => {
                 type:  "model"
             },
             {
+                rootUrl: "/assets/landscapes/stage1/",
+                sceneFilename: "LandscapeAundecimated.glb",
+                name: "stage1TileA",
+                type:  "model"
+            },
+            {
+                rootUrl: "/assets/landscapes/stage1/",
+                sceneFilename: "LandscapeBundecimated.glb",
+                name: "stage1TileB",
+                type:  "model"
+            },
+            {
                 url: "/assets/enemies/textures/blueMagicCircle.png",
                 name: "blueMagicCircle",
                 type:  "texture"
@@ -118,6 +130,21 @@ export const useLoadAssets = () => {
             }
         ];
 
+        ["reimu", "wriggle"].forEach(name => 
+            ["angry", "dissapoint", "excited", "neutral", "shocked", "special", "tired"].forEach(emotion =>
+                assetList.push(
+                    {
+                        url: `/assets/characterPortraits/${name}/${emotion}.png`,
+                        name: `${name}Character${emotion.charAt(0).toUpperCase() + emotion.slice(1)}`,
+                        type: "texture",
+                        postProcess: texture => {
+                            texture.vScale = 0.99
+                        }
+                    }
+                )
+            )
+        )
+
         const assetsManager = new AssetsManager(scene);
         
         assetList.forEach(asset => {
@@ -140,6 +167,10 @@ export const useLoadAssets = () => {
                     assetTask = assetsManager.addTextureTask(asset.name, asset.url);
                     assetTask.onSuccess = (task) => {
                         task.texture.hasAlpha = true;
+
+                        if(asset.postProcess){
+                            asset.postProcess(task.texture)
+                        }
                         tempAssets[task.name] = task.texture;
                     }
                     break;

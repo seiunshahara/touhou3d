@@ -8,9 +8,7 @@ import { makeName } from '../hooks/useName';
 
 let metaEnemies = {};
 
-export const Enemies = ({source}) => {
-    
-    const currentActionList = useMemo(() => makeActionListTimeline(source.epochs), [source.epochs]);
+export const Enemies = ({currentActionList}) => {
     const startTime = useMemo(() => Date.now(), []);
 
     const [enemies, setEnemies] = useState({});

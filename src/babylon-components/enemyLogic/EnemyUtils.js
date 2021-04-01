@@ -2,7 +2,7 @@ export const makeActionListTimeline = (actionList) => {
     let accumulator = 0
 
     actionList.forEach(action => {
-        if(action.wait === undefined) throw new Error("All actions must have a wait")
+        if(action.wait === undefined) action.wait = 0
         action.timeline = accumulator;
         accumulator += action.wait;
     })
