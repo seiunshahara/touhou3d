@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import React, { useMemo } from 'react'
 import { useHistory } from 'react-router';
 import { VerticleMenu } from '../components/VerticleMenu';
@@ -11,6 +12,9 @@ export const Options = () => {
 
     const optionsList = useMemo(() => ({
         "Player": [1, 2, 3, 4, 5],
+        "Bomb": [1, 2, 3],
+        "MUSIC": ["ON", "OFF"],
+        "SFX": ["ON", "OFF"],
         "Back": () => history.push("/menu"),
     }), [history])
 

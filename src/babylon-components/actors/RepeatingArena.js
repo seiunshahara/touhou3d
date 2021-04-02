@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core';
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { useBeforeRender } from 'react-babylonjs';
 import { ClonedMesh } from "../actors/ClonedMesh"
 

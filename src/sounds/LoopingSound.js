@@ -1,3 +1,4 @@
+import { SETTINGS } from "../utils/Settings";
 
 export default class LoopingSound {
     constructor(url, volume = 1, overlap = 2) {
@@ -52,6 +53,8 @@ export default class LoopingSound {
 
     play() {
         if(!this.ready || this.playing) return;
+        if(this.sfx && SETTINGS.SFX === "OFF") return;
+        if(this.music && SETTINGS.MUSIC === "OFF") return;
 
         this.sources.forEach((source, i) => {
             source.start(0, source.buffer.duration * (i/this.sources.length));

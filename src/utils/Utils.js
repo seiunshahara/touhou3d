@@ -53,3 +53,7 @@ export const useEffectDebugger = (effectHook, dependencies, dependencyNames = []
 export const capFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+export const mod = (n, m) => {
+    return ((n % m) + m) % m;
+}

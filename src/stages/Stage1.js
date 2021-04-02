@@ -30,8 +30,8 @@ export const Stage1 = () => {
   }, [])
 
   return <>
-    <UIExecutor currentActionList={UIActionList} />
-    <Enemies currentActionList={enemyActionList} />
+    <UIExecutor currentActionList={UIActionList} setEpochIndex={setEpochIndex}/>
+    <Enemies currentActionList={enemyActionList} setEpochIndex={setEpochIndex}/>
     <RepeatingArena tileAssetNameA="stage1TileA" tileAssetNameB="stage1TileB" velocity={new Vector3(0, 0, 10)} />
     <hemisphericLight name='light1' intensity={0.2} direction={Vector3.Up()} />
     <directionalLight name="dl" intensity={0.5} direction={new Vector3(0, -0.5, 0.5)} position={new Vector3(0, 50, 5)}>

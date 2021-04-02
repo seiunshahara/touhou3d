@@ -11,7 +11,9 @@ export const StageStartQuote = ({text}) => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         const textColor = "white"
-        textOnCtx(ctx, text, 0.1, 0.2, 0.6, textColor)
+        textOnCtx(ctx, text[0], 0.05, 0, 0.2, textColor)
+        textOnCtx(ctx, text[1], 0.06, 0.1, 0.3, textColor)
+        textOnCtx(ctx, text[2], 0.03, 0.1, 0.4, textColor)
 
         textTexture.update();
 

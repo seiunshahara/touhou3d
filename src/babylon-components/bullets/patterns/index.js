@@ -12,13 +12,13 @@ export const makeBulletPattern = (patternOptions, parent) => {
     else{
         switch(patternOptions.pattern){
             case "empty": 
-                _pattern = makeEmptyPattern(patternOptions)
+                _pattern = makeEmptyPattern(patternOptions, parent)
                 break;
             case "single": 
-                _pattern = makeSinglePattern(patternOptions)
+                _pattern = makeSinglePattern(patternOptions, parent)
                 break;
             case "burst": 
-                _pattern = makeBurstPattern(patternOptions)
+                _pattern = makeBurstPattern(patternOptions, parent)
                 break;
             default:
                 throw new Error("Pattern type not supported: " + patternOptions.pattern);

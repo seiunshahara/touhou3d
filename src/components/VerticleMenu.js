@@ -1,8 +1,9 @@
-import { List, ListItem } from '@material-ui/core'
+import { Box, List, ListItem } from '@material-ui/core'
 import { isFunction } from 'lodash';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useKeydown } from '../hooks/useKeydown';
 import { choiceSound, selectSound } from '../sounds/SoundSystem';
+import { SETTINGS, SET_SETTINGS } from '../utils/Settings';
 
 const mod = function (num, n) {
     return ((num % n) + n) % n;
@@ -27,6 +28,34 @@ export const VerticleMenuSingle = ({selected, menuKey, slanted, index}) => {
 }
 
 export const VerticleMenuArray = ({selected, menuKey, menuValue, slanted, index}) => {
+    const styleAddin = selected ? {
+        color: "white",
+        WebkitTextStrokeColor: "black"
+    } : {}
+
+    const [choice, setChoice] = useState(SETTINGS[menuKey.toUpperCase()]);
+
+    useEffect(() => {
+        SETTINGS[menuKey.toUpperCase()] = choice;
+        SET_SETTINGS();
+     }, [choice]);
+
+    const arrayIndex = menuValue.indexOf(choice);
+
+    useKeydown("LEFT", () => {
+        if(!selected) return;
+        choiceSound.play();
+        const newArrayIndex = mod(arrayIndex - 1, menuValue.length)
+        setChoice(menuValue[newArrayIndex])
+    })
+
+    useKeydown("RIGHT", () => {
+        if(!selected) return;
+        choiceSound.play();
+        const newArrayIndex = mod(arrayIndex + 1, menuValue.length)
+        setChoice(menuValue[newArrayIndex])
+    })
+
     return (<ListItem style={{
         left: slanted ? -index * 3 + "vh" : 0,
         transition: "left 2s",
@@ -34,7 +63,21 @@ export const VerticleMenuArray = ({selected, menuKey, menuValue, slanted, index}
         WebkitTextStrokeColor: "white",
     }}
         key={menuKey}>
-        {menuKey + " " + menuValue.join(" ")}
+        <Box display="flex" position="relative" left="-250px">
+            <span style={{...styleAddin}}>{menuKey}</span>
+            <Box position="absolute" left="300px">
+                {menuValue.map(val => {
+                    const selected = val === choice;
+                    
+                    const styleAddin = selected ? {
+                        color: "white",
+                        WebkitTextStrokeColor: "black"
+                    } : {}
+
+                    return <span key={val} style={{padding: "10px", ...styleAddin}}>{val}</span>
+                })}
+            </Box>
+        </Box>
     </ListItem>)
 }
 
@@ -66,7 +109,7 @@ export const VerticleMenu = ({ menuMap, active = true, slanted = false }) => {
     })
 
     return (
-        <List style={{ visibility: active ? "visible" : "hidden" }}>
+        <List style={{ visibility: active ? "visible" : "hidden"}}>
             {menuKeys.map((menuKey, i) => {
                 const menuValue = menuMap[menuKey];
                 const menuItemProps = {

@@ -50,6 +50,7 @@
     "jest-circus": "26.6.0",
     "jest-resolve": "26.6.0",
     "jest-watch-typeahead": "0.6.1",
+    "local-storage": "^2.0.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "0.11.3",
     "next-power-of-two": "^1.0.0",

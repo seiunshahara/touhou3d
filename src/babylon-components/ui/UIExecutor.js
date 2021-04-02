@@ -32,17 +32,18 @@ export const UIExecutor = ({currentActionList}) => {
             default:
                 throw new Error("Unknown UI command: " + action.action)
         }
-    }, [charactersInDialogue, setActiveCharacter, setActiveCharacterEmotion, setActiveCharacterText, setCharactersInDialogue])
+    }, [charactersInDialogue, setActiveCharacter, setActiveCharacterEmotion, setActiveCharacterText, setCharactersInDialogue, setStageStartQuote])
 
-    const nextUIAction = useCallback(() => {
+    const nextUIAction = () => {
         if(actionList.length === 0) return;
         const action = actionList.shift();
         doUIAction(action);
 
-    }, [actionList, doUIAction])
+    }
 
     useEffect(() => {
         nextUIAction();
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentActionList])
 
     useKeydown("DIALOGUE", () => {

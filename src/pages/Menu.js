@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -8,6 +8,7 @@ import { MainMenu } from './MainMenu';
 import { DifficultySelect } from './DifficultySelect';
 import { CharacterSelect } from './CharacterSelect';
 import { Options } from './Options';
+import { ControlsContext } from '../components/ControlsContainer';
 
 const useStyles = makeStyles({
     container: {
@@ -17,25 +18,34 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        fontSize: "5vh"
+        fontSize: "5vh",
     }
 })
 
-export const Menu = ({menuAudio}) => {
+export const Menu = () => {
     const classes = useStyles();
 
+    const {keyUpHandler, keyDownHandler} = useContext(ControlsContext)
+
     return (
-        <Box className={classes.container}>
+        <Box 
+            onKeyUp = {keyUpHandler}
+            onKeyDown = {keyDownHandler}
+            onPointerUp = {keyUpHandler}
+            onPointerDown = {keyDownHandler}
+            className={classes.container}
+            tabIndex={0}
+            >
             <Router>
                 <Switch>
                     <Route exact path="/">
-                        <MainMenu menuAudio={menuAudio}/>
+                        <MainMenu/>
                     </Route>
                     <Route exact path="/menu">
-                        <MainMenu menuAudio={menuAudio} menuOpenInit/>
+                        <MainMenu menuOpenInit/>
                     </Route>
                     <Route exact path="/menu/options">
-                        <Options menuAudio={menuAudio}/>
+                        <Options/>
                     </Route>
                     <Route exact path="/menu/game/difficultySelect">
                         <DifficultySelect next={"/menu/game/characterSelect"}/>

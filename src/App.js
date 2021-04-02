@@ -4,20 +4,18 @@ import { GlobalsContainer } from './components/GlobalsContainer';
 import { Game } from './pages/Game';
 import { Menu } from './pages/Menu';
 
-const audio = new Audio("menu_music.wav");
-
 function App() {
 
     return (
         <GlobalsContainer>
-            <ControlsContainer>
+            <ControlsContainer outsideOfRenderer>
                 <Router>
                     <Switch>
                         <Route path="/game/">
                             <Game />
                         </Route>
                         <Route path="/">
-                            <Menu menuAudio={audio}/>
+                            <Menu/>
                         </Route>
                     </Switch>
                 </Router>
