@@ -87,3 +87,39 @@ export const glsl = (template, ...args) => {
     }
     return str + template[template.length - 1]
 }
+
+const getLines = (ctx, text, maxWidth) => {
+    var words = text.split(" ");
+    var lines = [];
+    var currentLine = words[0];
+
+    for (var i = 1; i < words.length; i++) {
+        var word = words[i];
+        var width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+            currentLine += " " + word;
+        } else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
+
+export const textOnCtx = (ctx, text, size, x, y, fill, stroke = "black", strokeWidth = 8) => {
+
+    ctx.font = `${size * ctx.canvas.height}px tuhu`;
+    ctx.textAlign = "left";
+
+    const lines = getLines(ctx, text, (1 - (x * 2)) * ctx.canvas.width)
+
+    lines.forEach((line, i) => {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = strokeWidth;
+        ctx.strokeText(line, x * ctx.canvas.width, y * ctx.canvas.height + i * (size * ctx.canvas.height * 1.1));
+
+        ctx.fillStyle = fill;
+        ctx.fillText(line, x * ctx.canvas.width, y * ctx.canvas.height + i * (size * ctx.canvas.height * 1.1));
+    })
+}

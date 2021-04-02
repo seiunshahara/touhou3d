@@ -23,13 +23,13 @@ export const PlayerMovement = ({children}) => {
 
         if(position.x > ARENA_WIDTH/2) position.x = ARENA_WIDTH/2
         if(position.x < -ARENA_WIDTH/2) position.x = -ARENA_WIDTH/2
-        if(position.y > ARENA_HEIGHT + ARENA_FLOOR) position.y = ARENA_HEIGHT + ARENA_FLOOR
+        if(position.y > ARENA_HEIGHT) position.y = ARENA_HEIGHT
         if(position.y < ARENA_FLOOR) position.y = ARENA_FLOOR
 
         actorPositions.player = transformNodeRef.current.getAbsolutePosition();
     })
 
-    return <transformNode ref={transformNodeRef} name="playerTransform" position={new Vector3(0, 1, -ARENA_LENGTH/2)}>
+    return <transformNode ref={transformNodeRef} name="playerTransform" position={new Vector3(0, 5, -ARENA_LENGTH/2)}>
         {children}
     </transformNode>
 }

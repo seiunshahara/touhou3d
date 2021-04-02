@@ -4,6 +4,7 @@ import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";
 import { makeParticleSystemFromSingle } from "../effects/makeParticleSystem";
 import {SYSTEMS_PER_WHEEL} from "../../utils/Constants"
+import { capFirst } from "../../utils/Utils"
 
 export const useLoadAssets = () => {
     const scene = useScene();
@@ -54,13 +55,13 @@ export const useLoadAssets = () => {
             },
             {
                 rootUrl: "/assets/landscapes/stage1/",
-                sceneFilename: "LandscapeAundecimated.glb",
+                sceneFilename: "landscapeTileAdraco.glb",
                 name: "stage1TileA",
                 type:  "model"
             },
             {
                 rootUrl: "/assets/landscapes/stage1/",
-                sceneFilename: "LandscapeBundecimated.glb",
+                sceneFilename: "landscapeTileBdraco.glb",
                 name: "stage1TileB",
                 type:  "model"
             },
@@ -93,11 +94,14 @@ export const useLoadAssets = () => {
             {
                 type: "function",
                 name: "sphere",
-                generator: () => MeshBuilder.CreateSphere("sphere", {
-                    diameter: 2., 
-                    segments: 10,
-                    updatable: true
-                }, scene)
+                generator: () => {
+                    const mesh = MeshBuilder.CreateSphere("sphere", {
+                        diameter: 2., 
+                        segments: 10,
+                        updatable: true
+                    }, scene)
+                    mesh.isVisible = false;
+                }
             }, 
             {
                 type: "function",
@@ -113,6 +117,7 @@ export const useLoadAssets = () => {
 
                     const matrix = matrixX.multiply(matrixZ);  
                     mesh.bakeTransformIntoVertices(matrix);
+                    mesh.isVisible = false;
                     return mesh;
                 }
             },
@@ -125,6 +130,7 @@ export const useLoadAssets = () => {
                         height: .25,
                         updatable: true
                     }, scene)
+                    mesh.isVisible = false;
                     return mesh;
                 }
             }
@@ -135,7 +141,7 @@ export const useLoadAssets = () => {
                 assetList.push(
                     {
                         url: `/assets/characterPortraits/${name}/${emotion}.png`,
-                        name: `${name}Character${emotion.charAt(0).toUpperCase() + emotion.slice(1)}`,
+                        name: `${name}Character${capFirst(emotion)}`,
                         type: "texture",
                         postProcess: texture => {
                             texture.vScale = 0.99

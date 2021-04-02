@@ -6,9 +6,10 @@ import { ClonedMesh } from "../actors/ClonedMesh"
 export const RepeatingArena = ({tileAssetNameA, tileAssetNameB, velocity}) => {
 
     const positions = useMemo(() => [
-        new Vector3(0, 0, -100),
+        new Vector3(0, 0, -125),
         new Vector3(0, 0, 0), 
-        new Vector3(0, 0, 100),
+        new Vector3(0, 0, 125),
+        new Vector3(0, 0, 250),
     ], [])
 
     const transformNodeRef = useRef();
@@ -19,8 +20,8 @@ export const RepeatingArena = ({tileAssetNameA, tileAssetNameB, velocity}) => {
         const deltaS = scene.getEngine().getDeltaTime() / 1000;
         transformNodeRef.current.position.addInPlace(velocity.scale(-deltaS))
 
-        if(transformNodeRef.current.position.z < -75){
-            transformNodeRef.current.position.z += 200
+        if(transformNodeRef.current.position.z < -200){
+            transformNodeRef.current.position.z += 250
         }
     })
 
@@ -28,5 +29,6 @@ export const RepeatingArena = ({tileAssetNameA, tileAssetNameB, velocity}) => {
         <ClonedMesh assetName={tileAssetNameA} position={positions[0]}/>
         <ClonedMesh assetName={tileAssetNameB} position={positions[1]}/>
         <ClonedMesh assetName={tileAssetNameA} position={positions[2]}/>
+        <ClonedMesh assetName={tileAssetNameB} position={positions[3]}/>
     </transformNode>
 }

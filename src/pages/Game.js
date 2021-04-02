@@ -14,6 +14,7 @@ import { PlayerCamera } from '../babylon-components/actors/player/PlayerCamera';
 import { FightRoot } from '../babylon-components/actors/FightRoot';
 import "../babylon-components/Shaders"
 import { UI } from '../babylon-components/ui/UI';
+import { Vector3 } from '@babylonjs/core';
 
 export const Game = () => {
     const windowSize = useWindowSize();
@@ -25,7 +26,7 @@ export const Game = () => {
                 antialias
                 canvasId='babylonJS' >
                 <Scene 
-                    clearColor={new Color3(.529, .808, .922)}
+                    clearColor={new Color3(.1, .1, .2)}
                     render
                 >   
                     <ControlsContainer>

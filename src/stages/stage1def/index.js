@@ -1,5 +1,94 @@
 import { DefaultFairy } from "./DefaultFairy";
 
+/**
+ * map.epochs[0].push({
+        type: 'UI',
+        action: 'init',
+        actors: ["reimu", "wriggle"],
+        text: "Hey!"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "reimu",
+        text: "Hey Wriggle?"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "wriggle",
+        text: "Yea Reimu?"
+    })
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "reimu",
+        emotion: "angry",
+        text: "Fuck you"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "wriggle",
+        emotion: "dissapoint",
+        text: "That wasn't very nice"
+    })
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "reimu",
+        emotion: "excited",
+        text: "I bet you smeel like poo"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "wriggle",
+        emotion: "shocked",
+        text: "I DO NOT!"
+    })
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "reimu",
+        emotion: "excited",
+        text: "Yea you do"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "wriggle",
+        text: "That's it! I'm gonna say it"
+    })
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "reimu",
+        emotion: "tired",
+        text: "Say what?"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "wriggle",
+        text: "N"
+    })
+
+    map.epochs[0].push({
+        type: 'UI',
+        action: 'talk',
+        actor: "reimu",
+        emotion: "shocked",
+        text: "OH GOD NO"
+    })
+*/
+
 const stage1def = () => {
     const map = {
         epochs: [
@@ -9,122 +98,44 @@ const stage1def = () => {
 
     map.epochs[0].push({
         type: 'UI',
-        action: 'init',
-        actors: ["reimu", "wriggle"],
+        action: 'stageStartQuote',
+        text: 'Tonight\'s gonna be a funky night',
+        wait: 7000
     })
+
+    for(let i = 0; i < 12; i++){
+        map.epochs[0].push({
+            type: 'spawn',
+            enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+            wait: 250
+        })
+    }
 
     map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "wriggle",
-        text: "blah blah blah"
+        type: 'empty',
+        wait: 4000
     })
+
+    for(let i = 0; i < 12; i++){
+        map.epochs[0].push({
+            type: 'spawn',
+            enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+            wait: 250
+        })
+    }
 
     map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "reimu",
-        text: "blah blah blah"
+        type: 'empty',
+        wait: 4000
     })
 
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "wriggle",
-        emotion: "angry",
-        text: "blah blah blah"
-    })
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "reimu",
-        emotion: "special",
-        text: "blah blah blah"
-    })
-
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "wriggle",
-        emotion: "tired",
-        text: "blah blah blah"
-    })
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "reimu",
-        text: "blah blah blah"
-    })
-
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "wriggle",
-        emotion: "shocked",
-        text: "blah blah blah"
-    })
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "reimu",
-        emotion: "excited",
-        text: "blah blah blah"
-    })
-
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "wriggle",
-        emotion: "dissapoint",
-        text: "blah blah blah"
-    })
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "reimu",
-        text: "blah blah blah"
-    })
-
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'talk',
-        actor: "wriggle",
-        text: "blah blah blah"
-    })
-
-    // for(let i = 0; i < 12; i++){
-    //     map.epochs[0].push({
-    //         type: 'spawn',
-    //         enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-    //         wait: 250
-    //     })
-    // }
-
-    // map.epochs[0].push({
-    //     type: 'empty',
-    //     wait: 4000
-    // })
-
-    // for(let i = 0; i < 12; i++){
-    //     map.epochs[0].push({
-    //         type: 'spawn',
-    //         enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-    //         wait: 250
-    //     })
-    // }
-
-    // map.epochs[0].push({
-    //     type: 'empty',
-    //     wait: 4000
-    // })
-
-    // for(let i = 0; i < 12; i++){
-    //     map.epochs[0].push({
-    //         type: 'spawn',
-    //         enemy: DefaultFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-    //         wait: 250
-    //     })
-    // }
+    for(let i = 0; i < 12; i++){
+        map.epochs[0].push({
+            type: 'spawn',
+            enemy: DefaultFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+            wait: 250
+        })
+    }
 
     return map;
 }

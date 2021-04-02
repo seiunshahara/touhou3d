@@ -32,6 +32,7 @@ export const makeBulletMesh = (meshOptions, assets) => {
 
     _mesh.alwaysSelectAsActiveMesh = true;
     _mesh.doNotSyncBoundingInfo = true;
+    _mesh.isVisible = true;
 
     _mesh.makeInstances = (num) => {
         const bufferMatrices = bufferMatricesSource.slice(num * 16);

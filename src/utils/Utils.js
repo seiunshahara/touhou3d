@@ -49,3 +49,7 @@ export const useEffectDebugger = (effectHook, dependencies, dependencyNames = []
     //eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(effectHook, dependencies);
 };
+
+export const capFirst = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}

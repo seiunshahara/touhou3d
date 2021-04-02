@@ -7,6 +7,7 @@ import { Enemies } from '../babylon-components/enemyLogic/Enemies';
 import stage1def from "./stage1def"
 import { makeActionListTimeline } from '../babylon-components/enemyLogic/EnemyUtils';
 import { UIExecutor } from '../babylon-components/ui/UIExecutor';
+import { stage1Theme } from '../sounds/SoundSystem';
 
 
 export const Stage1 = () => {
@@ -19,17 +20,21 @@ export const Stage1 = () => {
 
   useEffect(() => {
     scene.fogMode = Scene.FOGMODE_LINEAR;
-    scene.fogStart = 400.0;
-    scene.fogEnd = 800.0;
-    scene.fogColor = new Color3(.529, .808, .922);
+    scene.fogStart = 70.0;
+    scene.fogEnd = 100.0;
+    scene.fogColor = new Color3(.1, .1, .2);
   }, [scene])
+
+  useEffect(() => {
+    stage1Theme.play();
+  }, [])
 
   return <>
     <UIExecutor currentActionList={UIActionList} />
     <Enemies currentActionList={enemyActionList} />
-    {/* <RepeatingArena tileAssetNameA="stage1TileA" tileAssetNameB="stage1TileB" velocity={new Vector3(0, 0, 10)} /> */}
+    <RepeatingArena tileAssetNameA="stage1TileA" tileAssetNameB="stage1TileB" velocity={new Vector3(0, 0, 10)} />
     <hemisphericLight name='light1' intensity={0.2} direction={Vector3.Up()} />
-    <directionalLight name="dl" intensity={1} direction={new Vector3(0, -0.5, 0.5)} position={new Vector3(0, 50, 5)}>
+    <directionalLight name="dl" intensity={0.5} direction={new Vector3(0, -0.5, 0.5)} position={new Vector3(0, 50, 5)}>
     </directionalLight>
   </>
 }
