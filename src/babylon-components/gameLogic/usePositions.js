@@ -20,6 +20,14 @@ export const usePositions = () => {
         actorPositions.enemyKillSelfs[id] = () => {};
     }, [])
 
+    const killEnemy = useCallback((id) => {
+        if(!actorPositions.enemyKillSelfs[id].dead){
+            actorPositions.enemyKillSelfs[id]();
+            actorPositions.enemyKillSelfs[id].dead = true;
+            removeEnemy(id);
+        }
+    }, [removeEnemy])
+
     useBeforeRender(() => {
         actorPositions.enemies.forEach((vector, i) => {
             actorPositions.enemiesBuffer[i * 3 + 0] = vector.x
@@ -28,5 +36,5 @@ export const usePositions = () => {
         })
     })
 
-    return {addEnemy, removeEnemy}
+    return {addEnemy, removeEnemy, killEnemy}
 }

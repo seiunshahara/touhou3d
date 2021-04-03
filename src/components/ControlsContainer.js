@@ -21,7 +21,7 @@ export const ControlsContainer = ({ children, outsideOfRenderer }) => {
         39: "RIGHT", //right arrow
         68: "RIGHT", //d
         16: "SLOW", //shift
-        32: "DIALOGUE", //space
+        32: "BOMB", //space
         1: "SHOOT", //click
     });
 

@@ -31,10 +31,6 @@ export const useLoadAssets = () => {
     }, [scene])
 
     useEffect(() => {
-        //Anim setup 
-        Animation.AllowMatricesInterpolation = true;
-        scene.animationPropertiesOverride = new AnimationPropertiesOverride()
-        scene.animationPropertiesOverride.enableBlending = true;
 
         //Particles
         ParticleHelper.BaseAssetsUrl = "/assets/particles";
@@ -45,6 +41,11 @@ export const useLoadAssets = () => {
             {
                 json: "deathParticles",
                 name: "deathParticles",
+                type: "particles"
+            },
+            {
+                json: "chargeBomb",
+                name: "chargeBomb",
                 type: "particles"
             },
             {
