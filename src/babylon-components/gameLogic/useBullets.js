@@ -1,5 +1,5 @@
 import { useBeforeRender, useScene } from 'react-babylonjs';
-import { itemGet } from '../../sounds/SoundSystem';
+import { itemGet } from '../../sounds/SFX';
 import { MAX_ENEMIES } from '../../utils/Constants';
 import { makeBulletBehaviour } from '../bullets/behaviours';
 import { BulletGroup } from '../bullets/BulletGroup';

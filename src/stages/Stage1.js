@@ -7,7 +7,7 @@ import { Enemies } from '../babylon-components/enemyLogic/Enemies';
 import stage1def from "./stage1def"
 import { makeActionListTimeline } from '../babylon-components/enemyLogic/EnemyUtils';
 import { UIExecutor } from '../babylon-components/ui/UIExecutor';
-import { stage1Theme } from '../sounds/SoundSystem';
+import Music from '../sounds/Music';
 
 
 export const Stage1 = () => {
@@ -26,7 +26,7 @@ export const Stage1 = () => {
   }, [scene])
 
   useEffect(() => {
-    stage1Theme.play();
+    Music.play("stage1Theme");
   }, [])
 
   return <>

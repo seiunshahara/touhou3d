@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -9,6 +9,7 @@ import { DifficultySelect } from './DifficultySelect';
 import { CharacterSelect } from './CharacterSelect';
 import { Options } from './Options';
 import { ControlsContext } from '../components/ControlsContainer';
+import Music from '../sounds/Music';
 
 const useStyles = makeStyles({
     container: {
@@ -23,6 +24,10 @@ const useStyles = makeStyles({
 })
 
 export const Menu = () => {
+    useEffect(() => {
+        Music.play("menuTheme")
+    }, [])
+
     const classes = useStyles();
 
     const {keyUpHandler, keyDownHandler} = useContext(ControlsContext)

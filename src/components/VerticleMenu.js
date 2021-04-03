@@ -2,7 +2,7 @@ import { Box, List, ListItem } from '@material-ui/core'
 import { isFunction } from 'lodash';
 import React, { useEffect, useState } from 'react'
 import { useKeydown } from '../hooks/useKeydown';
-import { choiceSound, selectSound } from '../sounds/SoundSystem';
+import { choiceSound, selectSound } from '../sounds/SFX';
 import { SETTINGS, SET_SETTINGS } from '../utils/Settings';
 
 const mod = function (num, n) {

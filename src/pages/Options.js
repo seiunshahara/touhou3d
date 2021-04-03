@@ -1,4 +1,3 @@
-import { Box } from '@material-ui/core';
 import React, { useMemo } from 'react'
 import { useHistory } from 'react-router';
 import { VerticleMenu } from '../components/VerticleMenu';

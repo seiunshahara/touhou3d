@@ -8,8 +8,6 @@ export default class LoopingSound {
 
         this.initFunc = () => this.init();
 
-        document.body.addEventListener('mousemove', this.initFunc);
-        document.body.addEventListener('scroll', this.initFunc);
         document.body.addEventListener('keydown', this.initFunc);
         document.body.addEventListener('click', this.initFunc);
         document.body.addEventListener('touchstart',this.initFunc);
@@ -18,8 +16,6 @@ export default class LoopingSound {
     init() {
         if(this.didInit) return;
 
-        document.body.removeEventListener('mousemove', this.initFunc);
-        document.body.removeEventListener('scroll', this.initFunc);
         document.body.removeEventListener('keydown', this.initFunc);
         document.body.removeEventListener('click', this.initFunc);
         document.body.removeEventListener('touchstart',this.initFunc);
@@ -53,8 +49,7 @@ export default class LoopingSound {
 
     play() {
         if(!this.ready || this.playing) return;
-        if(this.sfx && SETTINGS.SFX === "OFF") return;
-        if(this.music && SETTINGS.MUSIC === "OFF") return;
+        if(SETTINGS.SFX === "OFF") return;
 
         this.sources.forEach((source, i) => {
             source.start(0, source.buffer.duration * (i/this.sources.length));

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useBeforeRender } from 'react-babylonjs';
 import { useName } from '../../../hooks/useName';
 import { useKeydown, useKeyup } from '../../../../hooks/useKeydown';
-import { playerShoot } from '../../../../sounds/SoundSystem';
+import { playerShoot } from '../../../../sounds/SFX';
 import { useNormalizedFrameSkip } from '../../../hooks/useNormalizedFrameSkip';
 import { useAddBulletGroup } from '../../../hooks/useAddBulletGroup'
 import { useControl } from '../../../hooks/useControl';

@@ -1,4 +1,4 @@
-import { enemyDeath } from "../../sounds/SoundSystem";
+import { enemyDeath } from "../../sounds/SFX";
 import { makeParticleSystem } from "./makeParticleSystem"
 
 export const genericEnemyDeath = (emitter, assets) => {

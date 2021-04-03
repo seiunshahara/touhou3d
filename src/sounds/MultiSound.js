@@ -43,8 +43,7 @@ export default class MultiSound {
 
     play() {
         if(!this.ready) return;
-        if(this.sfx && SETTINGS.SFX === "OFF") return;
-        if(this.music && SETTINGS.MUSIC === "OFF") return;
+        if(SETTINGS.SFX === "OFF") return;
 
         this.stop();
 

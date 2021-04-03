@@ -1,12 +1,10 @@
-import { SETTINGS } from "../utils/Settings";
-
-export default class LazyLoopingSound {
+export default class BGM {
     constructor(url, volume = 1) {
         this.url = url;
         this.volume = volume;
     }
 
-    init() {
+    init(playAfter) {
         if(this.didInit) return;
 
         this.didInit = true;
@@ -27,26 +25,23 @@ export default class LazyLoopingSound {
             this.source.loop = true;
             this.source.connect(this.gainNode);
             this.ready = true;
-            this.play();
+
+            if(playAfter){
+                this.play();
+            }
         })
         .catch(err => console.error(err));
     }
 
     play() {
-        if(!this.ready){
-            this.init()
-        }
-        if(this.playing) return;
-
-        if(this.sfx && SETTINGS.SFX === "OFF") return;
-        if(this.music && SETTINGS.MUSIC === "OFF") return;
+        if(!this.ready || this.isPlaying) return false;
 
         this.source.start(0);
-        this.playing = true;
+        this.isPlaying = true;
     }
 
     stop() {
-        if(!this.ready || !this.playing) return;
+        if(!this.ready || !this.isPlaying) return;
 
         this.source.stop(0); // this destroys the buffer source
         const newSource = this.audioContext.createBufferSource(); // so we need to create a new one
@@ -55,7 +50,6 @@ export default class LazyLoopingSound {
         newSource.connect(this.gainNode);
 
         this.source = newSource;
-
-        this.playing = false;
+        this.isPlaying = false;
     }
 }

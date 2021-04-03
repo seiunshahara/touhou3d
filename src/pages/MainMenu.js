@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { VerticleMenu } from '../components/VerticleMenu';
 import { useKeydown } from '../hooks/useKeydown';
 import { useHistory } from 'react-router';
-import { menuTheme } from '../sounds/SoundSystem';
 
 const useStyles = makeStyles({
     titlePos1: {
@@ -50,6 +49,7 @@ const useStyles = makeStyles({
 })
 
 export const MainMenu = ({menuOpenInit = false}) => {
+
     const classes = useStyles();
     const [menuOpen, setMenuOpen] = useState(menuOpenInit);
     const history = useHistory();
@@ -57,7 +57,6 @@ export const MainMenu = ({menuOpenInit = false}) => {
     const openMenu = () => {
         if (menuOpen) return;
 
-        menuTheme.play();
         setMenuOpen(true);
     }
 

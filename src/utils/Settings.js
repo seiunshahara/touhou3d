@@ -1,5 +1,6 @@
 import ls from "local-storage"
-import * as SOUNDS from "../sounds/SoundSystem";
+import Music from "../sounds/Music";
+import * as SOUNDS from "../sounds/SFX";
 
 export const SETTINGS = ls('SETTINGS') ? JSON.parse(ls('SETTINGS')) : {
     PLAYER: 3,
@@ -11,15 +12,17 @@ export const SETTINGS = ls('SETTINGS') ? JSON.parse(ls('SETTINGS')) : {
 }
 
 export const SET_SETTINGS = () => {
+    if(SETTINGS.MUSIC === "ON"){
+        Music.play();
+    }
+
     if(SETTINGS.MUSIC === "OFF"){
-        for(let sound in SOUNDS){
-            if(SOUNDS[sound].stop && SOUNDS[sound].music) SOUNDS[sound].stop()
-        }
+        Music.stop();
     }
 
     if(SETTINGS.SFX === "OFF"){
         for(let sound in SOUNDS){
-            if(SOUNDS[sound].stop && SOUNDS[sound].sfx) SOUNDS[sound].stop()
+            if(SOUNDS[sound].stop) SOUNDS[sound].stop()
         }
     }
 

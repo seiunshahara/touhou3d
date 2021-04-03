@@ -11,12 +11,12 @@ export const CharacterSelect = ({back, next}) => {
 
     const choose = useCallback((character) => {
         setGlobal("character", character);
-        history.push(next)
+        window.location.href = next;
     }, [history, setGlobal, next])
 
     const characterOptions = useMemo(() => ({
         "Marisa": () => choose("MARISA"),
-        "Reimu": () => {},
+        "Reimu": () => choose("REIMU"),
     }), [choose])
 
     return (
