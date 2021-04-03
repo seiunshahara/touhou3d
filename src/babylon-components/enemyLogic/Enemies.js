@@ -6,10 +6,11 @@ import { Enemy } from './Enemy';
 import { makeName } from '../hooks/useName';
 
 let metaEnemies = {};
-let timeSinceStart = 0;
 
 export const Enemies = ({currentActionList}) => {
-    const startTime = useMemo(() => Date.now(), []);
+
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+    const timeSinceStart = useMemo(() => ({current: 0}), [currentActionList]);
 
     const [enemies, setEnemies] = useState({});
     const addEffect = useAddEffect();
@@ -47,17 +48,17 @@ export const Enemies = ({currentActionList}) => {
     useBeforeRender((scene) => {
 
         const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;
-        timeSinceStart += deltaS * 1000;
+        timeSinceStart.current += deltaS * 1000;
 
         currentActionList.some(action => {
-            if(action.timeline < timeSinceStart) {
+            if(action.timeline < timeSinceStart.current) {
                 executeAction(action);
                 return false;
             }
             return true;
         })
 
-        filterInPlace(currentActionList, action => action.timeline >= timeSinceStart)
+        filterInPlace(currentActionList, action => action.timeline >= timeSinceStart.current)
 
         if(metaEnemies !== enemies){
             setEnemies(metaEnemies);

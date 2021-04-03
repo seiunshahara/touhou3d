@@ -5,6 +5,7 @@ import { CharacterDialogueText } from './CharacterDialogueText'
 import { CharacterPortrait } from './CharacterPortrait'
 import { StageStartQuote } from './StageStartQuote'
 import { IngameMenu } from "./IngameMenu"
+import { selectSound } from '../../sounds/SFX'
 
 const mainCharacters = ["reimu"]
 
@@ -15,6 +16,7 @@ export const UI = () => {
     const [characters, setCharacters] = useState([])
 
     useKeydown("ESCAPE", () => {
+        selectSound.play()
         setPaused(paused => !paused)
     })
 

@@ -9,25 +9,14 @@ import { ProceduralTexture } from "@babylonjs/core/Materials/Textures/Procedural
  * @see https://doc.babylonjs.com/how_to/how_to_use_procedural_textures#creating-custom-procedural-textures
  */
 
- const _clientWaitAsync = function (engine, sync, activePPB, flags, interval_ms) {
-    if (flags === void 0) { flags = 0; }
-    if (interval_ms === void 0) { interval_ms = 50; }
-    var gl = engine._gl;
-    return new Promise(function (resolve, reject) {
-        var check = function () {
-            var res = gl.clientWaitSync(sync, flags, 0);
-            if (res === gl.WAIT_FAILED) {
-                reject();
-                return;
-            }
-            if (res === gl.TIMEOUT_EXPIRED) {
-                setTimeout(check, interval_ms);
-                return;
-            }
-            resolve(activePPB);
-        };
-        setTimeout(check, interval_ms);
-    });
+const readLatency = 16;
+
+export const allSyncs = {
+    syncs: [],
+    resolves: [],
+    rejects: [],
+    buffers: [],
+    PPBs: []
 };
 
 const _readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer) {
@@ -35,7 +24,7 @@ const _readTexturePixels = function (engine, texture, width, height, faceIndex, 
     if (level === void 0) { level = 0; }
     if (buffer === void 0) { buffer = null; }
 
-    const numPPB = 8;
+    const numPPB = readLatency;
 
     var gl = engine._gl;
     if (!gl) {
@@ -50,7 +39,7 @@ const _readTexturePixels = function (engine, texture, width, height, faceIndex, 
     }
     if (!texture._PPBWheel) {
         texture._PPBWheel = [];
-        for(let i = 0; i < numPPB; i++){
+        for (let i = 0; i < numPPB; i++) {
             const newPPB = gl.createBuffer();
             if (!newPPB) {
                 throw new Error("Unable to create PPB");
@@ -100,13 +89,20 @@ const _readTexturePixels = function (engine, texture, width, height, faceIndex, 
     }
     gl.flush();
 
-    return _clientWaitAsync(engine, sync, texture._activePPB, 0).then(function (activePPB) {
-        gl.deleteSync(sync);
-        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, activePPB);
-        gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, buffer);
-        gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
-        return buffer;
-    });
+    allSyncs.syncs.push(sync);
+
+    let promiseResolve;
+    let promiseReject;
+    const returnPromise = new Promise(function (resolve, reject){
+        promiseResolve = resolve;
+        promiseReject = reject;
+    })
+
+    allSyncs.resolves.push(promiseResolve)
+    allSyncs.rejects.push(promiseReject)
+    allSyncs.buffers.push(buffer);
+    allSyncs.PPBs.push(texture._activePPB);
+    return returnPromise;
 };
 
 var CustomCustomProceduralTexture = /** @class */ (function (_super) {
@@ -138,7 +134,7 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
      * @returns true if ready, otherwise, false.
      */
     CustomCustomProceduralTexture.prototype.isReady = function () {
-        if(this.sleep) return false;
+        if (this.sleep) return false;
         if (!_super.prototype.isReady.call(this)) {
             return false;
         }
@@ -155,8 +151,8 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
      * @param useCameraPostProcess Define if camera post process should be applied to the texture
      */
     CustomCustomProceduralTexture.prototype.render = function (useCameraPostProcess) {
-        if(this.sleep) return;
-        
+        if (this.sleep) return;
+
         var scene = this.getScene();
         if (this._animate && scene) {
             this._time += scene.getAnimationRatio() * 0.03;
@@ -166,10 +162,10 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
     };
 
     CustomCustomProceduralTexture.prototype.dispose = function () {
-        if(this._PPBWheel){
+        if (this._PPBWheel) {
             const engine = this._getEngine();
             const gl = engine._gl;
-            for(let buf of this._PPBWheel){
+            for (let buf of this._PPBWheel) {
                 gl.deleteBuffer(buf);
             }
         }
@@ -240,7 +236,7 @@ var CustomCustomProceduralTexture = /** @class */ (function (_super) {
             return _readTexturePixels(engine, this._texture, width, height, -1, level, buffer);
         }
         catch (e) {
-            console.log(e)
+            console.warn(e)
             return null;
         }
     };

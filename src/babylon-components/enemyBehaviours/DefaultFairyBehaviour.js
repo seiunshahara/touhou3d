@@ -1,40 +1,41 @@
 import { Animation, BezierCurveEase } from '@babylonjs/core';
-import React, { useContext, useEffect, useMemo, useRef } from 'react'
-import { sleep } from '../../utils/Utils';
+import React, { useContext, useMemo, useRef } from 'react'
 import { randVectorToPosition } from '../BabylonUtils';
-import { PauseContext } from '../gameLogic/GeneralContainer';
+import { AnimationContext } from '../gameLogic/GeneralContainer';
 import { actorPositions } from '../gameLogic/StaticRefs';
+import { useDoSequence } from '../hooks/useDoSequence';
 
-const lifespan = 7000;
 
 export const DefaultFairyBehaviour = ({children, leaveScene, spawn}) => {
     const transformNodeRef = useRef();
     const startPosition = useMemo(() => randVectorToPosition(spawn), [spawn])
-    const { registerAnimation } = useContext(PauseContext)
+    const { registerAnimation } = useContext(AnimationContext)
 
-    useEffect(() => {
-        const doActions = async () => {
+    const actionsTimings = useMemo(() => [
+        0, 
+        2,
+        5
+    ], []);
+
+    const actions = useMemo(() => [
+        () => {
             const transform = transformNodeRef.current;
-
-            let target = actorPositions.player.scale(1.2).add(startPosition.scale(0.8)).scale(0.5);
+            const target = actorPositions.player.scale(1.2).add(startPosition.scale(0.8)).scale(0.5);
             let easingFunction = new BezierCurveEase(.03,.66,.72,.98);
             registerAnimation(Animation.CreateAndStartAnimation("anim", transform, "position", 1, 2, transform.position, target, 0, easingFunction));
-            await sleep(2000)
-
-            target = transform.position.add(transform.position.subtract(actorPositions.player).normalize().scale(20));
+        },
+        () => {
+            const transform = transformNodeRef.current;
+            const target = transform.position.add(transform.position.subtract(actorPositions.player).normalize().scale(20));
             target.y = transform.position.y;
-            easingFunction = new BezierCurveEase(.64,.24,.87,.41);
+            const easingFunction = new BezierCurveEase(.64,.24,.87,.41);
             registerAnimation(Animation.CreateAndStartAnimation("anim", transform, "position", 1, 5, transform.position, target, 0, easingFunction));
-            await sleep(5000)
-        }
-        
-        doActions();
-    }, [startPosition])
+        },
+        leaveScene
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ], [])
 
-    useEffect(() => {
-        if(!leaveScene) return;
-        window.setTimeout(leaveScene, lifespan);
-    }, [leaveScene])
+    useDoSequence(true, actionsTimings, actions);
 
     return (
         <transformNode name position={startPosition} ref={transformNodeRef}>

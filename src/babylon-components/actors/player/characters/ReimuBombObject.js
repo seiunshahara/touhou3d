@@ -1,10 +1,12 @@
 import { Animation, Color3, StandardMaterial, TrailMesh, Vector3 } from "@babylonjs/core"
-import { useEffect, useMemo, useRef } from "react"
+import { useContext, useEffect, useMemo, useRef } from "react"
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { playerBombShoot } from "../../../../sounds/SFX";
-import { sleep } from "../../../../utils/Utils";
+import { AnimationContext } from "../../../gameLogic/GeneralContainer";
 import { actorPositions } from "../../../gameLogic/StaticRefs";
 import { usePositions } from "../../../gameLogic/usePositions";
+import { useDoSequence } from "../../../hooks/useDoSequence";
+import { useName } from "../../../hooks/useName";
 
 const initialVelocity = 4;
 
@@ -12,16 +14,23 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
     const { killEnemy } = usePositions();
 
     const sphereRef = useRef();
-    const startTime = useMemo(() => new Date(), []);
+    const timeDelta = useRef(0);
     const scene = useScene();
+    const trail = useRef();
+    const name = useName("bombObject");
+    const { registerAnimation } = useContext(AnimationContext);
 
-    useEffect(() => {
-        let trail;
-        const camera = scene.activeCamera;
+    const actionsTimings = useMemo(() => [
+        0, 
+        delay
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    ], []);
 
-        const start = async () => {
-            Animation.CreateAndStartAnimation("anim", sphereRef.current, "scaling", 60, 120, new Vector3(0, 0, 0), new Vector3(.2, .2, .2), Animation.ANIMATIONLOOPMODE_CONSTANT);
-            await sleep(delay);
+    const actions = useMemo(() => [
+        () => {
+            registerAnimation(Animation.CreateAndStartAnimation("anim", sphereRef.current, "scaling", 60, 120, new Vector3(0, 0, 0), new Vector3(.2, .2, .2), Animation.ANIMATIONLOOPMODE_CONSTANT));
+        },
+        () => {
             playerBombShoot.play();
             sphereRef.current.velocity = props.position.add(new Vector3(0, 0, 1)).normalize();
             sphereRef.current.firing = true;
@@ -30,19 +39,25 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
             sphereRef.current.parent = false;
             sphereRef.current.position = position;
 
-            trail = new TrailMesh('sphereTrail', sphereRef.current, scene, 0.2, 100, true);
+            trail.current = new TrailMesh('sphereTrail', sphereRef.current, scene, 0.2, 100, true);
             const sourceMat = new StandardMaterial('sourceMat', scene);
             sourceMat.emissiveColor = sourceMat.diffuseColor = color;
             sourceMat.specularColor = new Color3.Black();
             sourceMat.alpha = 0.3
-            trail.material = sourceMat;
+            trail.current.material = sourceMat;
 
-            Animation.CreateAndStartAnimation("anim", sphereRef.current, "scaling", 60, 60, new Vector3(.2, .2, .2), new Vector3(5, 5, 5), Animation.ANIMATIONLOOPMODE_CONSTANT);
+            registerAnimation(Animation.CreateAndStartAnimation("anim", sphereRef.current, "scaling", 60, 60, new Vector3(.2, .2, .2), new Vector3(5, 5, 5), Animation.ANIMATIONLOOPMODE_CONSTANT));
         }
-        start();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    ], [])
+    
+    useDoSequence(true, actionsTimings, actions)
+
+    useEffect(() => {
+        const camera = scene.activeCamera;
 
         return () => {
-            trail.dispose();
+            trail.current.dispose();
             camera.position.x = 0;
             camera.position.y = 0;
         }
@@ -54,7 +69,7 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
         if(!sphereRef.current.firing) return;
         const camera = scene.activeCamera;
         const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;;
-        const timeDelta = ((new Date() - startTime) - delay) / 1000;
+        timeDelta.current += deltaS;
 
         const thisPosition = sphereRef.current.getAbsolutePosition();
         let closestEnemyPosition;
@@ -62,7 +77,7 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
         let closestEnemyID;
         
         actorPositions.enemies.forEach((enemy, id) => {
-            if(enemy.x < -5000000) return;
+            if(enemy.x < -500000) return;
             const distance = Vector3.Distance(enemy, thisPosition);
             if(distance < closestEnemyDistance){
                 closestEnemyDistance = distance;
@@ -74,21 +89,21 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
         if(closestEnemyDistance < 100){
             const newVelocity = closestEnemyPosition.subtract(thisPosition);
             sphereRef.current.velocity = Vector3.Lerp(sphereRef.current.velocity, newVelocity, deltaS).normalize();
-            if(closestEnemyDistance < 5 && closestEnemyID) killEnemy(closestEnemyID);
+            if(closestEnemyDistance < 5 && closestEnemyID !== undefined) killEnemy(closestEnemyID);
         }
 
-        sphereRef.current.position.addInPlace(sphereRef.current.velocity.scale(deltaS * (initialVelocity + (timeDelta * 16))))
+        sphereRef.current.position.addInPlace(sphereRef.current.velocity.scale(deltaS * (initialVelocity + (timeDelta.current * 16))))
 
         camera.position.x = (Math.random() - 0.5) * 0.03;
         camera.position.y = (Math.random() - 0.5) * 0.03;
     })
 
     return (
-        <transformNode name="bombObjectRoot" {...props}>
-            <sphere ref={sphereRef} scaling={new Vector3(0, 0, 0)}>
+        <transformNode name={name + "transformNode"} {...props}>
+            <sphere name={name + "sphere"} ref={sphereRef} scaling={new Vector3(0, 0, 0)}>
                 <standardMaterial alpha={0.3} diffuseColor={color} emissiveColor={color} specularColor={new Color3(0, 0, 0)}/>
             </sphere>
-            <pointLight position={new Vector3(0, 0, 0)}/>
+            <pointLight name={name + "pointLight"} position={new Vector3(0, 0, 0)}/>
         </transformNode>
     )
 }
