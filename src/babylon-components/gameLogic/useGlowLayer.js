@@ -8,6 +8,6 @@ export const useGlowLayer = () => {
         const glowLayer = new GlowLayer("glow", scene)
         glowLayer.blurKernelSize = 100;
         return glowLayer;
-    }, []);
+    }, [scene]);
     return glowLayer;
 }

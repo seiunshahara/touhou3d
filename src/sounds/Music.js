@@ -23,9 +23,12 @@ class MusicClass{
         document.body.removeEventListener('click', this.initFunc);
         document.body.removeEventListener('touchstart',this.initFunc);
         this.didInit = true;
+        const _this = this;
 
         for(let BGMIndex in this.BGMs){
-            this.BGMs[BGMIndex].init(this.activeSound === BGMIndex && SETTINGS.MUSIC === "ON");
+            this.BGMs[BGMIndex].init(this.activeSound === BGMIndex && SETTINGS.MUSIC === "ON", () => {
+                _this.startedAt = Date.now();
+            });
         }
     }
 
@@ -33,8 +36,22 @@ class MusicClass{
         
         if(activeSound) this.activeSound = activeSound;
         if(SETTINGS.MUSIC === "OFF" || !this.activeSound) return;
-        this.BGMs[this.activeSound].play();
+        if (this.pausedAt) {
+            this.startedAt = Date.now() - this.pausedAt;
+            this.BGMs[this.activeSound].play(0, this.pausedAt / 1000);
+        }
+        else {
+            this.startedAt = Date.now();
+            this.BGMs[this.activeSound].play(0);
+        }
 
+    }
+
+    pause(){
+        if(this.activeSound){
+            this.pausedAt = Date.now() - this.startedAt;
+        }
+        this.stop();
     }
 
     stop(){

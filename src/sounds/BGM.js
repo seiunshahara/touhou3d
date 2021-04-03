@@ -4,7 +4,7 @@ export default class BGM {
         this.volume = volume;
     }
 
-    init(playAfter) {
+    init(playAfter, onAfterInit) {
         if(this.didInit) return;
 
         this.didInit = true;
@@ -28,15 +28,16 @@ export default class BGM {
 
             if(playAfter){
                 this.play();
+                onAfterInit();
             }
         })
         .catch(err => console.error(err));
     }
 
-    play() {
+    play(...args) {
         if(!this.ready || this.isPlaying) return false;
 
-        this.source.start(0);
+        this.source.start(...args);
         this.isPlaying = true;
     }
 

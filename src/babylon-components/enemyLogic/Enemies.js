@@ -6,6 +6,7 @@ import { Enemy } from './Enemy';
 import { makeName } from '../hooks/useName';
 
 let metaEnemies = {};
+let timeSinceStart = 0;
 
 export const Enemies = ({currentActionList}) => {
     const startTime = useMemo(() => Date.now(), []);
@@ -43,8 +44,10 @@ export const Enemies = ({currentActionList}) => {
         }
     }
 
-    useBeforeRender(() => {
-        const timeSinceStart = Date.now() - startTime;
+    useBeforeRender((scene) => {
+
+        const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;
+        timeSinceStart += deltaS * 1000;
 
         currentActionList.some(action => {
             if(action.timeline < timeSinceStart) {

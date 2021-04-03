@@ -12,7 +12,7 @@ export const PlayerMovement = ({children}) => {
     useBeforeRender((scene) => {
         if(!transformNodeRef.current) return;
         
-        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;
         const position = transformNodeRef.current.position;
         const slowFactor = SLOW ? 0.5 : 1;
 

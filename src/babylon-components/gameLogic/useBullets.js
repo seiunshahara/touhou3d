@@ -91,7 +91,7 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
         //Lifespans
 
         let now = new Date();
-        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;;
 
         const toRemove = [];
 

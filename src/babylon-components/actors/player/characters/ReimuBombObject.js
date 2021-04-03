@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef } from "react"
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { playerBombShoot } from "../../../../sounds/SFX";
 import { sleep } from "../../../../utils/Utils";
-import { RandVector3 } from "../../../BabylonUtils";
 import { actorPositions } from "../../../gameLogic/StaticRefs";
 import { usePositions } from "../../../gameLogic/usePositions";
 
@@ -15,10 +14,10 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
     const sphereRef = useRef();
     const startTime = useMemo(() => new Date(), []);
     const scene = useScene();
-    const camera = scene.activeCamera;
 
     useEffect(() => {
         let trail;
+        const camera = scene.activeCamera;
 
         const start = async () => {
             Animation.CreateAndStartAnimation("anim", sphereRef.current, "scaling", 60, 120, new Vector3(0, 0, 0), new Vector3(.2, .2, .2), Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -47,12 +46,14 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
             camera.position.x = 0;
             camera.position.y = 0;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useBeforeRender((scene) => {
         if(!sphereRef.current) return;
         if(!sphereRef.current.firing) return;
-        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        const camera = scene.activeCamera;
+        const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;;
         const timeDelta = ((new Date() - startTime) - delay) / 1000;
 
         const thisPosition = sphereRef.current.getAbsolutePosition();
@@ -83,7 +84,7 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
     })
 
     return (
-        <transformNode {...props}>
+        <transformNode name="bombObjectRoot" {...props}>
             <sphere ref={sphereRef} scaling={new Vector3(0, 0, 0)}>
                 <standardMaterial alpha={0.3} diffuseColor={color} emissiveColor={color} specularColor={new Color3(0, 0, 0)}/>
             </sphere>

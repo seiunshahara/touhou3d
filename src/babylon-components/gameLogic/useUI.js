@@ -2,9 +2,9 @@ import { useState } from "react"
 
 export const useUI = () => {
     const [charactersInDialogue, setCharactersInDialogue] = useState([])
-    const [activeCharacter, setActiveCharacter] = useState("")
+    const [activeCharacter, setActiveCharacter] = useState()
     const [activeCharacterEmotion, setActiveCharacterEmotion] = useState("neutral")
-    const [activeCharacterText, setActiveCharacterText] = useState("")
+    const [activeCharacterText, setActiveCharacterText] = useState()
     const [stageStartQuote, setStageStartQuote] = useState()
 
     return {

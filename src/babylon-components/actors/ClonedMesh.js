@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react'
 import { useAssets } from "../hooks/useAssets"
+import { useName } from '../hooks/useName';
 
 export const ClonedMesh = ({assetName, ...props}) => {
 
     const transformNodeRef = useRef();
     const mesh = useAssets(assetName)
+    const name = useName(assetName)
 
     useEffect(() => {
         if(!mesh) return;
@@ -12,6 +14,6 @@ export const ClonedMesh = ({assetName, ...props}) => {
     }, [mesh])
 
     return (
-        <transformNode ref={transformNodeRef} {...props}/>
+        <transformNode name={name} ref={transformNodeRef} {...props}/>
     )
 }

@@ -38,7 +38,7 @@ export const VerticleMenuArray = ({selected, menuKey, menuValue, slanted, index}
     useEffect(() => {
         SETTINGS[menuKey.toUpperCase()] = choice;
         SET_SETTINGS();
-     }, [choice]);
+     }, [choice, menuKey]);
 
     const arrayIndex = menuValue.indexOf(choice);
 

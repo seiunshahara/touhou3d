@@ -10,7 +10,6 @@ import { useControl } from '../../../hooks/useControl';
 import { useTarget } from '../../../hooks/useTarget';
 import { allBullets } from '../../../gameLogic/StaticRefs';
 import { sleep } from '../../../../utils/Utils';
-import { makeParticleSystem } from '../../../effects/makeParticleSystem';
 import { useEffects } from '../../../gameLogic/useEffects';
 import { ReimuBombObject } from './ReimuBombObject';
 
@@ -87,7 +86,6 @@ export const Reimu = () => {
     const [isBombing, setIsBombing] = useState(false);
     const addEffect = useEffects();
     const scene = useScene();
-    const camera = scene.activeCamera;
 
     useKeydown("SLOW", () => {
         Animation.CreateAndStartAnimation("anim", sphereRef1.current, "position", 60, 15, sphereRef1.current.position, focusPosition1, Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -122,10 +120,13 @@ export const Reimu = () => {
             console.log(sphereTransformNodeRef.current.rotation)
             Animation.CreateAndStartAnimation("anim", sphereTransformNodeRef.current, "rotation", 60, 300, new Vector3(0, 0, 0), new Vector3(0, 0, Math.PI * 16), Animation.ANIMATIONLOOPMODE_CONSTANT, easingFunction);
             
-            await sleep(10000);
+            await sleep(5000);
             trail1.dispose();
             trail2.dispose();
+            await sleep(5000);
+            
             setIsBombing(false);
+            
         }
 
         if(isBombing) {
@@ -164,7 +165,7 @@ export const Reimu = () => {
             playerShoot.stop();
         }
 
-        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;;
 
         sphereRef1.current.rotate(z, deltaS, Space.WORLD)
         sphereRef2.current.rotate(z, -deltaS, Space.WORLD)
@@ -198,7 +199,7 @@ export const Reimu = () => {
                 </standardMaterial>
             </sphere>
         </transformNode>
-        <transformNode position = {new Vector3(0, 0, 1)}>
+        <transformNode name="bombObjectTransformNode" position = {new Vector3(0, 0, 1)}>
             {isBombing && <>
                 <ReimuBombObject color = {new Color3(0, 0, 1)} delay = {2000} position = {new Vector3(0.3 *  Math.cos(0.897 * 0), 0.3 *  Math.sin(0.897 * 0), 0)}/>
                 <ReimuBombObject color = {new Color3(0, 1, 0)} delay = {2133} position = {new Vector3(0.3 *  Math.cos(0.897 * 1), 0.3 *  Math.sin(0.897 * 1), 0)}/>

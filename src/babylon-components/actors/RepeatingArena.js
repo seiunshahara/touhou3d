@@ -17,7 +17,7 @@ export const RepeatingArena = ({tileAssetNameA, tileAssetNameB, velocity}) => {
     useBeforeRender((scene) => {
         if(!transformNodeRef.current) return;
 
-        const deltaS = scene.getEngine().getDeltaTime() / 1000;
+        const deltaS = scene.paused ? 0 : scene.getEngine().getDeltaTime() / 1000;
         transformNodeRef.current.position.addInPlace(velocity.scale(-deltaS))
 
         if(transformNodeRef.current.position.z < -200){

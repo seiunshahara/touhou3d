@@ -1,4 +1,4 @@
-import { AnimationPropertiesOverride, AssetsManager, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2, Vector3 } from "@babylonjs/core";
+import { AssetsManager, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2, Vector3 } from "@babylonjs/core";
 import { useCallback, useState, useEffect } from "react";
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";

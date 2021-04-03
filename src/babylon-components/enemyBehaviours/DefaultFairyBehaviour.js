@@ -1,7 +1,8 @@
 import { Animation, BezierCurveEase } from '@babylonjs/core';
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useContext, useEffect, useMemo, useRef } from 'react'
 import { sleep } from '../../utils/Utils';
 import { randVectorToPosition } from '../BabylonUtils';
+import { PauseContext } from '../gameLogic/GeneralContainer';
 import { actorPositions } from '../gameLogic/StaticRefs';
 
 const lifespan = 7000;
@@ -9,6 +10,7 @@ const lifespan = 7000;
 export const DefaultFairyBehaviour = ({children, leaveScene, spawn}) => {
     const transformNodeRef = useRef();
     const startPosition = useMemo(() => randVectorToPosition(spawn), [spawn])
+    const { registerAnimation } = useContext(PauseContext)
 
     useEffect(() => {
         const doActions = async () => {
@@ -16,13 +18,13 @@ export const DefaultFairyBehaviour = ({children, leaveScene, spawn}) => {
 
             let target = actorPositions.player.scale(1.2).add(startPosition.scale(0.8)).scale(0.5);
             let easingFunction = new BezierCurveEase(.03,.66,.72,.98);
-            Animation.CreateAndStartAnimation("anim", transform, "position", 1, 2, transform.position, target, 0, easingFunction);
+            registerAnimation(Animation.CreateAndStartAnimation("anim", transform, "position", 1, 2, transform.position, target, 0, easingFunction));
             await sleep(2000)
 
             target = transform.position.add(transform.position.subtract(actorPositions.player).normalize().scale(20));
             target.y = transform.position.y;
             easingFunction = new BezierCurveEase(.64,.24,.87,.41);
-            Animation.CreateAndStartAnimation("anim", transform, "position", 1, 5, transform.position, target, 0, easingFunction);
+            registerAnimation(Animation.CreateAndStartAnimation("anim", transform, "position", 1, 5, transform.position, target, 0, easingFunction));
             await sleep(5000)
         }
         

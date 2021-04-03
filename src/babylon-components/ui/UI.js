@@ -1,15 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { UIContext } from '../gameLogic/GeneralContainer'
+import { useKeydown } from '../../hooks/useKeydown'
+import { PauseContext, UIContext } from '../gameLogic/GeneralContainer'
 import { CharacterDialogueText } from './CharacterDialogueText'
 import { CharacterPortrait } from './CharacterPortrait'
 import { StageStartQuote } from './StageStartQuote'
+import { IngameMenu } from "./IngameMenu"
 
 const mainCharacters = ["reimu"]
 
 export const UI = () => {
     const { charactersInDialogue, activeCharacter, activeCharacterEmotion, activeCharacterText, stageStartQuote } = useContext(UIContext)
+    const { paused, setPaused } = useContext(PauseContext)
 
     const [characters, setCharacters] = useState([])
+
+    useKeydown("ESCAPE", () => {
+        setPaused(paused => !paused)
+    })
 
     useEffect(() => {
         setCharacters(characters => {
@@ -43,8 +50,6 @@ export const UI = () => {
         })
     }, [activeCharacter, activeCharacterEmotion])
 
-
-
     return <>
         {
             characters.map(character =>
@@ -53,5 +58,6 @@ export const UI = () => {
         }
         {activeCharacter && <CharacterDialogueText character={activeCharacter} text={activeCharacterText} />}
         {stageStartQuote && <StageStartQuote text = {stageStartQuote} />}
+        {paused && <IngameMenu />}
     </>
 }
