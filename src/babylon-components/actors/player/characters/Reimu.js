@@ -188,12 +188,12 @@ export const Reimu = () => {
     return <transformNode name={name} ref={transformNodeRef}>
         <transformNode name={name + "sphereTransformNode"} position = {new Vector3(0, 0, 1)} ref={sphereTransformNodeRef}>
             <sphere name={name + "sphere1"} scaling={new Vector3(0.5, 0.5, 0.5)} position={new Vector3(1, 0, 0)} rotation={new Vector3(Math.PI / 4, 0, 0)} ref={sphereRef1}>
-                <standardMaterial alpha={isBombing ? 1 : 0.5} name={name + "sphereMat1"}>
+                <standardMaterial alpha={0.5} name={name + "sphereMat1"}>
                     <texture assignTo="diffuseTexture" url={"/assets/debugTextures/yinyang.jpg"} />
                 </standardMaterial>
             </sphere>
             <sphere name={name + "sphere2"} scaling={new Vector3(0.5, 0.5, 0.5)} position={new Vector3(-1, 0, 0)} rotation={new Vector3(Math.PI / 4, 0, 0)} ref={sphereRef2}>
-                <standardMaterial alpha={isBombing ? 1 : 0.5} name={name + "sphereMat2"}>
+                <standardMaterial alpha={0.5} name={name + "sphereMat2"}>
                     <texture assignTo="diffuseTexture" url={"/assets/debugTextures/yinyang.jpg"} />
                 </standardMaterial>
             </sphere>
