@@ -41,11 +41,11 @@ export const itemBehaviourVelocityPixelShader = glsl`
 `
 
 class Itembehaviour extends EnemyBulletBehaviour{
-    constructor(environmentCollision, radius, parent){
-        super("itemBehaviourPosition", "itemBehaviourVelocity", parent, environmentCollision, null, radius, 4)
+    constructor(bulletType, environmentCollision, radius, parent){
+        super("itemBehaviourPosition", "itemBehaviourVelocity", parent, environmentCollision, null, radius, bulletType || 4)
     }
 }
 
-export const makeItembehaviour = (environmentCollision, radius, parent) => {
-    return new Itembehaviour(environmentCollision, radius, parent);
+export const makeItembehaviour = (behaviourOptions, environmentCollision, radius, parent) => {
+    return new Itembehaviour(behaviourOptions.bulletType, environmentCollision, radius, parent);
 }

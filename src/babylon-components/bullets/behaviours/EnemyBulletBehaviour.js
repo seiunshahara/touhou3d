@@ -2,6 +2,15 @@ import { Vector3 } from "@babylonjs/core";
 import { actorPositions } from "../../gameLogic/StaticRefs";
 import { BulletBehaviour } from "./BulletBehaviour";
 
+export const BULLET_TYPE = {
+    BULLET: 0,
+    LIFE: 1,
+    BOMB: 2,
+    POWER: 3,
+    POINT: 4,
+    SPECIAL: 5
+}
+
 export class EnemyBulletBehaviour extends BulletBehaviour{
     constructor(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction, radius, bulletType = 0){
         super(positionShader, velocityShader, parent, collideWithEnvironment, initialValuesFunction, radius);

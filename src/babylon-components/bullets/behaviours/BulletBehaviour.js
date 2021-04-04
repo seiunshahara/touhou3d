@@ -170,11 +170,16 @@ export class BulletBehaviour{
 
         outputCollisionTexture.setTexture("positionSampler", inputPositionTexture);
         outputCollisionTexture.setTexture("velocitySampler", inputVelocityTexture);
+        this.reducerLayers[0].setTexture("source", outputCollisionTexture);
+
+        if(!REDUCER_ENABLED){
+            this.collisionResult = outputCollisionTexture;
+        }
 
         this.bulletMaterial.setTexture("collisionSampler", inputCollisionTexture);
         this.bulletMaterial.setTexture("positionSampler", inputPositionTexture);
         this.bulletMaterial.setTexture("velocitySampler", inputVelocityTexture);
         
-        return true;
+        return [outputPositionTexture, outputVelocityTexture];
     }
 }

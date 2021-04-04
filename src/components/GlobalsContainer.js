@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import ls from "local-storage"
 import { SETTINGS } from '../utils/Settings';
-import { useBeforeRender } from 'react-babylonjs';
 
 export const GlobalsContext = React.createContext();
 

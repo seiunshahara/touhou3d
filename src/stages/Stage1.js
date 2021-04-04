@@ -30,7 +30,7 @@ export const Stage1 = () => {
   useEffect(() => {
     Music.play("stage1Theme");
     resetGlobals();
-  }, [])
+  }, [resetGlobals])
 
   return <>
     <UIExecutor currentActionList={UIActionList} setEpochIndex={setEpochIndex}/>

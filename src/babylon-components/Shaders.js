@@ -7,6 +7,7 @@ import { addReducerPixelShader } from "./bullets/BulletUtils";
 import { fresnelVertexShader, fresnelFragmentShader } from "./bullets/materials/Fresnel";
 import { textureFragmentShader, textureVertexShader } from "./bullets/materials/Texture";
 import { itemFragmentShader, itemVertexShader } from "./bullets/materials/Item";
+import { playerShotTrackingBehaviourPositionPixelShader, playerShotTrackingBehaviourVelocityPixelShader } from "./bullets/behaviours/PlayerShotTrackingBehaviour";
 
 Effect.ShadersStore["addReducerPixelShader"] = addReducerPixelShader;
 
@@ -21,6 +22,9 @@ Effect.ShadersStore["itemBehaviourVelocityPixelShader"] = itemBehaviourVelocityP
 
 Effect.ShadersStore["playerShotBehaviourPositionPixelShader"] = playerShotBehaviourPositionPixelShader;
 Effect.ShadersStore["playerShotBehaviourVelocityPixelShader"] = playerShotBehaviourVelocityPixelShader;
+
+Effect.ShadersStore["playerShotTrackingBehaviourPositionPixelShader"] = playerShotTrackingBehaviourPositionPixelShader;
+Effect.ShadersStore["playerShotTrackingBehaviourVelocityPixelShader"] = playerShotTrackingBehaviourVelocityPixelShader;
 
 Effect.ShadersStore["fresnelVertexShader"] = fresnelVertexShader;
 Effect.ShadersStore["fresnelFragmentShader"] = fresnelFragmentShader;

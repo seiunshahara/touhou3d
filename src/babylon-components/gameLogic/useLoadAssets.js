@@ -87,6 +87,26 @@ export const useLoadAssets = () => {
                 type: "texture"
             },
             {
+                url: "/assets/items/power.png",
+                name: "power",
+                type: "texture"
+            },
+            {
+                url: "/assets/items/fullpower.png",
+                name: "fullpower",
+                type: "texture"
+            },
+            {
+                url: "/assets/items/bomb.png",
+                name: "bomb",
+                type: "texture"
+            },
+            {
+                url: "/assets/items/1up.png",
+                name: "1up",
+                type: "texture"
+            },
+            {
                 rootUrl: "/assets/bullets/knife/",
                 sceneFilename: "knife.glb",
                 name: "knife",

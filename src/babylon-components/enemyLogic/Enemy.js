@@ -7,24 +7,27 @@ import { FairyBase } from '../enemyActors/FairyBase';
 import { useAssets } from '../hooks/useAssets';
 import { RandomEnemyBehaviour } from '../enemyBehaviours/RandomEnemyBehaviour'
 import { DefaultFairyBehaviour } from '../enemyBehaviours/DefaultFairyBehaviour';
+import { BULLET_TYPE } from '../bullets/behaviours/EnemyBulletBehaviour';
 
 const deathInstruction = {
     type: "shoot",
     materialOptions: {
         material: "item",
-        texture: "point",
+        texture: "power",
         doubleSided: true,
         hasAlpha: true
     },
     patternOptions: {
-        pattern: "burst",
-        num: 5,
+        pattern: "single",
+        position: [0, 0, 0], 
+        velocity: [[-1, 1], [-1, 1], [-1, 1]],
     },
     meshOptions: {
         mesh: "item",
     },
     behaviourOptions: {
         behaviour: "item",
+        bulletType: BULLET_TYPE.POWER
     },
     lifespan: 10000,
     wait: 0

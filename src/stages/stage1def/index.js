@@ -96,50 +96,50 @@ const stage1def = () => {
 
     // return map;
 
-    map.epochs[0].push({
-        type: 'UI',
-        action: 'stageStartQuote',
-        text: [
-            'Stage 1',
-            'Where the Fireflies Fly',
-            'Are the fireflies brighter than usual, or is it just your imagination? Tonight will be a long night'
-        ],
-        wait: 7000
-    })
+    // map.epochs[0].push({
+    //     type: 'UI',
+    //     action: 'stageStartQuote',
+    //     text: [
+    //         'Stage 1',
+    //         'Where the Fireflies Fly',
+    //         'Are the fireflies brighter than usual, or is it just your imagination? Tonight will be a long night'
+    //     ],
+    //     wait: 7000
+    // })
 
-    for(let i = 0; i < 12; i++){
+    for(let i = 0; i < 100; i++){
         map.epochs[0].push({
             type: 'spawn',
-            enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+            enemy: DefaultFairy([[-1, 1], [-1, 1], [1, 0.9]], [0, 0, 0]),
             wait: 250
         })
     }
 
-    map.epochs[0].push({
-        type: 'empty',
-        wait: 4000
-    })
+    // map.epochs[0].push({
+    //     type: 'empty',
+    //     wait: 4000
+    // })
 
-    for(let i = 0; i < 12; i++){
-        map.epochs[0].push({
-            type: 'spawn',
-            enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-            wait: 250
-        })
-    }
+    // for(let i = 0; i < 12; i++){
+    //     map.epochs[0].push({
+    //         type: 'spawn',
+    //         enemy: DefaultFairy([[-1, -0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+    //         wait: 250
+    //     })
+    // }
 
-    map.epochs[0].push({
-        type: 'empty',
-        wait: 4000
-    })
+    // map.epochs[0].push({
+    //     type: 'empty',
+    //     wait: 4000
+    // })
 
-    for(let i = 0; i < 12; i++){
-        map.epochs[0].push({
-            type: 'spawn',
-            enemy: DefaultFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
-            wait: 250
-        })
-    }
+    // for(let i = 0; i < 12; i++){
+    //     map.epochs[0].push({
+    //         type: 'spawn',
+    //         enemy: DefaultFairy([[1, 0.9], [1, 0.9], [1, 0.9]], [0, 0, 0]),
+    //         wait: 250
+    //     })
+    // }
 
     return map;
 }

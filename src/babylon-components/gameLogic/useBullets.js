@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext, useRef } from 'react';
 import { useBeforeRender, useScene } from 'react-babylonjs';
 import { globals, GlobalsContext } from '../../components/GlobalsContainer';
 import { itemGet } from '../../sounds/SFX';
@@ -15,20 +15,21 @@ import { actorPositions, allBullets } from './StaticRefs';
 export const useBullets = (assets, environmentCollision, killEnemy) => {
     const scene = useScene();
     const {setGlobal} = useContext(GlobalsContext)
+    const frame = useRef(0)
 
-    const disposeSingle = (id) => {
+    const disposeSingle = useCallback((id) => {
         allBullets[id].dispose();
         delete allBullets[id];
-    }
+    }, [])
     
-    const dispose = (ids) => {
+    const dispose = useCallback((ids) => {
         ids.forEach(id => {
             allBullets[id].dispose();
             delete allBullets[id];
         })
-    }
+    }, [])
     
-    const addBulletGroup = (parent, instruction) => {
+    const addBulletGroup = useCallback((parent, instruction) => {
         if(!parent) throw new Error("parent not ready!")
 
         const preparedInstruction = prepareBulletInstruction(instruction);
@@ -58,15 +59,13 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
         const newID = makeName("bulletGroup");
         allBullets[newID] = bulletGroup;
         return newID
-    }
+    }, [assets, environmentCollision, scene])
 
     useBeforeRender(() => {
-        console.log("render")
         //Collisions
-
-        Object.values(allBullets).forEach(bulletGroup => {
+        Object.values(allBullets).forEach((bulletGroup) => {
             if(bulletGroup.behaviour.isPlayerBullet){
-                bulletGroup.behaviour.collisionTexture1.readPixels().then(buffer => {
+                bulletGroup.behaviour.collisionResult.readPixels().then(buffer => {
                     const collisions = convertPlayerBulletCollisions(buffer)
                     collisions.forEach(collision => {
                         if(collision.collisionID > 10000 - MAX_ENEMIES){
@@ -81,11 +80,17 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
             }
             else{
                 bulletGroup.behaviour.collisionResult.readPixels().then(buffer => {
+                    frame.current ++;
+                    if(frame.current % 2 === 0) return;
                     const collisions = convertEnemyBulletCollisions(buffer)
                     if(collisions.length > 0) {
                         const collision = collisions[0];
                         if(collision.point){
                             setGlobal("POINT", globals.POINT + collision.point)
+                            itemGet.play();
+                        }
+                        if(collision.power){
+                            setGlobal("POWER", globals.POWER + collision.power)
                             itemGet.play();
                         }
                     }

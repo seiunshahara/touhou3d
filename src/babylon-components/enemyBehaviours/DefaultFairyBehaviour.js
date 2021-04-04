@@ -33,7 +33,7 @@ export const DefaultFairyBehaviour = ({children, leaveScene, spawn}) => {
         },
         leaveScene
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    ], [])
+    ], [leaveScene])
 
     useDoSequence(true, actionsTimings, actions);
 

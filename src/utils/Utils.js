@@ -57,3 +57,9 @@ export const capFirst = (str) => {
 export const mod = (n, m) => {
     return ((n % m) + m) % m;
 }
+
+export const staticReplace = (obj, prop, index, value) => {
+    const newArray = [...obj[prop]];
+    newArray[index] = value;
+    obj[prop] = newArray;
+}
