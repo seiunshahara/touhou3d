@@ -13,6 +13,9 @@ import { useEffects } from '../../../gameLogic/useEffects';
 import { ReimuBombObject } from './ReimuBombObject';
 import { useDoSequence } from '../../../hooks/useDoSequence';
 import { AnimationContext, PauseContext } from '../../../gameLogic/GeneralContainer';
+import { PlayerUILeft } from './PlayerUILeft';
+import { PlayerUIRight } from './PlayerUIRight';
+import { globals, GlobalsContext } from '../../../../components/GlobalsContainer';
 
 const z = new Vector3(0, 0, 1);
 const focusPosition1 = new Vector3(0.5, 0, 0)
@@ -75,6 +78,8 @@ const shotInstruction = (power) => {
 export const Reimu = () => {
     const transformNodeRef = useRef();
     const sphereTransformNodeRef = useRef();
+    const sphereTransformRef1 = useRef();
+    const sphereTransformRef2 = useRef();
     const sphereRef1 = useRef();
     const sphereRef2 = useRef();
     const trail1 = useRef();
@@ -89,18 +94,21 @@ export const Reimu = () => {
     const [isBombing, setIsBombing] = useState(false);
     const { registerAnimation } = useContext(AnimationContext)
     const {paused} = useContext(PauseContext);
+    const { setGlobal } = useContext(GlobalsContext)
     const addEffect = useEffects();
     const scene = useScene();
 
     useKeydown("SLOW", () => {
-        Animation.CreateAndStartAnimation("anim", sphereRef1.current, "position", 60, 15, sphereRef1.current.position, focusPosition1, Animation.ANIMATIONLOOPMODE_CONSTANT);
-        Animation.CreateAndStartAnimation("anim", sphereRef2.current, "position", 60, 15, sphereRef2.current.position, focusPosition2, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        Animation.CreateAndStartAnimation("anim", sphereTransformRef1.current, "position", 60, 15, sphereTransformRef1.current.position, focusPosition1, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        Animation.CreateAndStartAnimation("anim", sphereTransformRef2.current, "position", 60, 15, sphereTransformRef2.current.position, focusPosition2, Animation.ANIMATIONLOOPMODE_CONSTANT);
     })
     useKeyup("SLOW", () => {
-        Animation.CreateAndStartAnimation("anim", sphereRef1.current, "position", 60, 15, sphereRef1.current.position, unfocusPosition1, Animation.ANIMATIONLOOPMODE_CONSTANT);
-        Animation.CreateAndStartAnimation("anim", sphereRef2.current, "position", 60, 15, sphereRef2.current.position, unfocusPosition2, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        Animation.CreateAndStartAnimation("anim", sphereTransformRef1.current, "position", 60, 15, sphereTransformRef1.current.position, unfocusPosition1, Animation.ANIMATIONLOOPMODE_CONSTANT);
+        Animation.CreateAndStartAnimation("anim", sphereTransformRef2.current, "position", 60, 15, sphereTransformRef2.current.position, unfocusPosition2, Animation.ANIMATIONLOOPMODE_CONSTANT);
     })
     useKeydown("BOMB", () => {
+        if(!globals.BOMB || isBombing) return;
+        setGlobal("BOMB", globals.BOMB - 1);
         setIsBombing(true)
     })
 
@@ -112,14 +120,14 @@ export const Reimu = () => {
 
     const actions = useMemo(() => [
         () => {
-            trail1.current = new TrailMesh('sphere1Trail', sphereRef1.current, scene, 0.5, 30, true);
+            trail1.current = new TrailMesh('sphere1Trail', sphereTransformRef1.current, scene, 0.25, 30, true);
             const sourceMat1 = new StandardMaterial('sourceMat1', scene);
             const color1 = new Color3.Red();
             sourceMat1.emissiveColor = sourceMat1.diffuseColor = color1;
             sourceMat1.specularColor = new Color3.Black();
             trail1.current.material = sourceMat1;
 
-            trail2.current = new TrailMesh('sphere2Trail', sphereRef2.current, scene, 0.5, 30, true);
+            trail2.current = new TrailMesh('sphere2Trail', sphereTransformRef2.current, scene, 0.25, 30, true);
             const sourceMat2 = new StandardMaterial('sourceMat2', scene);
             const color2 = new Color3.White();
             sourceMat2.emissiveColor = sourceMat2.diffuseColor = color2;
@@ -144,12 +152,12 @@ export const Reimu = () => {
     useDoSequence(isBombing, actionsTimings, actions)
 
     useEffect(() => {
-        if (!sphereRef1.current || !sphereRef2.current) return;
+        if (!sphereTransformRef1.current || !sphereTransformRef2.current) return;
 
-        const id1 = addBulletGroup(sphereRef1.current,
+        const id1 = addBulletGroup(sphereTransformRef1.current,
             shotInstruction(0)
         )
-        const id2 = addBulletGroup(sphereRef2.current,
+        const id2 = addBulletGroup(sphereTransformRef2.current,
             shotInstruction(0)
         )
 
@@ -162,7 +170,7 @@ export const Reimu = () => {
     }, [addBulletGroup])
 
     useBeforeRender((scene) => {
-        if (!sphereRef1.current || !sphereRef2.current || !transformNodeRef.current) return;
+        if (!sphereTransformRef1.current || !sphereTransformRef2.current || !transformNodeRef.current) return;
         if (!transformNodeRef.current.shotFrame) {
             transformNodeRef.current.shotFrame = 0;
         }
@@ -197,16 +205,22 @@ export const Reimu = () => {
 
     return <transformNode name={name} ref={transformNodeRef}>
         <transformNode name={name + "sphereTransformNode"} position = {new Vector3(0, 0, 1)} ref={sphereTransformNodeRef}>
-            <sphere name={name + "sphere1"} scaling={new Vector3(0.5, 0.5, 0.5)} position={new Vector3(1, 0, 0)} rotation={new Vector3(Math.PI / 4, 0, 0)} ref={sphereRef1}>
-                <standardMaterial alpha={0.5} name={name + "sphereMat1"}>
-                    <texture assignTo="diffuseTexture" url={"/assets/debugTextures/yinyang.jpg"} />
-                </standardMaterial>
-            </sphere>
-            <sphere name={name + "sphere2"} scaling={new Vector3(0.5, 0.5, 0.5)} position={new Vector3(-1, 0, 0)} rotation={new Vector3(Math.PI / 4, 0, 0)} ref={sphereRef2}>
-                <standardMaterial alpha={0.5} name={name + "sphereMat2"}>
-                    <texture assignTo="diffuseTexture" url={"/assets/debugTextures/yinyang.jpg"} />
-                </standardMaterial>
-            </sphere>
+            <transformNode ref={sphereTransformRef1} position={new Vector3(1, 0, 0)}>
+                {!isBombing && <PlayerUIRight position={new Vector3(0, -0.6, 0)}/>}
+                <sphere name={name + "sphere1"} scaling={new Vector3(0.5, 0.5, 0.5)} rotation={new Vector3(Math.PI / 4, 0, 0)} ref={sphereRef1}>
+                    <standardMaterial alpha={0.5} name={name + "sphereMat1"}>
+                        <texture assignTo="diffuseTexture" url={"/assets/debugTextures/yinyang.jpg"} />
+                    </standardMaterial>
+                </sphere>
+            </transformNode>
+            <transformNode ref={sphereTransformRef2} position={new Vector3(-1, 0, 0)}>
+                {!isBombing && <PlayerUILeft position={new Vector3(0, -0.6, 0)}/>}
+                <sphere name={name + "sphere2"} scaling={new Vector3(0.5, 0.5, 0.5)} rotation={new Vector3(Math.PI / 4, 0, 0)} ref={sphereRef2}>
+                    <standardMaterial alpha={0.5} name={name + "sphereMat2"}>
+                        <texture assignTo="diffuseTexture" url={"/assets/debugTextures/yinyang.jpg"} />
+                    </standardMaterial>
+                </sphere>
+            </transformNode>
         </transformNode>
         <transformNode name="bombObjectTransformNode" position = {new Vector3(0, 0, 1)}>
             {isBombing && <>

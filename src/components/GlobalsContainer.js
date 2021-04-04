@@ -1,28 +1,52 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ls from "local-storage"
 import { SETTINGS } from '../utils/Settings';
+import { useBeforeRender } from 'react-babylonjs';
 
 export const GlobalsContext = React.createContext();
 
+const defaults = {
+    HISCORE: 0,
+    SCORE: 0,
+    PLAYER: SETTINGS.PLAYER,
+    BOMB: SETTINGS.BOMB,
+    POWER: 0,
+    GRAZE: 0,
+    POINT: 0,
+    TIME: 0,
+}
+
+export const globals =  ls('globals') ? Object.assign({}, defaults, JSON.parse(ls('globals'))) : defaults
+
 export const GlobalsContainer = ({children}) => {
 
-    const [globals, setGlobals] = useState(
-        ls('globals') ? JSON.parse(ls('globals')) : {
-            PLAYER: SETTINGS.PLAYER,
-            BOMB: SETTINGS.BOMB,
-            POINT: 0
-        }
-    )
-
     const setGlobal = (key, value) => {
-        const newGlobals = {...globals};
-        newGlobals[key] = value;
-        setGlobals(newGlobals);
-        ls('globals', JSON.stringify(newGlobals))
+        globals[key] = value
     }
 
+    const resetGlobals = () => {
+        Object.assign(globals, defaults, JSON.parse(ls('globals')), {
+            PLAYER: SETTINGS.PLAYER,
+            BOMB: SETTINGS.BOMB,
+            POWER: 0,
+            GRAZE: 0,
+            POINT: 0,
+            TIME: 0,
+        })
+    }
+
+    useEffect(() => {
+        const interval = window.setInterval(() => {
+            ls('globals', JSON.stringify(globals))
+        }, 1000)
+        return () => {
+            window.clearInterval(interval)
+        }
+
+    }, [])
+
     return (   
-        <GlobalsContext.Provider value={{globals, setGlobals, setGlobal}}>
+        <GlobalsContext.Provider value={{setGlobal, resetGlobals}}>
             {children}
         </GlobalsContext.Provider>
     )

@@ -94,8 +94,15 @@ export const ReimuBombObject = ({color, delay, ...props}) => {
 
         sphereRef.current.position.addInPlace(sphereRef.current.velocity.scale(deltaS * (initialVelocity + (timeDelta.current * 16))))
 
-        camera.position.x = (Math.random() - 0.5) * 0.03;
-        camera.position.y = (Math.random() - 0.5) * 0.03;
+        if(timeDelta.current < 2){
+            camera.position.x = (Math.random() - 0.5) * 0.03;
+            camera.position.y = (Math.random() - 0.5) * 0.03;
+        }
+        else{
+            camera.position.x = 0;
+            camera.position.y = 0;
+        }
+        
     })
 
     return (

@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { useBeforeRender, useScene } from 'react-babylonjs';
+import { globals, GlobalsContext } from '../../components/GlobalsContainer';
 import { itemGet } from '../../sounds/SFX';
 import { MAX_ENEMIES } from '../../utils/Constants';
 import { makeBulletBehaviour } from '../bullets/behaviours';
@@ -12,6 +14,7 @@ import { actorPositions, allBullets } from './StaticRefs';
 
 export const useBullets = (assets, environmentCollision, killEnemy) => {
     const scene = useScene();
+    const {setGlobal} = useContext(GlobalsContext)
 
     const disposeSingle = (id) => {
         allBullets[id].dispose();
@@ -58,6 +61,7 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
     }
 
     useBeforeRender(() => {
+        console.log("render")
         //Collisions
 
         Object.values(allBullets).forEach(bulletGroup => {
@@ -81,6 +85,7 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
                     if(collisions.length > 0) {
                         const collision = collisions[0];
                         if(collision.point){
+                            setGlobal("POINT", globals.POINT + collision.point)
                             itemGet.play();
                         }
                     }

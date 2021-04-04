@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useScene } from 'react-babylonjs'
 import { Vector3, Color3, Scene } from '@babylonjs/core'
 import '@babylonjs/loaders';
@@ -8,6 +8,7 @@ import stage1def from "./stage1def"
 import { makeActionListTimeline } from '../babylon-components/enemyLogic/EnemyUtils';
 import { UIExecutor } from '../babylon-components/ui/UIExecutor';
 import Music from '../sounds/Music';
+import { GlobalsContext } from '../components/GlobalsContainer';
 
 
 export const Stage1 = () => {
@@ -17,6 +18,7 @@ export const Stage1 = () => {
   const currentActionList = useMemo(() => makeActionListTimeline(stageSource.epochs[epochIndex]), [stageSource, epochIndex]);
   const enemyActionList = currentActionList.filter(action => action.type === "spawn")
   const UIActionList = currentActionList.filter(action => action.type === 'UI')
+  const {resetGlobals} = useContext(GlobalsContext)
 
   useEffect(() => {
     scene.fogMode = Scene.FOGMODE_LINEAR;
@@ -27,6 +29,7 @@ export const Stage1 = () => {
 
   useEffect(() => {
     Music.play("stage1Theme");
+    resetGlobals();
   }, [])
 
   return <>
