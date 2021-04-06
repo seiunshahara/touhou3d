@@ -14,7 +14,7 @@ const makeComputeProceduralTexture = (shader, initialPositionTexture, initialVel
     proceduralTexture.setTexture("collisionSampler", initialCollisionTexture);
     proceduralTexture.setVector3("playerPosition", actorPositions.player);
     proceduralTexture.setVector2("resolution", new Vector2(WIDTH, WIDTH));
-    proceduralTexture.setFloat("delta", 0);
+    proceduralTexture.setFloat("delta", 0.001);
 
     if(initialValuesFunction){
         initialValuesFunction(proceduralTexture);

@@ -1,4 +1,4 @@
-import { AssetsManager, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2, Vector3 } from "@babylonjs/core";
+import { AssetsManager, DracoCompression, Matrix, MeshBuilder, ParticleHelper, ParticleSystemSet, Vector2, Vector3 } from "@babylonjs/core";
 import { useCallback, useState, useEffect } from "react";
 import { useBeforeRender, useScene } from "react-babylonjs";
 import { makeSpriteSheetAnimation } from "../BabylonUtils";
@@ -36,11 +36,24 @@ export const useLoadAssets = () => {
         ParticleHelper.BaseAssetsUrl = "/assets/particles";
         ParticleSystemSet.BaseAssetsUrl = "/assets/particles";
 
+        DracoCompression.Configuration = {
+            decoder: {
+                wasmUrl: "/assets/util/draco_wasm_wrapper_gltf.js",
+                wasmBinaryUrl: "/assets/util/draco_decoder_gltf.wasm",
+                fallbackUrl: "/assets/util/draco_decoder_gltf.js"
+            }
+        };
+
         const tempAssets = {};
         const assetList = [
             {
                 json: "deathParticles",
                 name: "deathParticles",
+                type: "particles"
+            },
+            {
+                json: "hitParticles",
+                name: "hitParticles",
                 type: "particles"
             },
             {
@@ -79,6 +92,11 @@ export const useLoadAssets = () => {
             {
                 url: "/assets/bullets/ofuda/reimu_ofuda.jpg",
                 name: "reimu_ofuda",
+                type: "texture"
+            },
+            {
+                url: "/assets/bullets/ofuda/reimu_ofuda_blue.jpg",
+                name: "reimu_ofuda_blue",
                 type: "texture"
             },
             {

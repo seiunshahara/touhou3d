@@ -13,13 +13,9 @@ const readLatency = 16;
 
 export const allSyncs = {
     syncs: [],
-    resolves: [],
-    rejects: [],
-    buffers: [],
-    PPBs: []
 };
 
-const _readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer) {
+const _readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer, isPlayerBullet) {
     if (faceIndex === void 0) { faceIndex = -1; }
     if (level === void 0) { level = 0; }
     if (buffer === void 0) { buffer = null; }
@@ -89,19 +85,22 @@ const _readTexturePixels = function (engine, texture, width, height, faceIndex, 
     }
     gl.flush();
 
-    allSyncs.syncs.push(sync);
-
     let promiseResolve;
     let promiseReject;
+
     const returnPromise = new Promise(function (resolve, reject){
         promiseResolve = resolve;
         promiseReject = reject;
     })
 
-    allSyncs.resolves.push(promiseResolve)
-    allSyncs.rejects.push(promiseReject)
-    allSyncs.buffers.push(buffer);
-    allSyncs.PPBs.push(texture._activePPB);
+    allSyncs.syncs.push({
+        sync,
+        promiseResolve,
+        promiseReject,
+        buffer,
+        PPB: texture._activePPB
+    })
+
     return returnPromise;
 };
 

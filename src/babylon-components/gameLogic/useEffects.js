@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { genericEnemyDeath } from "../effects/genericEnemyDeath";
+import { genericEnemyHit } from "../effects/genericEnemyHit";
 import { reimuBombCharge } from "../effects/reimuBombCharge";
 import { AssetsContext } from "./GeneralContainer";
 
@@ -11,6 +12,9 @@ export const useEffects = (assets) => {
         switch (effectName) {
             case "deathParticles":
                 genericEnemyDeath(emitter, assets)
+                break;
+            case "hitParticles":
+                genericEnemyHit(emitter, assets)
                 break;
             case "reimuBombCharge":
                 reimuBombCharge(emitter, assets)

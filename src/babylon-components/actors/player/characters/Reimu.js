@@ -16,6 +16,7 @@ import { PlayerUILeft } from './PlayerUILeft';
 import { PlayerUIRight } from './PlayerUIRight';
 import { globals, GlobalsContext } from '../../../../components/GlobalsContainer';
 import { calcPowerClass } from '../PlayerUtils';
+import { PLAYER_BULLETS_WHEEL_LENGTH } from '../../../../utils/Constants';
 
 const z = new Vector3(0, 0, 1);
 const focusPosition1 = new Vector3(0.5, 0, 0)
@@ -28,52 +29,97 @@ let bulletFrameSkip = 5;
 
 const shotInstruction = (powerClass, initialVelocity) => {
 
-    let shotSources;
+    let shotSourcesLinear;
+    let shotSourcesTracking;
+
     if(powerClass === 0){
-        shotSources = [
+        shotSourcesLinear = [
             new Vector3(0, 0, 0.15)
         ]
     }
+
     else if(powerClass === 1){
-        shotSources = [
-            new Vector3(0, 0.5, 0),
-            new Vector3(0, 0, 0.5),
-            new Vector3(0, -0.5, 0)
+        shotSourcesLinear = [
+            new Vector3(0, 0, 0.15)
+        ];
+        shotSourcesTracking = [
+            new Vector3(0, 0, 0.15)
         ]
     }
     else if(powerClass === 2){
-        shotSources = [
-            new Vector3(0, 1.0, -0.5),
-            new Vector3(0, 0.5, 0),
-            new Vector3(0, 0, 0.5),
-            new Vector3(0, -0.5, 0),
-            new Vector3(0, -1.0, -0.5)
+        shotSourcesLinear = [
+            new Vector3(0.3 *  Math.cos(2.09 * 0), 0.3 *  Math.sin(2.09 * 0), 0.15),
+            new Vector3(0.3 *  Math.cos(2.09 * 1), 0.3 *  Math.sin(2.09 * 1), 0.15),
+            new Vector3(0.3 *  Math.cos(2.09 * 2), 0.3 *  Math.sin(2.09 * 2), 0.15),
+        ];
+        shotSourcesTracking = [
+            new Vector3(0, 0, 0.15)
+        ]
+    }
+    else if(powerClass === 3){
+        shotSourcesLinear = [
+            new Vector3(0.3 *  Math.cos(2.09 * 0), 0.3 *  Math.sin(2.09 * 0), 0.15),
+            new Vector3(0.3 *  Math.cos(2.09 * 1), 0.3 *  Math.sin(2.09 * 1), 0.15),
+            new Vector3(0.3 *  Math.cos(2.09 * 2), 0.3 *  Math.sin(2.09 * 2), 0.15),
+        ];
+        shotSourcesTracking = [
+            new Vector3(0, 0.3, 0.15),
+            new Vector3(0, -0.3, 0.15)
         ]
     }
 
-    return {
+    const instructions = [{
         type: "shoot",
         materialOptions: {
             material: "texture",
             texture: "reimu_ofuda",
+            hasAlpha: true,
             doubleSided: true
         },
         patternOptions: {
             pattern: "empty",
-            num: 100 * shotSources.length,
+            num: PLAYER_BULLETS_WHEEL_LENGTH * shotSourcesLinear.length,
         },
         meshOptions: {
             mesh: "card",
         },
         behaviourOptions: {
-            behaviour: "playerShotTracking",
-            initialShotVector: initialVelocity,
-            shotSources: shotSources,
+            behaviour: "playerShot",
+            shotSources: shotSourcesLinear,
             shotSpeed: 20
         },
         lifespan: Infinity,
         wait: 0
+    }];
+
+    if(powerClass > 0){
+        instructions.push({
+            type: "shoot",
+            materialOptions:{
+                material: "texture",
+                texture: "reimu_ofuda_blue",
+                hasAlpha: true,
+                doubleSided: true
+            },
+            patternOptions: {
+                pattern: "empty",
+                num: PLAYER_BULLETS_WHEEL_LENGTH * shotSourcesTracking.length,
+            },
+            meshOptions: {
+                mesh: "card",
+            },
+            behaviourOptions: {
+                behaviour: "playerShotTracking",
+                initialShotVector: initialVelocity,
+                shotSources: shotSourcesTracking,
+                shotSpeed: 20
+            },
+            lifespan: Infinity,
+            wait: 0
+        })
     }
+
+    return instructions;
 }
 
 export const Reimu = () => {
@@ -90,8 +136,8 @@ export const Reimu = () => {
     const frameSkip = useNormalizedFrameSkip(bulletFrameSkip);
     const {addBulletGroup, dispose} = useContext(BulletsContext);
     const SHOOT = useControl("SHOOT");
-    const [shot1Id, setShot1Id] = useState();
-    const [shot2Id, setShot2Id] = useState();
+    const [shot1Id, setShot1Ids] = useState([]);
+    const [shot2Id, setShot2Ids] = useState([]);
     const [isBombing, setIsBombing] = useState(false);
     const { registerAnimation } = useContext(AnimationContext)
     const {paused} = useContext(PauseContext);
@@ -156,21 +202,31 @@ export const Reimu = () => {
     useEffect(() => {
         if (!sphereTransformRef1.current || !sphereTransformRef2.current) return;
 
-        const id1 = addBulletGroup(sphereTransformRef1.current,
-            shotInstruction(powerClass, [3, 0, 6])
-        )
-        const id2 = addBulletGroup(sphereTransformRef2.current,
-            shotInstruction(powerClass ,[-3, 0, 6])
-        )
+        const ids1 = [addBulletGroup(sphereTransformRef1.current,
+            shotInstruction(powerClass, [3, 0, 6])[0]
+        )]
+        if(powerClass > 0){
+            ids1.push(addBulletGroup(sphereTransformRef1.current,
+                shotInstruction(powerClass, [3, 0, 6])[1]
+            ))
+        }
+        const ids2 = [addBulletGroup(sphereTransformRef2.current,
+            shotInstruction(powerClass, [-3, 0, 6])[0]
+        )]
+        if(powerClass > 0){
+            ids2.push(addBulletGroup(sphereTransformRef2.current,
+                shotInstruction(powerClass, [-3, 0, 6])[1]
+            ))
+        }
 
-        setShot1Id(id1)
-        setShot2Id(id2)
+        setShot1Ids(ids1)
+        setShot2Ids(ids2)
 
         return () => {
-            allBullets[id1].behaviour.firing = false;
-            allBullets[id2].behaviour.firing = false;
+            ids1.forEach(shotId => allBullets[shotId].behaviour.firing = false);
+            ids2.forEach(shotId => allBullets[shotId].behaviour.firing = false);
             window.setTimeout(() => {
-                dispose([id1, id2])
+                dispose([...ids1, ...ids2])
             }, 5000)
         }
 
@@ -196,15 +252,15 @@ export const Reimu = () => {
 
         transformNodeRef.current.shotFrame += 1;
 
-        allBullets[shot1Id].behaviour.firing = false;
-        allBullets[shot2Id].behaviour.firing = false;
-        allBullets[shot1Id].behaviour.target = target;
-        allBullets[shot2Id].behaviour.target = target;
+        shot1Id.forEach(shotId => allBullets[shotId].behaviour.firing = false);
+        shot2Id.forEach(shotId => allBullets[shotId].behaviour.firing = false);
+        shot1Id.forEach(shotId => allBullets[shotId].behaviour.target = target);
+        shot2Id.forEach(shotId => allBullets[shotId].behaviour.target = target);
 
         if (transformNodeRef.current.shotFrame > frameSkip) {
             if (SHOOT && !paused) {
-                allBullets[shot1Id].behaviour.firing = true;
-                allBullets[shot2Id].behaviour.firing = true;
+                shot1Id.forEach(shotId => allBullets[shotId].behaviour.firing = true);
+                shot2Id.forEach(shotId => allBullets[shotId].behaviour.firing = true);
             }
             transformNodeRef.current.shotFrame = 0;
         }

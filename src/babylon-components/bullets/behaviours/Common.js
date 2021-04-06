@@ -45,9 +45,11 @@ export const playerBulletCollisionPixelShader = glsl`
         //Bullet colliding with ceiling?
         collision = max(collision, collideWithEnvironment.z * float(position.y > arenaMax.y));
 
+        vec3 dPosition = vec3(0., 0., 0.);
+
         for(int i = 0; i < ${MAX_ENEMIES}; i ++){
             int offset = i * 3;
-            vec3 enemyPosition = vec3(enemyPositions[offset],enemyPositions[offset + 1], enemyPositions[offset + 2]);
+            vec3 enemyPosition = vec3(enemyPositions[offset], enemyPositions[offset + 1], enemyPositions[offset + 2]);
             float enemyBulletDistance = distance(position, enemyPosition);
             float close = float(enemyBulletDistance < enemyRadii[i]);
             collision = max(collision, close * (10000. - float(i)));
@@ -57,7 +59,7 @@ export const playerBulletCollisionPixelShader = glsl`
         //Bullet exists in scene?
         collision = collision * float(position.y > -500000.);
 
-        gl_FragColor = vec4(position, collision);
+        gl_FragColor = vec4(0., 0., 0., collision);
     }
 `
 

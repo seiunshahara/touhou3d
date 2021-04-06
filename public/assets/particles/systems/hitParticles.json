@@ -7,7 +7,7 @@
 			"emitterId": "a26a3fca-2327-4f38-b94f-a04a255da8d5",
 			"particleEmitterType": {
 				"type": "SphereParticleEmitter",
-				"radius": 1,
+				"radius": 0.1,
 				"radiusRange": 1,
 				"directionRandomizer": 0
 			},
@@ -25,16 +25,16 @@
 			"minAngularSpeed": -0.5,
 			"maxAngularSpeed": 0.5,
 			"minSize": 0.1,
-			"maxSize": 0.5,
+			"maxSize": 0.2,
 			"minScaleX": 1,
 			"maxScaleX": 1,
 			"minScaleY": 1,
 			"maxScaleY": 1,
-			"minEmitPower": 5,
-			"maxEmitPower": 10,
+			"minEmitPower": 30,
+			"maxEmitPower": 60,
 			"minLifeTime": 1,
 			"maxLifeTime": 1,
-			"emitRate": 50,
+			"emitRate": 10,
 			"gravity": [
 				0,
 				0,
@@ -47,14 +47,14 @@
 			],
 			"color1": [
 				0.65,
-				0.51,
-				1,
+				0,
+				0.30,
 				1
 			],
 			"color2": [
 				0.32,
-				0.59,
-				1,
+				0,
+				0.10,
 				1
 			],
 			"colorDead": [

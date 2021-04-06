@@ -19,7 +19,8 @@ export const makeBulletMaterial = (materialOptions, parent, assets, scene) => {
         default: 
             throw new Error("Unsupported bullet material option: " + materialOptions.material)
     }
-
     _material.backFaceCulling = !materialOptions.doubleSided;
+
+
     return _material;
 }

@@ -25,9 +25,9 @@ export const GeneralContainer = ({children}) => {
     const [environmentCollision, setEnvironmentCollision] = useState(new Vector3(1, 0, 0));
 
     const assets = useLoadAssets();
-    const {addEnemy, removeEnemy, killEnemy} = usePositions();
-    const bulletsObject = useBullets(assets, environmentCollision, killEnemy);
     const addEffect = useEffects(assets);
+    const {addEnemy, removeEnemy, killEnemy} = usePositions();
+    const bulletsObject = useBullets(assets, environmentCollision, killEnemy, addEffect);
     const UIProps = useUI()
     const glowLayer = useGlowLayer();
     const {registerAnimation, ...pauseProps} = usePause();
@@ -37,39 +37,27 @@ export const GeneralContainer = ({children}) => {
         const gl = scene.getEngine()._gl;
 
         const newSyncs = [];
-        const newResolves = [];
-        const newRejects = [];
-        const newBuffers = [];
-        const newPPBs = [];
 
-        allSyncs.syncs.forEach((sync, i) => {
-            var res = gl.clientWaitSync(sync, 0, 0);
+        allSyncs.syncs.forEach((sync) => {
+            var res = gl.clientWaitSync(sync.sync, 0, 0);
             if (res === gl.WAIT_FAILED) {
-                allSyncs.rejects[i]();
+                sync.promiseReject();
                 return;
             }
             if (res === gl.TIMEOUT_EXPIRED) {
                 newSyncs.push(sync);
-                newResolves.push(allSyncs.resolves[i])
-                newRejects.push(allSyncs.rejects[i])
-                newBuffers.push(allSyncs.buffers[i])
-                newPPBs.push(allSyncs.PPBs[i]);
                 return;
             }
-            const buffer = allSyncs.buffers[i]
-            const PPB = allSyncs.PPBs[i];
-            gl.deleteSync(sync);
-            gl.bindBuffer(gl.PIXEL_PACK_BUFFER, PPB);
-            gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, buffer);
+
+            gl.deleteSync(sync.sync);
+            gl.bindBuffer(gl.PIXEL_PACK_BUFFER, sync.PPB);
+            gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, sync.buffer);
             gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
-            allSyncs.resolves[i](buffer);
+
+            sync.promiseResolve(sync.buffer);
         })
         
         allSyncs.syncs = newSyncs;
-        allSyncs.rejects = newRejects;
-        allSyncs.resolves = newResolves;
-        allSyncs.buffers = newBuffers;
-        allSyncs.PPBs = newPPBs;
     })
 
     return assets ? <AssetsContext.Provider value={assets}>

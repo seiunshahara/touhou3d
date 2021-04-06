@@ -14,6 +14,7 @@ export const textureFragmentShader = glsl`
 `
 
 export const makeTextureMaterial = (materialOptions, assets, scene) => {
+
     const _material = new ShaderMaterial(v4() + "texture", scene, {
         vertex: "texture", fragment: "texture"
     }, {
@@ -21,8 +22,8 @@ export const makeTextureMaterial = (materialOptions, assets, scene) => {
         uniforms: ["worldView", "worldViewProjection", "view", "projection", "direction", "cameraPosition"],
         needAlphaBlending: materialOptions.hasAlpha
     });
-
     _material.setTexture("textureSampler", assets[materialOptions.texture])
+    _material.alpha = materialOptions.alpha || (materialOptions.hasAlpha && 0.5) || 1;
 
     return _material;
 }

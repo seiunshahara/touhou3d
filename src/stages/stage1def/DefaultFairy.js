@@ -4,7 +4,7 @@ export const DefaultFairy = (spawn, target) => {
         asset: "blueFairy",
         behaviour: "defaultFairy",
         radius: 0.5,
-        health: 1,
+        health: 10,
         spawn: spawn,
         actionList: [
         ]

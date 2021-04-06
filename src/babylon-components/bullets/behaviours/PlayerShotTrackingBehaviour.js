@@ -1,5 +1,5 @@
 import { Vector3 } from "@babylonjs/core";
-import { MAX_ENEMIES } from "../../../utils/Constants";
+import { MAX_ENEMIES, PLAYER_BULLETS_WHEEL_LENGTH } from "../../../utils/Constants";
 import { glsl, RandVector3 } from "../../BabylonUtils";
 import { makeTextureFromVectors } from "../BulletUtils";
 import { collisionSnippet, mainHeaderSnippet, uniformSnippet } from "./Common";
@@ -67,8 +67,10 @@ export const playerShotTrackingBehaviourVelocityPixelShader = glsl`
         float bulletEnabled = float((id > (currentWindowStart - 0.1)) && (id < (currentWindowEnd - 0.1))) * firing;
         float bulletNotEnabled = 1. - bulletEnabled;
 
-        vec3 closestPosition = vec3(-500000., -500000., -500000.);
-        float closestDistance = 500000.;
+        vec3 closestPosition = vec3(-500., -500., -500.);
+        float closestDistance = 500.;
+
+        position = clamp(position, vec3(-510., -510., -510.), vec3(510., 510., 510.));
 
         //mutate velocity
         for(int i = 0; i < ${MAX_ENEMIES}; i ++){
@@ -86,7 +88,7 @@ export const playerShotTrackingBehaviourVelocityPixelShader = glsl`
         vec3 towardsEnemy = normalize(closestPosition - position);
         vec3 mutatedVelocity = (velocity.xyz * (1. - delta * 3.)) + (towardsEnemy * delta * 40.);
 
-        float newClosest = float(closestPosition.x > -100000.);
+        float newClosest = float(closestPosition.x > -1000.);
         float notNewClosest = 1. - newClosest;
 
         velocity = newClosest * vec4(mutatedVelocity, 1.) + notNewClosest * velocity;
@@ -100,7 +102,7 @@ class PlayerShotTrackingBehaviour extends PlayerBulletBehaviour{
         const sourceSampler = makeTextureFromVectors(behaviourOptions.shotSources)
         
         super("playerShotTrackingBehaviourPosition", "playerShotTrackingBehaviourVelocity", parent, environmentCollision, (texture) => {
-            texture.setFloat("frame", 0)
+            texture.setFloat("frame", 0.001)
             texture.setFloat("firing", 0)
             texture.setVector3("shotVector", new RandVector3(...behaviourOptions.initialShotVector))
             texture.setVector3("sourceOffset", new Vector3(0, 0, 0))
@@ -123,10 +125,10 @@ class PlayerShotTrackingBehaviour extends PlayerBulletBehaviour{
 
             const sourceOffset = this.parent.getAbsolutePosition();
 
-            this.positionTexture1.setFloat("frame", this.bulletFrame)
-            this.velocityTexture1.setFloat("frame", this.bulletFrame)
-            this.positionTexture2.setFloat("frame", this.bulletFrame)
-            this.velocityTexture2.setFloat("frame", this.bulletFrame)
+            this.positionTexture1.setFloat("frame", this.bulletFrame + 0.001)
+            this.velocityTexture1.setFloat("frame", this.bulletFrame + 0.001)
+            this.positionTexture2.setFloat("frame", this.bulletFrame + 0.001)
+            this.velocityTexture2.setFloat("frame", this.bulletFrame + 0.001)
 
             this.positionTexture1.setFloat("firing", +this.firing)
             this.velocityTexture1.setFloat("firing", +this.firing)
@@ -139,7 +141,7 @@ class PlayerShotTrackingBehaviour extends PlayerBulletBehaviour{
             this.velocityTexture2.setVector3("sourceOffset", sourceOffset)
         }
 
-        this.bulletFrame = (this.bulletFrame + 1) % 100;
+        this.bulletFrame = (this.bulletFrame + 1) % PLAYER_BULLETS_WHEEL_LENGTH;
     }
 }
 

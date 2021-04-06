@@ -25,6 +25,7 @@ export class PlayerBulletBehaviour extends BulletBehaviour{
 
     update(deltaS){
         const ready = super.update(deltaS);
+
         if(ready){
             this.collisionTexture1.setFloats("enemyPositions", actorPositions.enemiesBuffer);
             this.collisionTexture2.setFloats("enemyPositions", actorPositions.enemiesBuffer);

@@ -1,4 +1,5 @@
 import { Vector3 } from "@babylonjs/core";
+import { PLAYER_BULLETS_WHEEL_LENGTH } from "../../../utils/Constants";
 import { glsl } from "../../BabylonUtils";
 import { makeTextureFromVectors } from "../BulletUtils";
 import { collisionSnippet, mainHeaderSnippet, uniformSnippet } from "./Common";
@@ -97,10 +98,10 @@ class PlayerShotBehaviour extends PlayerBulletBehaviour{
             const sourceOffset = this.parent.getAbsolutePosition();
             const shotVector = this.target.subtract(sourceOffset).normalize().scale(this.shotSpeed)
 
-            this.positionTexture1.setFloat("frame", this.bulletFrame)
-            this.velocityTexture1.setFloat("frame", this.bulletFrame)
-            this.positionTexture2.setFloat("frame", this.bulletFrame)
-            this.velocityTexture2.setFloat("frame", this.bulletFrame)
+            this.positionTexture1.setFloat("frame", this.bulletFrame + 0.001)
+            this.velocityTexture1.setFloat("frame", this.bulletFrame + 0.001)
+            this.positionTexture2.setFloat("frame", this.bulletFrame + 0.001)
+            this.velocityTexture2.setFloat("frame", this.bulletFrame + 0.001)
 
             this.positionTexture1.setFloat("firing", +this.firing)
             this.velocityTexture1.setFloat("firing", +this.firing)
@@ -118,7 +119,7 @@ class PlayerShotBehaviour extends PlayerBulletBehaviour{
             this.velocityTexture2.setVector3("sourceOffset", sourceOffset)
         }
 
-        this.bulletFrame = (this.bulletFrame + 1) % 100;
+        this.bulletFrame = (this.bulletFrame + 1) % PLAYER_BULLETS_WHEEL_LENGTH;
     }
 }
 

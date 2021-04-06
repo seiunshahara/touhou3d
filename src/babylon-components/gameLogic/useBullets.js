@@ -1,7 +1,7 @@
 import { useCallback, useContext, useRef } from 'react';
 import { useBeforeRender, useScene } from 'react-babylonjs';
 import { globals, GlobalsContext } from '../../components/GlobalsContainer';
-import { itemGet } from '../../sounds/SFX';
+import { enemyDamage, itemGet } from '../../sounds/SFX';
 import { MAX_ENEMIES } from '../../utils/Constants';
 import { makeBulletBehaviour } from '../bullets/behaviours';
 import { BulletGroup } from '../bullets/BulletGroup';
@@ -11,11 +11,17 @@ import { makeBulletMesh } from '../bullets/meshes';
 import { makeBulletPattern } from '../bullets/patterns';
 import { makeName } from '../hooks/useName';
 import { actorPositions, allBullets } from './StaticRefs';
+import { RandVector3 } from '../BabylonUtils';
 
-export const useBullets = (assets, environmentCollision, killEnemy) => {
+const hitParticleRandomization = [[-0.3, 0.3], [-0.3, 0.3], [-0.3, 0.3]]
+
+let playHitSound = false;
+let framesSincePlayHit = 0;
+
+export const useBullets = (assets, environmentCollision, killEnemy, addEffect) => {
     const scene = useScene();
-    const {setGlobal} = useContext(GlobalsContext)
-    const frame = useRef(0)
+    const {setGlobal} = useContext(GlobalsContext);
+    const frame = useRef(0);
 
     const disposeSingle = useCallback((id) => {
         allBullets[id].dispose();
@@ -41,6 +47,7 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
 
         mesh.makeInstances(positions.length);
         mesh.material = material
+
         behaviour.init(material, positions, velocities, scene);
 
         const {lifespan} = preparedInstruction;
@@ -63,6 +70,13 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
 
     useBeforeRender(() => {
         //Collisions
+        if(playHitSound && framesSincePlayHit % 6 === 0){
+            enemyDamage.play();
+            playHitSound = false;
+            framesSincePlayHit = 0;
+        }
+        framesSincePlayHit++;
+
         Object.values(allBullets).forEach((bulletGroup) => {
             if(bulletGroup.behaviour.isPlayerBullet){
                 bulletGroup.behaviour.collisionResult.readPixels().then(buffer => {
@@ -71,6 +85,13 @@ export const useBullets = (assets, environmentCollision, killEnemy) => {
                         if(collision.collisionID > 10000 - MAX_ENEMIES){
                             const enemyID = 10000 - collision.collisionID;
                             actorPositions.enemyHealths[enemyID]--;
+                            playHitSound = true;
+                            if(actorPositions.enemies[enemyID]){
+                                addEffect(actorPositions.enemies[enemyID].clone().add(
+                                    new RandVector3(...hitParticleRandomization)
+                                ), "hitParticles")
+                            }
+                            
                             if(actorPositions.enemyHealths[enemyID] <= 0){
                                 killEnemy(enemyID);
                             }
